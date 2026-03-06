@@ -48,6 +48,7 @@ export default function TerminalInterface() {
   const [currentInput, setCurrentInput] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [isMobile, setIsMobile] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -62,10 +63,20 @@ export default function TerminalInterface() {
   const theme = TERMINAL_THEMES[currentTheme];
 
   useEffect(() => {
-    // Auto-focus terminal input
-    if (inputRef.current) {
+    // Detect mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    // Auto-focus terminal input (not on mobile to prevent keyboard popup)
+    if (inputRef.current && !window.matchMedia('(max-width: 768px)').matches) {
       inputRef.current.focus();
     }
+    
+    return () => window.removeEventListener('resize', checkMobile);
 
     // Add welcome message
     if (commands.length === 0) {
@@ -350,7 +361,7 @@ Terminal Version: 2.0`;
 
   return (
     <div 
-      className="h-screen flex flex-col font-mono text-sm"
+      className="h-screen flex flex-col font-mono text-xs sm:text-sm safe-area-inset mobile-scroll touch-manipulation"
       style={{ 
         backgroundColor: theme.backgroundColor,
         color: theme.textColor 
@@ -358,14 +369,14 @@ Terminal Version: 2.0`;
     >
       {/* Terminal Header */}
       <div 
-        className="flex items-center justify-between p-4 border-b"
+        className={`flex ${isMobile ? 'flex-col space-y-2' : 'flex-row'} items-center justify-between p-3 sm:p-4 border-b`}
         style={{ 
           borderColor: `${theme.primaryColor}40`,
           background: `linear-gradient(90deg, ${theme.backgroundColor} 0%, ${theme.primaryColor}10 100%)`
         }}
       >
-        <div className="flex items-center space-x-3">
-          <Terminal style={{ color: theme.primaryColor }} size={20} />
+        <div className={`flex items-center ${isMobile ? 'justify-center w-full' : 'space-x-3'}`}>
+          <Terminal style={{ color: theme.primaryColor }} size={isMobile ? 16 : 20} />
           <span style={{ color: theme.primaryColor }} className="font-bold">
             AgentKeys Terminal v2.0
           </span>

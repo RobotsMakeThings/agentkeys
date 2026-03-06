@@ -29,7 +29,7 @@ export function Button({
 
   return (
     <button 
-      className={`inline-flex items-center justify-center rounded-lg font-medium transition-all ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg font-medium transition-all touch-manipulation ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}

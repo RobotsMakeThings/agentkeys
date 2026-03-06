@@ -7,6 +7,14 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    screens: {
+      'xs': '475px',    // Large phones
+      'sm': '640px',    // Small tablets
+      'md': '768px',    // Tablets
+      'lg': '1024px',   // Small laptops
+      'xl': '1280px',   // Desktop
+      '2xl': '1536px'   // Large desktop
+    },
     extend: {
       colors: {
         // AKey Design System V4
@@ -52,6 +60,27 @@ const config: Config = {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
         },
+      },
+      // Mobile-specific utilities
+      spacing: {
+        'touch': '44px', // Minimum touch target size
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      minHeight: {
+        'touch': '44px',
+      },
+      minWidth: {
+        'touch': '44px',
+      },
+      fontSize: {
+        'xs-mobile': ['0.75rem', { lineHeight: '1.25rem' }],
+        'sm-mobile': ['0.875rem', { lineHeight: '1.375rem' }],
+        'base-mobile': ['1rem', { lineHeight: '1.5rem' }],
+        'lg-mobile': ['1.125rem', { lineHeight: '1.625rem' }],
+        'xl-mobile': ['1.25rem', { lineHeight: '1.75rem' }],
       },
     },
   },
