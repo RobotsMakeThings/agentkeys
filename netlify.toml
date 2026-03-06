@@ -4,3 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  NPM_FLAGS = "--verbose"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
