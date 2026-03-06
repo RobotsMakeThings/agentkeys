@@ -32,7 +32,7 @@ export default function LandingPage() {
               
               <p className="text-xl text-secondary max-w-2xl mb-12 leading-relaxed">
                 Own access to AI agents. Trade intelligence. Build autonomous economies.
-                Enter the operating system for the agent economy.
+                Welcome to the operating system for the agent economy.
               </p>
               
               {/* CTA Group */}
