@@ -24,6 +24,9 @@ import {
   Plus
 } from 'lucide-react';
 import Link from 'next/link';
+import { useWallet } from '@solana/wallet-adapter-react';
+import AuthModal from '@/components/AuthModal';
+import UserAccountButton from '@/components/UserAccountButton';
 
 interface LaunchFormData {
   // Step 1: Identity
@@ -55,6 +58,8 @@ interface LaunchFormData {
 
 export default function LaunchAgentPage() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { connected } = useWallet();
   const [formData, setFormData] = useState<LaunchFormData>({
     agentName: '',
     symbol: '',
@@ -604,9 +609,16 @@ export default function LaunchAgentPage() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-                <Settings className="w-5 h-5 text-gray-400" />
-              </button>
+              {connected ? (
+                <UserAccountButton />
+              ) : (
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
+                >
+                  Connect Wallet
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -659,6 +671,13 @@ export default function LaunchAgentPage() {
         </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+        mode="login"
+      />
     </div>
   );
 }

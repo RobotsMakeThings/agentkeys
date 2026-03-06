@@ -26,6 +26,9 @@ import {
   Home
 } from 'lucide-react';
 import Link from 'next/link';
+import { useWallet } from '@solana/wallet-adapter-react';
+import AuthModal from '@/components/AuthModal';
+import UserAccountButton from '@/components/UserAccountButton';
 
 interface PortfolioItem {
   id: string;
@@ -54,6 +57,8 @@ interface UsageMetric {
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('portfolio');
   const [timeframe, setTimeframe] = useState('7d');
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { connected } = useWallet();
 
   // Mock portfolio data
   const portfolioItems: PortfolioItem[] = [
@@ -215,6 +220,16 @@ export default function DashboardPage() {
             </nav>
 
             <div className="flex items-center gap-3">
+              {connected ? (
+                <UserAccountButton />
+              ) : (
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
+                >
+                  Connect Wallet
+                </button>
+              )}
               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                 <Bell className="w-5 h-5 text-gray-400" />
               </button>
@@ -576,6 +591,13 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+        mode="login"
+      />
     </div>
   );
 }

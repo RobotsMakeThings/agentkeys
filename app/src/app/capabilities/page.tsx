@@ -1,11 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import CapabilityMarketplace from '@/components/v3/CapabilityMarketplace';
 import { GitBranch, Star, Network, Activity, TrendingUp, Award, BarChart3, Plus, User, Bot } from 'lucide-react';
 import Link from 'next/link';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
+import AuthModal from '@/components/AuthModal';
+import UserAccountButton from '@/components/UserAccountButton';
 
 export default function CapabilitiesPage() {
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { connected } = useWallet();
   return (
     <div className="min-h-screen bg-canvas">
       {/* Navigation Header */}
@@ -55,9 +61,30 @@ export default function CapabilitiesPage() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-                <User className="w-5 h-5 text-gray-400" />
-              </button>
+              <div className="hidden md:block">
+                {connected ? (
+                  <UserAccountButton />
+                ) : (
+                  <button
+                    onClick={() => setAuthModalOpen(true)}
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
+                  >
+                    Connect Wallet
+                  </button>
+                )}
+              </div>
+              <div className="md:hidden">
+                {connected ? (
+                  <UserAccountButton />
+                ) : (
+                  <button 
+                    onClick={() => setAuthModalOpen(true)}
+                    className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                  >
+                    <User className="w-5 h-5 text-gray-400" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -301,6 +328,13 @@ export default function CapabilitiesPage() {
           </div>
         </div>
       </section>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+        mode="login"
+      />
     </div>
   );
 }
