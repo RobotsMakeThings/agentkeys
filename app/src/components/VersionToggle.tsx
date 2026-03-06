@@ -32,14 +32,10 @@ export default function VersionToggle() {
           </Link>
           
           <Link
-            href="/v2"
-            className={`px-3 py-1.5 rounded-lg text-small font-medium transition-all flex items-center gap-1 ${
-              isV2
-                ? 'bg-gradient-primary text-white shadow-lg'
-                : 'text-secondary hover:text-primary hover:bg-card'
-            }`}
+            href="/capabilities"
+            className="px-3 py-1.5 rounded-lg text-small font-medium transition-all flex items-center gap-1 bg-gradient-to-r from-cyan-400 to-purple-400 text-white shadow-lg hover:opacity-90"
           >
-            V2
+            Capability
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
