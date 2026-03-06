@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import ActivityFeed from '@/components/ActivityFeed';
 import EnhancedAgentCard from '@/components/v2/EnhancedAgentCard';
+import CapabilityAgentCard from '@/components/v3/CapabilityAgentCard';
 
 // Mock data
 const agents = [
