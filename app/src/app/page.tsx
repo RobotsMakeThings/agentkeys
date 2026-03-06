@@ -8,7 +8,7 @@ import KeyOrb from '@/components/visuals/KeyOrb';
 import LiveMarketStrip from '@/components/market/LiveMarketStrip';
 import CapabilityMarketplace from '@/components/v3/CapabilityMarketplace';
 
-// Cache-busting update 2026-03-06
+// Cache-busting update 2026-03-06 15:45 MST - Force deployment refresh
 export default function LandingPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const { connected } = useWallet();
