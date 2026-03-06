@@ -1,0 +1,121 @@
+/* AgentKeys Brand Colors - Matching the Logo */
+:root {
+  --agentkeys-cyan-rgb: 34, 211, 238;
+  --agentkeys-purple-rgb: 168, 85, 247;
+  --agentkeys-blue-rgb: 59, 130, 246;
+  --agentkeys-teal-rgb: 6, 182, 212;
+  --agentkeys-violet-rgb: 139, 92, 246;
+}
+
+/* Gradient Utilities */
+.gradient-agentkeys {
+  background: linear-gradient(135deg, 
+    rgb(var(--agentkeys-cyan-rgb)) 0%, 
+    rgb(var(--agentkeys-teal-rgb)) 25%,
+    rgb(var(--agentkeys-blue-rgb)) 50%,
+    rgb(var(--agentkeys-violet-rgb)) 75%,
+    rgb(var(--agentkeys-purple-rgb)) 100%
+  );
+}
+
+.gradient-agentkeys-text {
+  background: linear-gradient(135deg, 
+    rgb(var(--agentkeys-cyan-rgb)) 0%, 
+    rgb(var(--agentkeys-purple-rgb)) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-agentkeys-border {
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, rgb(var(--agentkeys-cyan-rgb)), rgb(var(--agentkeys-purple-rgb))) border-box;
+}
+
+/* Glow Effects */
+.glow-agentkeys {
+  box-shadow: 
+    0 0 10px rgba(var(--agentkeys-cyan-rgb), 0.3),
+    0 0 20px rgba(var(--agentkeys-cyan-rgb), 0.2),
+    0 0 30px rgba(var(--agentkeys-purple-rgb), 0.1);
+  transition: all 0.3s ease;
+}
+
+.glow-agentkeys:hover {
+  box-shadow: 
+    0 0 15px rgba(var(--agentkeys-cyan-rgb), 0.4),
+    0 0 30px rgba(var(--agentkeys-cyan-rgb), 0.3),
+    0 0 45px rgba(var(--agentkeys-purple-rgb), 0.2);
+}
+
+/* Hover Effects */
+.hover-glow-agentkeys:hover {
+  box-shadow: 
+    0 0 20px rgba(var(--agentkeys-cyan-rgb), 0.4),
+    0 0 40px rgba(var(--agentkeys-purple-rgb), 0.3);
+  border-color: rgba(var(--agentkeys-cyan-rgb), 0.6);
+  transition: all 0.3s ease;
+}
+
+/* Background Gradients */
+.bg-agentkeys-subtle {
+  background: linear-gradient(135deg, 
+    rgba(var(--agentkeys-cyan-rgb), 0.1) 0%,
+    rgba(var(--agentkeys-purple-rgb), 0.1) 100%
+  );
+}
+
+.bg-agentkeys-card {
+  background: linear-gradient(135deg,
+    rgba(var(--agentkeys-cyan-rgb), 0.05) 0%,
+    rgba(var(--agentkeys-purple-rgb), 0.05) 100%
+  );
+  border: 1px solid rgba(var(--agentkeys-cyan-rgb), 0.2);
+}
+
+/* Animation */
+@keyframes pulse-agentkeys {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-agentkeys {
+  animation: pulse-agentkeys 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Logo specific styles */
+.agentkeys-logo {
+  filter: drop-shadow(0 0 10px rgba(var(--agentkeys-cyan-rgb), 0.3));
+  transition: filter 0.3s ease;
+}
+
+.agentkeys-logo:hover {
+  filter: drop-shadow(0 0 15px rgba(var(--agentkeys-cyan-rgb), 0.5));
+}
+
+/* Wallet adapter overrides */
+.wallet-adapter-button {
+  background: linear-gradient(135deg, 
+    rgb(var(--agentkeys-cyan-rgb)) 0%, 
+    rgb(var(--agentkeys-purple-rgb)) 100%
+  ) !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.wallet-adapter-button:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 
+    0 0 15px rgba(var(--agentkeys-cyan-rgb), 0.4),
+    0 0 30px rgba(var(--agentkeys-purple-rgb), 0.3) !important;
+}

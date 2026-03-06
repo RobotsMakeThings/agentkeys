@@ -1,0 +1,6 @@
+[build]
+  command = "cd app && npm ci --prefer-offline --no-audit && npm run build"
+  publish = "app/dist"
+
+[build.environment]
+  NODE_VERSION = "20"

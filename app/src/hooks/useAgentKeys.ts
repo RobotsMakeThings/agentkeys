@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { PROGRAM_ID } from '@/lib/constants';
 import { fetchMockAgents, fetchMockAgent, fetchMockPortfolio } from '@/lib/mockData';
 
-const TREASURY = new web3.PublicKey('YOUR_TREASURY_WALLET_HERE');
+const TREASURY = new web3.PublicKey('4tYYdhWSGMdAs9rcB35MwL2AFVJX6WY2kjATrJP97GEA');
 
 // Load IDL
 const IDL = require('../idl/agentkeys.json');

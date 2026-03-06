@@ -1,12 +1,11 @@
 // Constants and configuration for AgentKeys
 import { PublicKey } from '@solana/web3.js';
 
-// Program ID - UPDATE THIS AFTER DEPLOYMENT
-// Placeholder ID for development - replace with actual deployed program ID
-export const PROGRAM_ID = new PublicKey('AgentKeys111111111111111111111111111111111111');
+// Program ID - Updated with deployed program ID
+export const PROGRAM_ID = new PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS');
 
-// Treasury wallet - UPDATE THIS
-export const TREASURY_WALLET = new PublicKey('YOUR_TREASURY_WALLET_HERE');
+// Treasury wallet - Oshi Treasury
+export const TREASURY_WALLET = new PublicKey('4tYYdhWSGMdAs9rcB35MwL2AFVJX6WY2kjATrJP97GEA');
 
 // Network configuration
 export const NETWORKS = {
