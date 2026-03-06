@@ -166,6 +166,234 @@
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
   }
+
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Focus visible styles */
+  .accessibility-focus-visible *:focus-visible {
+    outline: 2px solid var(--blue) !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+  }
+
+  /* High contrast mode */
+  .accessibility-high-contrast {
+    --bg-canvas: #000000;
+    --bg-panel: #1a1a1a;
+    --bg-card: #2d2d2d;
+    --bg-elevated: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-muted: #999999;
+    --border-subtle: #666666;
+    --border-medium: #888888;
+    --blue: #66b3ff;
+    --violet: #b399ff;
+    --success: #66ff66;
+    --danger: #ff6666;
+    --warning: #ffcc66;
+  }
+
+  /* Reduced motion */
+  .accessibility-reduced-motion *,
+  .accessibility-reduced-motion *::before,
+  .accessibility-reduced-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Font size adjustments */
+  .font-small {
+    font-size: 14px;
+  }
+
+  .font-medium {
+    font-size: 16px;
+  }
+
+  .font-large {
+    font-size: 18px;
+  }
+
+  .font-x-large {
+    font-size: 20px;
+  }
+
+  /* Keyboard navigation improvements */
+  .accessibility-keyboard-nav {
+    scroll-behavior: smooth;
+  }
+
+  .accessibility-keyboard-nav button:focus,
+  .accessibility-keyboard-nav a:focus,
+  .accessibility-keyboard-nav input:focus,
+  .accessibility-keyboard-nav textarea:focus,
+  .accessibility-keyboard-nav select:focus {
+    box-shadow: 0 0 0 2px var(--blue), 0 0 0 4px rgba(0, 102, 255, 0.2);
+    outline: none;
+  }
+
+  /* Skip links */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+    border: 2px solid var(--blue);
+    transition: top 0.3s;
+  }
+
+  .skip-link:focus {
+    top: 6px;
+  }
+
+  /* Responsive design improvements */
+  @media (max-width: 768px) {
+    .responsive-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+
+    .responsive-text {
+      font-size: 14px !important;
+    }
+
+    .responsive-padding {
+      padding: 16px !important;
+    }
+
+    .responsive-margin {
+      margin: 8px !important;
+    }
+
+    /* Touch target improvements */
+    button,
+    a,
+    input,
+    select {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .responsive-text {
+      font-size: 12px !important;
+    }
+
+    .responsive-padding {
+      padding: 12px !important;
+    }
+
+    .responsive-margin {
+      margin: 4px !important;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+
+    .print-only {
+      display: block !important;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+    }
+
+    a {
+      text-decoration: underline !important;
+    }
+
+    a[href^="http"]:after {
+      content: " (" attr(href) ")";
+    }
+  }
+
+  /* Prefers color scheme */
+  @media (prefers-color-scheme: light) {
+    .auto-dark-mode {
+      --bg-canvas: #ffffff;
+      --bg-panel: #f8f9fa;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f3f4;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(0,0,0,0.12);
+      --border-medium: rgba(0,0,0,0.20);
+    }
+  }
+
+  /* Loading states */
+  .loading-skeleton {
+    background: linear-gradient(90deg, 
+      var(--bg-card) 25%, 
+      rgba(255,255,255,0.05) 50%, 
+      var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 2s infinite;
+  }
+
+  @keyframes loading-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Performance optimizations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+
+  .contain-layout {
+    contain: layout;
+  }
+
+  .contain-paint {
+    contain: paint;
+  }
+
+  .contain-style {
+    contain: style;
+  }
+
+  /* Image optimization */
+  img {
+    height: auto;
+    max-width: 100%;
+  }
+
+  img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  img[loading="lazy"].loaded {
+    opacity: 1;
+  }
 }
 
 :root {

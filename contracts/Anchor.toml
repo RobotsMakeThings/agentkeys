@@ -1,0 +1,39 @@
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+agentkeys = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+bonding_curve = "BondCurveProgramId1111111111111111111111111"  
+treasury = "TreasuryProgramId1111111111111111111111111"
+access_control = "AccessControlProgramId1111111111111111111111"
+
+[programs.devnet]
+agentkeys = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+bonding_curve = "BondCurveProgramId1111111111111111111111111"
+treasury = "TreasuryProgramId1111111111111111111111111"
+access_control = "AccessControlProgramId1111111111111111111111"
+
+[programs.mainnet]
+agentkeys = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+bonding_curve = "BondCurveProgramId1111111111111111111111111"
+treasury = "TreasuryProgramId1111111111111111111111111"
+access_control = "AccessControlProgramId1111111111111111111111"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+[workspace]
+members = [
+    "programs/agentkeys",
+    "programs/bonding_curve", 
+    "programs/treasury",
+    "programs/access_control"
+]

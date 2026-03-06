@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "AgentKeys Mobile",
+    "slug": "agentkeys-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#040405"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.agentkeys.mobile",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Use Face ID to authenticate and secure your wallet access",
+        "NSCameraUsageDescription": "Camera access is needed for QR code scanning"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#040405"
+      },
+      "package": "com.agentkeys.mobile",
+      "permissions": [
+        "USE_FINGERPRINT",
+        "USE_BIOMETRIC",
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-notifications",
+      "expo-local-authentication",
+      "@react-native-async-storage/async-storage"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id-here"
+      }
+    }
+  }
+}

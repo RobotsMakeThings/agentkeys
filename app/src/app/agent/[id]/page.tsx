@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import AgentHubClient from '@/components/AgentHubClient';
+import EnhancedAgentDetail from '@/components/agent-detail/EnhancedAgentDetail';
 
 // Generate static params for the dynamic route
 export function generateStaticParams() {
@@ -12,18 +12,23 @@ export function generateStaticParams() {
   ];
 }
 
-interface AgentHubPageProps {
+interface AgentDetailPageProps {
   params: {
     id: string;
   };
 }
 
-export default function AgentHubPage({ params }: AgentHubPageProps) {
+export const metadata = {
+  title: 'Agent Details - AgentKeys',
+  description: 'Comprehensive agent profile with trading, analytics, and community data',
+};
+
+export default function AgentDetailPage({ params }: AgentDetailPageProps) {
   const validAgents = ['research-os', 'trade-pilot', 'growth-loop', 'audit-mesh'];
   
   if (!validAgents.includes(params.id)) {
     notFound();
   }
 
-  return <AgentHubClient agentId={params.id} />;
+  return <EnhancedAgentDetail agentId={params.id} />;
 }

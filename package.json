@@ -1,0 +1,25 @@
+{
+  "name": "agentkeys-platform",
+  "version": "1.0.0",
+  "description": "AgentKeys - The Operating System for the Agent Economy",
+  "scripts": {
+    "build:contracts": "cd contracts && anchor build",
+    "deploy:contracts": "cd contracts && anchor deploy",
+    "build:backend": "cd backend && npm run build",
+    "start:backend": "cd backend && npm start",
+    "build:sdk": "cd sdk && npm run build",
+    "start:websocket": "cd websocket-server && npm start",
+    "deploy:mainnet": "./deploy-infrastructure.sh mainnet-beta",
+    "deploy:devnet": "./deploy-infrastructure.sh devnet"
+  },
+  "keywords": ["solana", "agents", "defi", "trading", "blockchain"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "workspaces": [
+    "backend",
+    "sdk",
+    "websocket-server"
+  ]
+}
