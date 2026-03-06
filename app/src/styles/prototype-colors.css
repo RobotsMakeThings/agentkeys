@@ -1,0 +1,49 @@
+/* Your Prototype Color System - Direct Translation */
+
+:root {
+  /* Your exact color palette */
+  --bg-primary: #07111f;
+  --bg-secondary: #0d1930;  
+  --panel: rgba(16,28,49,.88);
+  --line: rgba(255,255,255,.1);
+  --text-primary: #eef3ff;
+  --text-muted: #9fb0cc;
+  --cyan: #76f6ff;
+  --blue: #7da4ff;
+  --violet: #ba8cff;
+  --green: #67f0c5;
+  --amber: #ffd17b;
+  --shadow: 0 28px 80px rgba(0,0,0,.34);
+  --max-width: 1220px;
+
+  /* Update our existing variables to match your prototype */
+  --bg-canvas: #07111f;
+  --bg-panel: #0d1930;
+  --bg-card: rgba(16,28,49,.88);
+  --bg-elevated: rgba(15,31,56,.9);
+  
+  --text-primary: #eef3ff;
+  --text-secondary: #9fb0cc;
+  --text-muted: #7f91ad;
+  
+  --oshi-blue: #7da4ff;
+  --oshi-purple: #ba8cff;
+  --cyan: #76f6ff;
+  
+  /* Your exact gradients */
+  --gradient-radial-bg: 
+    radial-gradient(circle at 10% 10%, rgba(118,246,255,.15), transparent 22%),
+    radial-gradient(circle at 84% 14%, rgba(125,164,255,.18), transparent 28%),
+    radial-gradient(circle at 70% 82%, rgba(186,140,255,.14), transparent 24%),
+    linear-gradient(180deg, #08111f 0%, #07111f 40%, #081423 100%);
+    
+  --gradient-primary: linear-gradient(135deg, rgba(118,246,255,.9), rgba(125,164,255,.96));
+  --gradient-panel: linear-gradient(180deg, rgba(16,28,49,.86), rgba(10,18,34,.92));
+  --gradient-agent-card: linear-gradient(145deg, rgba(15,31,56,.9), rgba(8,17,31,.98));
+}
+
+/* Apply your background to body */
+.prototype-theme {
+  background: var(--gradient-radial-bg);
+  min-height: 100vh;
+}
