@@ -3,8 +3,10 @@ import EnhancedAgentDetail from '@/components/agent-detail/EnhancedAgentDetail';
 
 // Generate static params for the dynamic route
 export function generateStaticParams() {
-  // For now, generate static params for our demo agents
+  // Include Oshi flagship agent and demo agents
   return [
+    { id: 'oshi-flagship' },
+    { id: 'oshi' },
     { id: 'research-os' },
     { id: 'trade-pilot' },
     { id: 'growth-loop' },
@@ -24,7 +26,7 @@ export const metadata = {
 };
 
 export default function AgentDetailPage({ params }: AgentDetailPageProps) {
-  const validAgents = ['research-os', 'trade-pilot', 'growth-loop', 'audit-mesh'];
+  const validAgents = ['oshi-flagship', 'oshi', 'research-os', 'trade-pilot', 'growth-loop', 'audit-mesh'];
   
   if (!validAgents.includes(params.id)) {
     notFound();

@@ -45,6 +45,7 @@ import {
 } from 'recharts';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import OshiAgentDetail from '@/components/oshi/OshiAgentDetail';
 
 interface AgentDetailProps {
   agentId: string;
@@ -276,6 +277,11 @@ const MOCK_AGENT: Agent = {
 };
 
 export default function EnhancedAgentDetail({ agentId }: AgentDetailProps) {
+  // Special handling for Oshi agent
+  if (agentId === 'oshi-flagship' || agentId === 'oshi') {
+    return <OshiAgentDetail />;
+  }
+
   const [agent, setAgent] = useState<Agent | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isBookmarked, setIsBookmarked] = useState(false);

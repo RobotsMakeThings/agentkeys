@@ -4,6 +4,7 @@ import { authenticateToken } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { SolanaService } from '../services/SolanaService';
 import { CacheService } from '../services/CacheService';
+import { OshiService } from '../services/OshiService';
 import Joi from 'joi';
 import logger from '../utils/logger';
 
@@ -11,6 +12,7 @@ const router = Router();
 const db = Database.getInstance();
 const solanaService = new SolanaService();
 const cacheService = new CacheService();
+const oshiService = OshiService.getInstance();
 
 // Validation schemas
 const createAgentSchema = Joi.object({
@@ -96,6 +98,51 @@ router.get('/', async (req, res) => {
 
         const result = await db.query(query, params);
         
+        // Inject Oshi data if not in database yet
+        let agents = result.rows;
+        const hasOshi = agents.some(agent => agent.name === 'Oshi' || agent.symbol === 'OSHI');
+        
+        if (!hasOshi) {
+            try {
+                const oshiData = await oshiService.getOshiAgentData();
+                const oshiAgent = {
+                    id: 'oshi-flagship',
+                    agent_address: 'Agent111111111111111111111111111111111111111',
+                    creator_id: 'oshi-team',
+                    creator_username: 'oshi-team',
+                    creator_wallet: 'Creator1111111111111111111111111111111111111',
+                    name: oshiData.name,
+                    symbol: oshiData.symbol,
+                    description: oshiData.description,
+                    category: oshiData.category,
+                    github_url: oshiData.githubUrl,
+                    twitter_handle: oshiData.twitterHandle,
+                    token_mint: 'OshiMint1111111111111111111111111111111111',
+                    total_keys: oshiData.totalKeys,
+                    total_holders: oshiData.holders,
+                    market_cap: oshiData.marketCap,
+                    current_price: oshiData.currentPrice,
+                    is_active: true,
+                    created_at: oshiData.launchDate,
+                    updated_at: new Date().toISOString(),
+                    // Extended Oshi-specific data
+                    code_score: oshiData.codeScore,
+                    social_score: oshiData.socialScore,
+                    agent_score: oshiData.agentScore,
+                    performance_score: oshiData.performanceScore,
+                    trading_stats: oshiData.tradingStats,
+                    social_metrics: oshiData.socialMetrics,
+                    volume_24h: oshiData.volume24h,
+                    price_change_24h: oshiData.priceChange24h
+                };
+                
+                // Insert Oshi at the top of results
+                agents = [oshiAgent, ...agents];
+            } catch (error) {
+                logger.warn('Could not inject Oshi data into agents list:', error);
+            }
+        }
+        
         // Get total count
         let countQuery = `
             SELECT COUNT(*) 
@@ -125,7 +172,7 @@ router.get('/', async (req, res) => {
         const totalCount = parseInt(countResult.rows[0].count);
 
         const response = {
-            agents: result.rows,
+            agents: agents,
             pagination: {
                 page: parseInt(page as string),
                 limit: parseInt(limit as string),
@@ -149,7 +196,63 @@ router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         
-        // Try cache first
+        // Special handling for Oshi agent
+        if (id === 'oshi-flagship' || id === 'oshi' || id === 'Agent111111111111111111111111111111111111111') {
+            const cacheKey = `agent:oshi-flagship`;
+            let cachedAgent = await cacheService.get(cacheKey);
+            
+            if (cachedAgent) {
+                return res.json(cachedAgent);
+            }
+
+            try {
+                const oshiData = await oshiService.getOshiAgentData();
+                const oshiAgent = {
+                    id: 'oshi-flagship',
+                    agent_address: 'Agent111111111111111111111111111111111111111',
+                    creator_id: 'oshi-team',
+                    creator_username: 'oshi-team',
+                    creator_wallet: 'Creator1111111111111111111111111111111111111',
+                    name: oshiData.name,
+                    symbol: oshiData.symbol,
+                    description: oshiData.description,
+                    category: oshiData.category,
+                    github_url: oshiData.githubUrl,
+                    twitter_handle: oshiData.twitterHandle,
+                    token_mint: 'OshiMint1111111111111111111111111111111111',
+                    total_keys: oshiData.totalKeys,
+                    total_holders: oshiData.holders,
+                    market_cap: oshiData.marketCap,
+                    current_price: oshiData.currentPrice,
+                    is_active: true,
+                    created_at: oshiData.launchDate,
+                    updated_at: new Date().toISOString(),
+                    // Extended Oshi-specific data
+                    code_score: oshiData.codeScore,
+                    social_score: oshiData.socialScore,
+                    agent_score: oshiData.agentScore,
+                    performance_score: oshiData.performanceScore,
+                    trading_stats: oshiData.tradingStats,
+                    social_metrics: oshiData.socialMetrics,
+                    volume_24h: oshiData.volume24h,
+                    price_change_24h: oshiData.priceChange24h,
+                    bonding_curve_progress: 0.45, // Based on current performance
+                    total_fees: 0,
+                    claimable_fees: 0,
+                    total_claimed: 0
+                };
+
+                // Cache for 1 minute (frequent updates for flagship)
+                await cacheService.set(cacheKey, oshiAgent, 60);
+                
+                return res.json(oshiAgent);
+            } catch (error) {
+                logger.error('Error fetching Oshi agent data:', error);
+                return res.status(500).json({ error: 'Failed to fetch Oshi agent data' });
+            }
+        }
+        
+        // Standard database lookup for other agents
         const cacheKey = `agent:${id}`;
         let cachedAgent = await cacheService.get(cacheKey);
         

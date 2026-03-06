@@ -18,6 +18,7 @@ import userRoutes from './routes/users';
 import authRoutes from './routes/auth';
 import marketRoutes from './routes/market';
 import analyticsRoutes from './routes/analytics';
+import oshiRoutes from './routes/oshi';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -138,6 +139,7 @@ class AgentKeysServer {
         this.app.use('/api/auth', authRoutes);
         this.app.use('/api/market', marketRoutes);
         this.app.use('/api/analytics', analyticsRoutes);
+        this.app.use('/api/oshi', oshiRoutes);
 
         // API documentation endpoint
         this.app.get('/api', (req, res) => {

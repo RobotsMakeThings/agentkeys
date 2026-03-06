@@ -48,6 +48,32 @@ interface Agent {
 
 const MOCK_AGENTS: Agent[] = [
   {
+    id: 'oshi-flagship',
+    name: 'Oshi',
+    symbol: 'OSHI',
+    category: 'Trading',
+    price: 4.23,
+    volume24h: 18420,
+    holders: 142,
+    marketCap: 4090.41,
+    change24h: 7.2,
+    change7d: 18.3,
+    change30d: 89.7,
+    createdAt: new Date(),
+    creator: 'oshi-team',
+    creatorEarnings: 2847.33,
+    capabilities: ['Kalshi Trading', '15m BTC Predictions', 'Risk Management'],
+    momentum: 9.8,
+    performance: Array.from({ length: 30 }, (_, i) => ({
+      timestamp: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000),
+      value: 2.5 + Math.sin(i / 3) * 0.8 + (i * 0.06)
+    })),
+    partnerships: ['Kalshi', 'Discord'],
+    integrations: 12,
+    avgRating: 4.9,
+    totalReviews: 89
+  },
+  {
     id: 'data-oracle',
     name: 'DataOracle',
     symbol: 'DATA',

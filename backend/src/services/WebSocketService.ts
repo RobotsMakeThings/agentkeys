@@ -3,6 +3,7 @@ import { Server } from 'http';
 import { Database } from '../models/Database';
 import { SolanaService } from './SolanaService';
 import { CacheService } from './CacheService';
+import { OshiService } from './OshiService';
 import jwt from 'jsonwebtoken';
 import logger from '../utils/logger';
 
@@ -24,6 +25,7 @@ export class WebSocketService {
     private db: Database;
     private solanaService: SolanaService;
     private cacheService: CacheService;
+    private oshiService: OshiService;
     private subscriptions: Map<string, Set<AuthenticatedWebSocket>> = new Map();
     private priceUpdateInterval: NodeJS.Timeout;
     private heartbeatInterval: NodeJS.Timeout;
@@ -32,6 +34,7 @@ export class WebSocketService {
         this.db = Database.getInstance();
         this.solanaService = new SolanaService();
         this.cacheService = new CacheService();
+        this.oshiService = OshiService.getInstance();
 
         // Initialize WebSocket server
         this.wss = new WebSocket.Server({ 
@@ -136,6 +139,10 @@ export class WebSocketService {
 
                 case 'get_recent_trades':
                     await this.handleGetRecentTrades(ws, data, requestId);
+                    break;
+
+                case 'get_oshi_realtime':
+                    await this.handleGetOshiRealtime(ws, data, requestId);
                     break;
 
                 case 'ping':
@@ -311,11 +318,39 @@ export class WebSocketService {
         }
     }
 
+    private async handleGetOshiRealtime(ws: AuthenticatedWebSocket, data: any, requestId?: string) {
+        try {
+            const realtimeData = await this.oshiService.getRealtimeUpdates();
+            const oshiData = await this.oshiService.getOshiAgentData();
+
+            this.sendMessage(ws, {
+                type: 'oshi_realtime',
+                data: {
+                    ...realtimeData,
+                    tradingStats: oshiData.tradingStats,
+                    currentPrice: oshiData.currentPrice,
+                    marketCap: oshiData.marketCap,
+                    performanceScore: oshiData.performanceScore,
+                    timestamp: new Date().toISOString()
+                },
+                requestId
+            });
+        } catch (error) {
+            this.sendError(ws, 'Failed to get Oshi realtime data', requestId, error);
+        }
+    }
+
     private async sendInitialChannelData(ws: AuthenticatedWebSocket, channel: string) {
         try {
             if (channel.startsWith('agent:')) {
                 const agentId = channel.split(':')[1];
-                await this.handleGetAgentPrice(ws, { agentId });
+                if (agentId === 'oshi-flagship' || agentId === 'oshi') {
+                    await this.handleGetOshiRealtime(ws, {});
+                } else {
+                    await this.handleGetAgentPrice(ws, { agentId });
+                }
+            } else if (channel === 'oshi:realtime') {
+                await this.handleGetOshiRealtime(ws, {});
             } else if (channel === 'global:prices') {
                 // Send global price updates
                 const result = await this.db.query(`
@@ -426,6 +461,32 @@ export class WebSocketService {
             type: 'market_stats',
             data: {
                 ...stats,
+                timestamp: new Date().toISOString()
+            }
+        });
+    }
+
+    public broadcastOshiUpdate(updateData: any) {
+        this.broadcastToChannel('oshi:realtime', {
+            type: 'oshi_update',
+            data: {
+                ...updateData,
+                timestamp: new Date().toISOString()
+            }
+        });
+
+        // Also broadcast to agent-specific channel
+        this.broadcastToChannel('agent:oshi-flagship', {
+            type: 'oshi_update',
+            data: updateData
+        });
+    }
+
+    public broadcastTradingUpdate(tradeData: any) {
+        this.broadcastToChannel('oshi:trades', {
+            type: 'oshi_trade',
+            data: {
+                ...tradeData,
                 timestamp: new Date().toISOString()
             }
         });
