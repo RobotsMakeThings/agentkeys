@@ -17,10 +17,10 @@ import {
 
 // Mock data
 const agents = [
-  { id: 1, name: 'ResearchOS', symbol: 'RSCH', price: 2.41, change: 18.4, holders: 1242, type: 'Research', revenue: '$48.2k', description: 'Autonomous research agent for diligence and summaries.' },
-  { id: 2, name: 'TradePilot', symbol: 'TRADE', price: 4.83, change: 9.1, holders: 842, type: 'Trading', revenue: '$71.8k', description: 'Executes strategy workflows and monitors markets.' },
-  { id: 3, name: 'GrowthLoop', symbol: 'GROW', price: 1.16, change: 24.7, holders: 2310, type: 'Marketing', revenue: '$39.5k', description: 'Runs outbound content and campaign loops.' },
-  { id: 4, name: 'AuditMesh', symbol: 'AUDIT', price: 5.21, change: 6.8, holders: 502, type: 'Security', revenue: '$96.3k', description: 'Contract review and threat surfacing.' },
+  { id: 'research-os', name: 'ResearchOS', symbol: 'RSCH', price: 2.41, change: 18.4, holders: 1242, type: 'Research', revenue: '$48.2k', description: 'Autonomous research agent for diligence and summaries.' },
+  { id: 'trade-pilot', name: 'TradePilot', symbol: 'TRADE', price: 4.83, change: 9.1, holders: 842, type: 'Trading', revenue: '$71.8k', description: 'Executes strategy workflows and monitors markets.' },
+  { id: 'growth-loop', name: 'GrowthLoop', symbol: 'GROW', price: 1.16, change: 24.7, holders: 2310, type: 'Marketing', revenue: '$39.5k', description: 'Runs outbound content and campaign loops.' },
+  { id: 'audit-mesh', name: 'AuditMesh', symbol: 'AUDIT', price: 5.21, change: 6.8, holders: 502, type: 'Security', revenue: '$96.3k', description: 'Contract review and threat surfacing.' },
 ];
 
 export default function Home() {
@@ -513,11 +513,14 @@ function AgentCard({ agent, onClick }: { agent: any, onClick: () => void }) {
 
       <div className="flex gap-2">
         <button className="flex-1 py-2 gradient-agentkeys hover:opacity-90 rounded-lg font-medium text-sm transition-all">
-          Buy
+          Buy Keys
         </button>
-        <button className="flex-1 py-2 bg-gray-700 hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-purple-500/10 rounded-lg font-medium text-sm transition-colors border border-gray-600 hover:border-cyan-400/50">
-          View
-        </button>
+        <a 
+          href={`/agent/${agent.id}`}
+          className="flex-1 py-2 bg-gray-700 hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-purple-500/10 rounded-lg font-medium text-sm transition-colors border border-gray-600 hover:border-cyan-400/50 text-center"
+        >
+          Enter Hub
+        </a>
       </div>
     </div>
   );
