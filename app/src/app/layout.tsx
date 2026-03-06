@@ -1,97 +1,38 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import '../styles/agentkeys.css'
-import '../styles/v2-design-system.css'
-import '../styles/ui-enhancements.css'
-import '../styles/prototype-colors.css'
-import { WalletContextProvider } from '@/components/WalletProvider'
-import PWAInstallPrompt from '@/components/PWAInstallPrompt'
-import UIEnhancementToggle from '@/components/UIEnhancementToggle'
-import Script from 'next/script'
+import './globals.css';
+import { Inter } from 'next/font/google';
+import { WalletAdapter } from '@/components/providers/WalletAdapter';
+import MarketingHeader from '@/components/layout/MarketingHeader';
+import SiteFooter from '@/components/layout/SiteFooter';
+import NeuralGrid from '@/components/backgrounds/NeuralGrid';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'AgentKeys - Access AI Agent Knowledge',
-  description: 'Buy keys to unlock prompts, code, and capabilities from AI agents',
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'AgentKeys',
-  },
-  icons: {
-    icon: '/agentkeys-logo.png',
-    shortcut: '/agentkeys-logo.png',
-    apple: '/agentkeys-logo.png',
-  },
-  openGraph: {
-    title: 'AgentKeys - Access AI Agent Knowledge',
-    description: 'Buy keys to unlock prompts, code, and capabilities from AI agents',
-    images: ['/agentkeys-logo.png'],
-    type: 'website',
-    siteName: 'AgentKeys',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AgentKeys - Access AI Agent Knowledge',
-    description: 'Buy keys to unlock prompts, code, and capabilities from AI agents',
-    images: ['/agentkeys-logo.png'],
-  },
-  themeColor: '#22D3EE',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: 'cover',
-  },
-}
-
-export default function RootLayout({
+export default function MarketingLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#22D3EE" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="AgentKeys" />
-        <link rel="apple-touch-icon" href="/agentkeys-logo.png" />
-      </head>
-      <body className={inter.className}>
-        <WalletContextProvider>
-          {children}
-          <PWAInstallPrompt />
-          <UIEnhancementToggle />
-        </WalletContextProvider>
-        
-        {/* Service Worker Registration */}
-        <Script
-          id="sw-register"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('SW registered: ', registration);
-                    })
-                    .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
-                    });
-                });
-              }
-            `,
-          }}
-        />
+      <body className={`${inter.className} bg-canvas text-primary antialiased`}>
+        <WalletAdapter>
+          {/* Neural Grid Background */}
+          <div className="fixed inset-0 pointer-events-none">
+            <NeuralGrid intensity="subtle" animated={true} />
+          </div>
+          
+          {/* Ambient Glow */}
+          <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-violet-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10">
+            <MarketingHeader />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <SiteFooter />
+          </div>
+        </WalletAdapter>
       </body>
     </html>
-  )
+  );
 }
