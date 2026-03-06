@@ -2,6 +2,172 @@
 @tailwind components;
 @tailwind utilities;
 
+/* AKey - Futuristic Design System V4 */
+:root {
+  /* Base Layers - Depth System */
+  --bg-canvas: #040405;
+  --bg-panel: #0b0c0f;
+  --bg-card: #121318;
+  --bg-elevated: #1a1b21;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-medium: rgba(255,255,255,0.12);
+  
+  /* Text Hierarchy */
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-accent: #d4d4d8;
+  
+  /* Primary Gradient - Electric Blue to Neural Violet */
+  --blue: #0066ff;
+  --violet: #7c5cff;
+  --gradient-primary: linear-gradient(135deg, #0066ff 0%, #7c5cff 100%);
+  
+  /* Accent Colors */
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #38bdf8;
+  --agent-activity: #a855f7;
+  
+  /* Neural Effects */
+  --glow-blue: 0 0 20px rgba(0, 102, 255, 0.3);
+  --glow-violet: 0 0 20px rgba(124, 92, 255, 0.3);
+  --glow-success: 0 0 20px rgba(34, 197, 94, 0.2);
+  
+  /* Motion Variables */
+  --duration-fast: 180ms;
+  --duration-normal: 240ms;
+  --duration-slow: 360ms;
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Dark mode overrides */
+.dark {
+  --bg-canvas: #040405;
+  --bg-panel: #0b0c0f;
+  --bg-card: #121318;
+  --bg-elevated: #1a1b21;
+}
+
+/* Custom utilities for futuristic effects */
+@layer utilities {
+  .bg-canvas {
+    background-color: var(--bg-canvas);
+  }
+  
+  .bg-panel {
+    background-color: var(--bg-panel);
+  }
+  
+  .bg-card {
+    background-color: var(--bg-card);
+  }
+  
+  .bg-elevated {
+    background-color: var(--bg-elevated);
+  }
+  
+  .border-subtle {
+    border-color: var(--border-subtle);
+  }
+  
+  .border-medium {
+    border-color: var(--border-medium);
+  }
+  
+  .text-gradient {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .glow-blue {
+    box-shadow: var(--glow-blue);
+  }
+  
+  .glow-violet {
+    box-shadow: var(--glow-violet);
+  }
+  
+  .glow-success {
+    box-shadow: var(--glow-success);
+  }
+  
+  .neural-glow {
+    position: relative;
+  }
+  
+  .neural-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: var(--gradient-primary);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    opacity: 0.6;
+    transition: opacity var(--duration-normal) var(--ease-smooth);
+  }
+  
+  .neural-glow:hover::before {
+    opacity: 1;
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+  }
+  
+  .agent-card-hover {
+    transition: all var(--duration-normal) var(--ease-smooth);
+  }
+  
+  .agent-card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), var(--glow-blue);
+  }
+  
+  .price-flash-green {
+    animation: priceFlashGreen 800ms ease-out;
+  }
+  
+  .price-flash-red {
+    animation: priceFlashRed 800ms ease-out;
+  }
+  
+  @keyframes priceFlashGreen {
+    0% { background-color: rgba(34, 197, 94, 0.2); }
+    100% { background-color: transparent; }
+  }
+  
+  @keyframes priceFlashRed {
+    0% { background-color: rgba(239, 68, 68, 0.2); }
+    100% { background-color: transparent; }
+  }
+  
+  .neural-pulse {
+    animation: neuralPulse 3s ease-in-out infinite;
+  }
+  
+  @keyframes neuralPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+  
+  .data-stream {
+    background: linear-gradient(90deg, transparent 0%, var(--blue) 50%, transparent 100%);
+    animation: dataStream 2s linear infinite;
+  }
+  
+  @keyframes dataStream {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+}
+
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 15, 23, 42;
