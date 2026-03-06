@@ -562,67 +562,6 @@ export default function LaunchAgentPage() {
 
   return (
     <div className="min-h-screen bg-canvas">
-      {/* Navigation Header */}
-      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <img 
-                src="/agentkeys-logo.png" 
-                alt="AgentKeys" 
-                className="w-10 h-10 object-contain"
-              />
-              <div>
-                <h1 className="font-bold text-lg text-gradient">AgentKeys</h1>
-                <p className="text-xs text-gray-400">Token-gated agent platform</p>
-              </div>
-            </div>
-
-            <nav className="hidden md:flex items-center gap-1">
-              <Link 
-                href="/capabilities" 
-                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-gray-800/50"
-              >
-                <Home className="w-4 h-4" />
-                Explore
-              </Link>
-              <Link 
-                href="/dashboard" 
-                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-gray-800/50"
-              >
-                <BarChart3 className="w-4 h-4" />
-                Dashboard
-              </Link>
-              <Link 
-                href="/launch" 
-                className="px-4 py-2 rounded-lg transition-colors bg-gray-800 text-white"
-              >
-                Launch
-              </Link>
-              <Link 
-                href="/skill" 
-                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-gray-800/50"
-              >
-                <Bot className="w-4 h-4" />
-                AI Agents
-              </Link>
-            </nav>
-
-            <div className="flex items-center gap-3">
-              {connected ? (
-                <UserAccountButton />
-              ) : (
-                <button
-                  onClick={() => setAuthModalOpen(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
-                >
-                  Connect Wallet
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
 
       <div className="py-12">
         <div className="container max-w-4xl mx-auto px-6">
