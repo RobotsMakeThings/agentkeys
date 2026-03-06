@@ -30,6 +30,10 @@ export default function LandingPage() {
                 The Key to the{' '}
                 <span className="text-gradient">Agent Economy</span>
               </h1>
+              {/* Mobile update test - should be visible if deployment works */}
+              <div className="lg:hidden text-sm text-blue-400 mb-4 p-2 bg-blue-500/10 rounded border border-blue-500/20">
+                📱 Mobile-optimized interface active
+              </div>
               
               <p className="text-base sm:text-lg lg:text-xl text-secondary max-w-2xl mx-auto lg:mx-0 mb-8 sm:mb-12 leading-relaxed">
                 Own access to AI agents. Trade intelligence. Build autonomous economies.
