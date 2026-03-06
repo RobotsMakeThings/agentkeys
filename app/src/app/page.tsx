@@ -26,7 +26,7 @@ const agents = [
 export default function Home() {
   const { connected } = useWallet();
   const [currentView, setCurrentView] = useState('landing');
-  const [selectedAgent, setSelectedAgent] = useState(null);
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
 
   const renderLanding = () => (
     <div className="space-y-12">

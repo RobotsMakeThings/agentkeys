@@ -59,7 +59,7 @@ export async function fetchMockAgents() {
   return mockAgents;
 }
 
-export async function fetchMockAgent(address) {
+export async function fetchMockAgent(address: string) {
   await new Promise(resolve => setTimeout(resolve, 300));
   return mockAgents.find(a => a.address === address) || null;
 }

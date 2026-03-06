@@ -1,59 +1,63 @@
 // Contract interaction hooks for AgentKeys
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, web3, BN } from '@coral-xyz/anchor';
 import { useEffect, useState, useCallback } from 'react';
+import { PROGRAM_ID } from '@/lib/constants';
+import { fetchMockAgents, fetchMockAgent, fetchMockPortfolio } from '@/lib/mockData';
 
-const PROGRAM_ID = new web3.PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS');
 const TREASURY = new web3.PublicKey('YOUR_TREASURY_WALLET_HERE');
 
 // Load IDL
 const IDL = require('../idl/agentkeys.json');
 
+// Check if using placeholder (development mode)
+const isDevelopment = PROGRAM_ID.toString() === 'AgentKeys111111111111111111111111111111111111';
+
 export function useAgentKeys() {
   const { connection } = useConnection();
-  const wallet = useWallet();
-  const [program, setProgram] = useState(null);
+  const anchorWallet = useAnchorWallet();
+  const [program, setProgram] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!wallet.publicKey) {
+    if (!anchorWallet) {
       setProgram(null);
       return;
     }
 
     const provider = new AnchorProvider(
       connection,
-      wallet,
+      anchorWallet,
       AnchorProvider.defaultOptions()
     );
 
     const program = new Program(IDL, PROGRAM_ID, provider);
     setProgram(program);
-  }, [wallet.publicKey, connection]);
+  }, [anchorWallet, connection]);
 
   // Calculate bonding curve price
-  const calculatePrice = useCallback((supply) => {
+  const calculatePrice = useCallback((supply: number) => {
     const base = Math.floor(supply / 100);
     return base * base * 100000; // in lamports
   }, []);
 
   // Create new agent
-  const createAgent = useCallback(async (name, symbol, description) => {
-    if (!program || !wallet.publicKey) {
+  const createAgent = useCallback(async (name: string, symbol: string, description: string) => {
+    if (!program || !anchorWallet) {
       throw new Error('Wallet not connected');
     }
 
     setIsLoading(true);
     try {
       const [agentPDA] = web3.PublicKey.findProgramAddressSync(
-        [Buffer.from('agent'), wallet.publicKey.toBuffer()],
+        [Buffer.from('agent'), anchorWallet.publicKey.toBuffer()],
         PROGRAM_ID
       );
 
       const tx = await program.methods
         .createAgent(name, symbol, description)
         .accounts({
-          creator: wallet.publicKey,
+          creator: anchorWallet.publicKey,
           agent: agentPDA,
           systemProgram: web3.SystemProgram.programId,
           tokenProgram: new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
@@ -62,17 +66,17 @@ export function useAgentKeys() {
         .rpc();
 
       return { success: true, tx, agentPDA: agentPDA.toString() };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Create agent error:', error);
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
     }
-  }, [program, wallet.publicKey]);
+  }, [program, anchorWallet]);
 
   // Buy keys for an agent
-  const buyKeys = useCallback(async (agentAddress, amount) => {
-    if (!program || !wallet.publicKey) {
+  const buyKeys = useCallback(async (agentAddress: string, amount: number) => {
+    if (!program || !anchorWallet) {
       throw new Error('Wallet not connected');
     }
 
@@ -89,7 +93,7 @@ export function useAgentKeys() {
       const tx = await program.methods
         .buyKeys(new BN(amount))
         .accounts({
-          buyer: wallet.publicKey,
+          buyer: anchorWallet.publicKey,
           agent: agentPublicKey,
           creator: agentData.creator,
           treasury: TREASURY,
@@ -100,17 +104,17 @@ export function useAgentKeys() {
         .rpc();
 
       return { success: true, tx, cost: totalCost + fee };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Buy keys error:', error);
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
     }
-  }, [program, wallet.publicKey, calculatePrice]);
+  }, [program, anchorWallet, calculatePrice]);
 
   // Sell keys
-  const sellKeys = useCallback(async (agentAddress, amount) => {
-    if (!program || !wallet.publicKey) {
+  const sellKeys = useCallback(async (agentAddress: string, amount: number) => {
+    if (!program || !anchorWallet) {
       throw new Error('Wallet not connected');
     }
 
@@ -122,7 +126,7 @@ export function useAgentKeys() {
       const tx = await program.methods
         .sellKeys(new BN(amount))
         .accounts({
-          seller: wallet.publicKey,
+          seller: anchorWallet.publicKey,
           agent: agentPublicKey,
           creator: agentData.creator,
           tokenProgram: new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
@@ -131,13 +135,13 @@ export function useAgentKeys() {
         .rpc();
 
       return { success: true, tx };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sell keys error:', error);
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
     }
-  }, [program, wallet.publicKey]);
+  }, [program, anchorWallet]);
 
   // Fetch all agents
   const fetchAgents = useCallback(async () => {
@@ -149,7 +153,7 @@ export function useAgentKeys() {
 
     try {
       const agents = await program.account.agent.all();
-      return agents.map((agent) => ({
+      return agents.map((agent: any) => ({
         address: agent.publicKey.toString(),
         creator: agent.account.creator.toString(),
         name: agent.account.name,
@@ -167,7 +171,7 @@ export function useAgentKeys() {
   }, [program, calculatePrice]);
 
   // Fetch single agent
-  const fetchAgent = useCallback(async (agentAddress) => {
+  const fetchAgent = useCallback(async (agentAddress: string) => {
     if (isDevelopment) {
       return fetchMockAgent(agentAddress);
     }
@@ -211,7 +215,7 @@ export function useAgentKeys() {
 export function usePortfolio() {
   const { connection } = useConnection();
   const { publicKey } = useWallet();
-  const [holdings, setHoldings] = useState([]);
+  const [holdings, setHoldings] = useState<any[]>([]);
 
   useEffect(() => {
     if (!publicKey) {
@@ -229,8 +233,8 @@ export function usePortfolio() {
 
         // Filter for agent key tokens
         const agentHoldings = accounts.value
-          .filter((acc) => acc.account.data.parsed.info.tokenAmount.uiAmount > 0)
-          .map((acc) => ({
+          .filter((acc: any) => acc.account.data.parsed.info.tokenAmount.uiAmount > 0)
+          .map((acc: any) => ({
             mint: acc.account.data.parsed.info.mint,
             balance: acc.account.data.parsed.info.tokenAmount.uiAmount,
           }));
