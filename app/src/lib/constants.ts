@@ -21,13 +21,29 @@ export const NETWORKS = {
   },
 };
 
-// Bonding curve configuration
-export const BONDING_CURVE = {
-  basePrice: 0.0001, // SOL
-  curveFactor: 10000,
-  protocolFeePercent: 5,
-  creatorFeePercent: 5,
+// Fee structure configuration
+export const FEE_STRUCTURE = {
+  totalFeePercent: 3,        // 3% total trading fee
+  creatorFeePercent: 2,      // 2% goes to agent creator  
+  protocolFeePercent: 1,     // 1% goes to platform treasury
+  minimumClaimUSD: 5,        // $5 minimum claim amount
 };
+
+// Agent categories
+export const AGENT_CATEGORIES = [
+  'Trading',
+  'Research', 
+  'Development',
+  'Marketing',
+  'Design',
+  'Writing',
+  'Analysis',
+  'Automation',
+  'Education',
+  'Entertainment'
+] as const;
+
+export type AgentCategory = typeof AGENT_CATEGORIES[number];
 
 // Resource tiers
 export const RESOURCE_TIERS = {

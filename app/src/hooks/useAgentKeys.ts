@@ -35,11 +35,22 @@ export function useAgentKeys() {
     setProgram(program);
   }, [anchorWallet, connection]);
 
-  // Calculate bonding curve price
-  const calculatePrice = useCallback((supply: number) => {
-    const base = Math.floor(supply / 100);
-    return base * base * 100000; // in lamports
+  // Friend.tech style bonding curve pricing
+  const calculatePrice = useCallback((supply: number, amount: number) => {
+    const sum1 = supply === 0 ? 0 : (supply - 1) * supply * (2 * supply - 1) / 6;
+    const sum2 = supply + amount === 0 ? 0 : (supply + amount - 1) * (supply + amount) * (2 * (supply + amount) - 1) / 6;
+    const summation = sum2 - sum1;
+    // Price in lamports (scaled for SOL)
+    return Math.floor(summation * 1000000 / 16000);
   }, []);
+
+  const getBuyPrice = useCallback((supply: number, amount: number) => {
+    return calculatePrice(supply, amount);
+  }, [calculatePrice]);
+
+  const getSellPrice = useCallback((supply: number, amount: number) => {
+    return calculatePrice(Math.max(0, supply - amount), amount);
+  }, [calculatePrice]);
 
   // Create new agent
   const createAgent = useCallback(async (name: string, symbol: string, description: string) => {
@@ -86,9 +97,8 @@ export function useAgentKeys() {
       
       // Get agent data to calculate price
       const agentData = await program.account.agent.fetch(agentPublicKey);
-      const pricePerKey = calculatePrice(agentData.totalKeys);
-      const totalCost = pricePerKey * amount;
-      const fee = Math.floor(totalCost / 20); // 5% fee
+      const totalCost = getBuyPrice(agentData.totalKeys.toNumber(), amount);
+      const totalFee = Math.floor(totalCost * 3 / 100); // 3% total fee
 
       const tx = await program.methods
         .buyKeys(new BN(amount))
@@ -103,7 +113,7 @@ export function useAgentKeys() {
         })
         .rpc();
 
-      return { success: true, tx, cost: totalCost + fee };
+      return { success: true, tx, cost: totalCost + totalFee };
     } catch (error: any) {
       console.error('Buy keys error:', error);
       return { success: false, error: error.message };
@@ -162,7 +172,7 @@ export function useAgentKeys() {
         createdAt: agent.account.createdAt.toNumber() * 1000,
         totalKeys: agent.account.totalKeys.toNumber(),
         holders: agent.account.holders.toNumber(),
-        price: calculatePrice(agent.account.totalKeys) / web3.LAMPORTS_PER_SOL,
+        price: getBuyPrice(agent.account.totalKeys.toNumber(), 1) / web3.LAMPORTS_PER_SOL,
       }));
     } catch (error) {
       console.error('Fetch agents error:', error);
@@ -191,13 +201,87 @@ export function useAgentKeys() {
         createdAt: agent.createdAt.toNumber() * 1000,
         totalKeys: agent.totalKeys.toNumber(),
         holders: agent.holders.toNumber(),
-        price: calculatePrice(agent.totalKeys) / web3.LAMPORTS_PER_SOL,
+        price: getBuyPrice(agent.totalKeys.toNumber(), 1) / web3.LAMPORTS_PER_SOL,
       };
     } catch (error) {
       console.error('Fetch agent error:', error);
       return null;
     }
   }, [program, calculatePrice]);
+
+  // Claim accumulated fees
+  const claimFees = useCallback(async (agentAddress: string) => {
+    if (!program || !anchorWallet) {
+      throw new Error('Wallet not connected');
+    }
+
+    setIsLoading(true);
+    try {
+      const agentPublicKey = new web3.PublicKey(agentAddress);
+      
+      const [agentFeesAddress] = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from('agent_fees'), agentPublicKey.toBuffer()],
+        PROGRAM_ID
+      );
+
+      const [feeVaultAddress] = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from('fee_vault'), agentPublicKey.toBuffer()],
+        PROGRAM_ID
+      );
+
+      const tx = await program.methods
+        .claimFees()
+        .accounts({
+          creator: anchorWallet.publicKey,
+          agentFees: agentFeesAddress,
+          feeVault: feeVaultAddress,
+          systemProgram: web3.SystemProgram.programId,
+        })
+        .rpc();
+
+      return { success: true, tx };
+    } catch (error: any) {
+      console.error('Claim fees error:', error);
+      return { success: false, error: error.message };
+    } finally {
+      setIsLoading(false);
+    }
+  }, [program, anchorWallet]);
+
+  // Fetch agent fee information
+  const fetchAgentFees = useCallback(async (agentAddress: string) => {
+    if (isDevelopment) {
+      // Return mock data for development
+      return {
+        totalFees: 127500000, // 0.1275 SOL in lamports
+        claimableFees: 12500000, // 0.0125 SOL in lamports  
+        totalClaimed: 115000000, // 0.115 SOL in lamports
+        lastClaimedAt: Date.now() - 86400000, // 1 day ago
+      };
+    }
+    
+    if (!program) return null;
+
+    try {
+      const agentPublicKey = new web3.PublicKey(agentAddress);
+      const [agentFeesAddress] = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from('agent_fees'), agentPublicKey.toBuffer()],
+        PROGRAM_ID
+      );
+
+      const agentFees = await program.account.agentFees.fetch(agentFeesAddress);
+      
+      return {
+        totalFees: agentFees.totalFees.toNumber(),
+        claimableFees: agentFees.claimableFees.toNumber(), 
+        totalClaimed: agentFees.totalClaimed.toNumber(),
+        lastClaimedAt: agentFees.lastClaimedAt.toNumber() * 1000, // Convert to milliseconds
+      };
+    } catch (error) {
+      console.error('Fetch agent fees error:', error);
+      return null;
+    }
+  }, [program]);
 
   return {
     program,
@@ -207,6 +291,10 @@ export function useAgentKeys() {
     sellKeys,
     fetchAgents,
     fetchAgent,
+    claimFees,
+    fetchAgentFees,
+    getBuyPrice,
+    getSellPrice,
     calculatePrice,
   };
 }

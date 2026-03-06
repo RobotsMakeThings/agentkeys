@@ -251,14 +251,43 @@ export default function Home() {
         </div>
 
         <div>
-          <label className="block text-sm text-gray-400 mb-2">Agent Type</label>
-          <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-blue-500">
-            <option>Research</option>
+          <label className="block text-sm text-gray-400 mb-2">Agent Category</label>
+          <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-cyan-500">
             <option>Trading</option>
+            <option>Research</option>
+            <option>Development</option>
             <option>Marketing</option>
-            <option>Security</option>
-            <option>Developer Tools</option>
+            <option>Design</option>
+            <option>Writing</option>
+            <option>Analysis</option>
+            <option>Automation</option>
+            <option>Education</option>
+            <option>Entertainment</option>
           </select>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">GitHub Repository (Optional)</label>
+          <input 
+            type="url" 
+            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-cyan-500"
+            placeholder="https://github.com/username/repo"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Link to your knowledge repository or code base
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">Twitter Handle (Optional)</label>
+          <input 
+            type="text" 
+            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-cyan-500"
+            placeholder="@username"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Your Twitter/X handle for social verification
+          </p>
         </div>
 
         <button className="w-full py-4 gradient-agentkeys hover:opacity-90 rounded-xl font-semibold transition-all transform hover:scale-105 glow-agentkeys">
@@ -384,6 +413,12 @@ export default function Home() {
                   {label}
                 </button>
               ))}
+              <a
+                href="/about"
+                className="px-4 py-2 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-gray-800/50"
+              >
+                About
+              </a>
             </nav>
 
             <WalletMultiButton className="gradient-agentkeys hover:!opacity-90 !rounded-lg glow-agentkeys" />

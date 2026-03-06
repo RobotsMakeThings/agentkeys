@@ -14,6 +14,9 @@ pub mod agentkeys {
         name: String,
         symbol: String,
         description: String,
+        category: AgentCategory,
+        github_url: Option<String>,
+        twitter_handle: Option<String>,
     ) -> Result<()> {
         require!(name.len() <= 32, ErrorCode::NameTooLong);
         require!(symbol.len() <= 10, ErrorCode::SymbolTooLong);
@@ -25,6 +28,9 @@ pub mod agentkeys {
         agent.name = name;
         agent.symbol = symbol;
         agent.description = description;
+        agent.category = category;
+        agent.github_url = github_url;
+        agent.twitter_handle = twitter_handle;
         agent.created_at = Clock::get()?.unix_timestamp;
         agent.total_keys = 0;
         agent.holders = 0;
@@ -43,11 +49,13 @@ pub mod agentkeys {
         let agent = &ctx.accounts.agent;
         let buyer = &ctx.accounts.buyer;
         
-        let price_per_key = calculate_price(agent.total_keys);
-        let total_cost = price_per_key.checked_mul(amount).unwrap();
-        let protocol_fee = total_cost / 20;
-        let creator_payment = total_cost - protocol_fee;
+        let total_cost = get_buy_price(agent.total_keys, amount);
+        let total_fee = total_cost * 3 / 100;  // 3% total fee
+        let creator_fee = total_cost * 2 / 100;  // 2% to creator
+        let protocol_fee = total_cost * 1 / 100;  // 1% to protocol
+        let creator_payment = total_cost - total_fee;
         
+        // Transfer payment minus fees to seller/creator
         invoke(
             &system_instruction::transfer(
                 buyer.key,
@@ -60,6 +68,12 @@ pub mod agentkeys {
             ],
         )?;
         
+        // Transfer creator fee (2%) to agent creator's fee account
+        let agent_fees = &mut ctx.accounts.agent_fees;
+        agent_fees.total_fees = agent_fees.total_fees.checked_add(creator_fee).unwrap();
+        agent_fees.claimable_fees = agent_fees.claimable_fees.checked_add(creator_fee).unwrap();
+        
+        // Transfer protocol fee (1%) to treasury
         invoke(
             &system_instruction::transfer(
                 buyer.key,
@@ -185,11 +199,58 @@ pub mod agentkeys {
         msg!("Resource added: {}", resource.key());
         Ok(())
     }
+
+    pub fn claim_fees(ctx: Context<ClaimFees>) -> Result<()> {
+        let agent_fees = &mut ctx.accounts.agent_fees;
+        let creator = &ctx.accounts.creator;
+        
+        require!(
+            agent_fees.claimable_fees > 0,
+            ErrorCode::NoFeesToClaim
+        );
+        
+        // Minimum claim amount: $5 worth (approximately 0.03 SOL at $150/SOL)
+        let min_claim_amount = 30_000_000; // 0.03 SOL in lamports
+        require!(
+            agent_fees.claimable_fees >= min_claim_amount,
+            ErrorCode::ClaimAmountTooSmall
+        );
+        
+        let claimable_amount = agent_fees.claimable_fees;
+        
+        // Transfer fees to creator
+        **ctx.accounts.fee_vault.to_account_info().try_borrow_mut_lamports()? -= claimable_amount;
+        **creator.to_account_info().try_borrow_mut_lamports()? += claimable_amount;
+        
+        // Update fee tracking
+        agent_fees.claimable_fees = 0;
+        agent_fees.total_claimed = agent_fees.total_claimed.checked_add(claimable_amount).unwrap();
+        agent_fees.last_claimed_at = Clock::get()?.unix_timestamp;
+        
+        msg!("Claimed {} lamports in fees", claimable_amount);
+        Ok(())
+    }
 }
 
-fn calculate_price(supply: u64) -> u64 {
-    let base = supply / 100;
-    base.saturating_mul(base).saturating_mul(100_000)
+// Friend.tech style bonding curve pricing
+fn calculate_price(supply: u64, amount: u64) -> u64 {
+    let sum1 = if supply == 0 { 0 } else { (supply - 1) * supply * (2 * supply - 1) / 6 };
+    let sum2 = if supply + amount == 0 { 0 } else { (supply + amount - 1) * (supply + amount) * (2 * (supply + amount) - 1) / 6 };
+    let summation = sum2 - sum1;
+    // Price in lamports (1 ETH = 1 SOL equivalent, scaled down)
+    summation * 1000000 / 16000  // Adjusted for SOL pricing
+}
+
+fn get_price(supply: u64, amount: u64) -> u64 {
+    calculate_price(supply, amount)
+}
+
+fn get_buy_price(supply: u64, amount: u64) -> u64 {
+    get_price(supply, amount)
+}
+
+fn get_sell_price(supply: u64, amount: u64) -> u64 {
+    get_price(supply.saturating_sub(amount), amount)
 }
 
 #[account]
@@ -198,9 +259,23 @@ pub struct Agent {
     pub name: String,
     pub symbol: String,
     pub description: String,
+    pub category: AgentCategory,
+    pub github_url: Option<String>,
+    pub twitter_handle: Option<String>,
     pub created_at: i64,
     pub total_keys: u64,
     pub holders: u64,
+    pub bump: u8,
+}
+
+#[account]
+pub struct AgentFees {
+    pub agent: Pubkey,
+    pub creator: Pubkey,
+    pub total_fees: u64,
+    pub claimable_fees: u64,
+    pub total_claimed: u64,
+    pub last_claimed_at: i64,
     pub bump: u8,
 }
 
@@ -224,6 +299,20 @@ pub enum ResourceType {
     Subscription,
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq)]
+pub enum AgentCategory {
+    Trading,
+    Research,
+    Development,
+    Marketing,
+    Design,
+    Writing,
+    Analysis,
+    Automation,
+    Education,
+    Entertainment,
+}
+
 #[derive(Accounts)]
 pub struct CreateAgent<'info> {
     #[account(mut)]
@@ -232,7 +321,7 @@ pub struct CreateAgent<'info> {
     #[account(
         init,
         payer = creator,
-        space = 8 + 300,
+        space = 8 + 500,  // Increased space for new fields
         seeds = [b"agent", creator.key().as_ref()],
         bump
     )]
@@ -241,10 +330,29 @@ pub struct CreateAgent<'info> {
     #[account(
         init,
         payer = creator,
+        space = 8 + 200,
+        seeds = [b"agent_fees", agent.key().as_ref()],
+        bump
+    )]
+    pub agent_fees: Account<'info, AgentFees>,
+
+    #[account(
+        init,
+        payer = creator,
         mint::decimals = 0,
         mint::authority = agent,
     )]
     pub key_mint: Account<'info, Mint>,
+
+    /// CHECK: This will store accumulated fees for the agent
+    #[account(
+        init,
+        payer = creator,
+        space = 0,
+        seeds = [b"fee_vault", agent.key().as_ref()],
+        bump
+    )]
+    pub fee_vault: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
@@ -259,6 +367,13 @@ pub struct BuyKeys<'info> {
     #[account(mut)]
     pub agent: Account<'info, Agent>,
 
+    #[account(
+        mut,
+        seeds = [b"agent_fees", agent.key().as_ref()],
+        bump
+    )]
+    pub agent_fees: Account<'info, AgentFees>,
+
     /// CHECK: This is the agent creator who receives payment
     #[account(mut, address = agent.creator)]
     pub creator: AccountInfo<'info>,
@@ -267,11 +382,19 @@ pub struct BuyKeys<'info> {
     #[account(mut)]
     pub treasury: AccountInfo<'info>,
 
+    /// CHECK: Fee vault for agent creator fees
+    #[account(
+        mut,
+        seeds = [b"fee_vault", agent.key().as_ref()],
+        bump
+    )]
+    pub fee_vault: AccountInfo<'info>,
+
     #[account(mut)]
     pub key_mint: Account<'info, Mint>,
 
     #[account(
-        init,
+        init_if_needed,
         payer = buyer,
         associated_token::mint = key_mint,
         associated_token::authority = buyer,
@@ -329,6 +452,30 @@ pub struct AddResource<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct ClaimFees<'info> {
+    #[account(mut)]
+    pub creator: Signer<'info>,
+
+    #[account(
+        mut,
+        has_one = creator,
+        seeds = [b"agent_fees", agent_fees.agent.as_ref()],
+        bump
+    )]
+    pub agent_fees: Account<'info, AgentFees>,
+
+    /// CHECK: Fee vault that holds accumulated fees
+    #[account(
+        mut,
+        seeds = [b"fee_vault", agent_fees.agent.as_ref()],
+        bump
+    )]
+    pub fee_vault: AccountInfo<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
 #[error_code]
 pub enum ErrorCode {
     #[msg("Name too long (max 32 characters)")]
@@ -341,4 +488,8 @@ pub enum ErrorCode {
     InsufficientKeys,
     #[msg("Unauthorized")]
     Unauthorized,
+    #[msg("No fees available to claim")]
+    NoFeesToClaim,
+    #[msg("Claim amount too small (minimum $5)")]
+    ClaimAmountTooSmall,
 }
