@@ -7,7 +7,6 @@ import '../styles/ui-enhancements.css'
 import '../styles/prototype-colors.css'
 import { WalletContextProvider } from '@/components/WalletProvider'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
-import VersionToggle from '@/components/VersionToggle'
 import UIEnhancementToggle from '@/components/UIEnhancementToggle'
 import Script from 'next/script'
 
@@ -69,7 +68,6 @@ export default function RootLayout({
         <WalletContextProvider>
           {children}
           <PWAInstallPrompt />
-          <VersionToggle />
           <UIEnhancementToggle />
         </WalletContextProvider>
         

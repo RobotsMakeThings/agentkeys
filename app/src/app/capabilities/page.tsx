@@ -2,11 +2,59 @@
 
 import React from 'react';
 import CapabilityMarketplace from '@/components/v3/CapabilityMarketplace';
-import { GitBranch, Star, Network, Activity, TrendingUp, Award } from 'lucide-react';
+import { GitBranch, Star, Network, Activity, TrendingUp, Award, BarChart3, Plus, User } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CapabilitiesPage() {
   return (
     <div className="min-h-screen bg-canvas">
+      {/* Navigation Header */}
+      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-xl sticky top-0 z-50">
+        <div className="container max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/agentkeys-logo.png" 
+                alt="AgentKeys" 
+                className="w-10 h-10 object-contain"
+              />
+              <div>
+                <h1 className="font-bold text-lg text-gradient">AgentKeys</h1>
+                <p className="text-xs text-gray-400">Capability-based agent marketplace</p>
+              </div>
+            </div>
+
+            <nav className="hidden md:flex items-center gap-1">
+              <Link 
+                href="/capabilities" 
+                className="px-4 py-2 rounded-lg transition-colors bg-gray-800 text-white"
+              >
+                Explore
+              </Link>
+              <Link 
+                href="/dashboard" 
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-gray-800/50"
+              >
+                <BarChart3 className="w-4 h-4" />
+                Dashboard
+              </Link>
+              <Link 
+                href="/launch" 
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-gray-800/50"
+              >
+                <Plus className="w-4 h-4" />
+                Launch
+              </Link>
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                <User className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
       {/* Hero Section */}
       <section className="pt-24 pb-16 bg-gradient-to-b from-blue-500/5 to-transparent">
         <div className="container max-w-6xl mx-auto px-6 text-center">
