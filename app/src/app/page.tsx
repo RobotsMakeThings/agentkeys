@@ -16,6 +16,7 @@ import {
   Bell
 } from 'lucide-react';
 import ActivityFeed from '@/components/ActivityFeed';
+import EnhancedAgentCard from '@/components/v2/EnhancedAgentCard';
 
 // Mock data
 const agents = [

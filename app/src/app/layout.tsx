@@ -2,8 +2,12 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import '../styles/agentkeys.css'
+import '../styles/v2-design-system.css'
+import '../styles/ui-enhancements.css'
 import { WalletContextProvider } from '@/components/WalletProvider'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
+import VersionToggle from '@/components/VersionToggle'
+import UIEnhancementToggle from '@/components/UIEnhancementToggle'
 import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -64,6 +68,8 @@ export default function RootLayout({
         <WalletContextProvider>
           {children}
           <PWAInstallPrompt />
+          <VersionToggle />
+          <UIEnhancementToggle />
         </WalletContextProvider>
         
         {/* Service Worker Registration */}
