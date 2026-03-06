@@ -12,8 +12,10 @@ import {
   Search,
   Plus,
   Wallet,
-  Layers
+  Layers,
+  Bell
 } from 'lucide-react';
+import ActivityFeed from '@/components/ActivityFeed';
 
 // Mock data
 const agents = [
@@ -443,6 +445,15 @@ export default function Home() {
             {currentView === 'create' && renderCreate()}
             {currentView === 'portfolio' && renderPortfolio()}
           </>
+        )}
+
+        {/* Activity Feed - Show on landing view */}
+        {currentView === 'landing' && (
+          <section className="mt-12">
+            <div className="max-w-4xl mx-auto">
+              <ActivityFeed maxItems={8} />
+            </div>
+          </section>
         )}
       </main>
 
