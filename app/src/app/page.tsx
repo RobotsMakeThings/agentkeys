@@ -1,143 +1,462 @@
 'use client';
 
+import React, { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { 
+  Bot, 
+  TrendingUp, 
+  Users, 
+  DollarSign, 
+  ArrowUpRight, 
+  Search,
+  Plus,
+  Wallet,
+  Layers
+} from 'lucide-react';
+
+// Mock data
+const agents = [
+  { id: 1, name: 'ResearchOS', symbol: 'RSCH', price: 2.41, change: 18.4, holders: 1242, type: 'Research', revenue: '$48.2k', description: 'Autonomous research agent for diligence and summaries.' },
+  { id: 2, name: 'TradePilot', symbol: 'TRADE', price: 4.83, change: 9.1, holders: 842, type: 'Trading', revenue: '$71.8k', description: 'Executes strategy workflows and monitors markets.' },
+  { id: 3, name: 'GrowthLoop', symbol: 'GROW', price: 1.16, change: 24.7, holders: 2310, type: 'Marketing', revenue: '$39.5k', description: 'Runs outbound content and campaign loops.' },
+  { id: 4, name: 'AuditMesh', symbol: 'AUDIT', price: 5.21, change: 6.8, holders: 502, type: 'Security', revenue: '$96.3k', description: 'Contract review and threat surfacing.' },
+];
 
 export default function Home() {
   const { connected } = useWallet();
+  const [currentView, setCurrentView] = useState('landing');
+  const [selectedAgent, setSelectedAgent] = useState(null);
 
-  return (
-    <main className="min-h-screen bg-gray-900 text-white">
-      <header className="p-4 border-b border-gray-800 flex justify-between items-center">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-          AgentKeys
+  const renderLanding = () => (
+    <div className="space-y-12">
+      {/* Hero */}
+      <section className="text-center py-12">
+        <div className="inline-block px-4 py-1 mb-6 text-sm text-blue-400 border border-blue-500/30 bg-blue-500/10 rounded-full">
+          Agent-to-Agent Economy Infrastructure
+        </div>
+        <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          Own access to the agents that will run the internet
         </h1>
-        <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700" />
-      </header>
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+          Buy and trade Agent Keys, unlock premium capabilities, and participate in the markets forming around autonomous software.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <button 
+            onClick={() => setCurrentView('agents')}
+            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors"
+          >
+            Explore Agents
+          </button>
+          <button 
+            onClick={() => setCurrentView('create')}
+            className="px-8 py-3 border border-gray-600 hover:bg-gray-800 rounded-xl font-semibold transition-colors"
+          >
+            Launch an Agent
+          </button>
+        </div>
+      </section>
 
-      <div className="max-w-6xl mx-auto p-8">
-        {!connected ? (
-          <div className="text-center py-20">
-            <h2 className="text-5xl font-bold mb-6">
-              Access AI Agent Knowledge
-            </h2>
-            <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              Buy keys to unlock prompts, code, training data, and capabilities from the best AI agents
-            </p>
-            <div className="flex justify-center gap-4">
-              <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700 !text-lg !px-8 !py-3" />
+      {/* Stats */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
+          <div className="flex items-center justify-between mb-4">
+            <Users className="h-8 w-8 text-blue-400" />
+            <span className="text-green-400 text-sm">+12.5%</span>
+          </div>
+          <div className="text-3xl font-bold">84.2k</div>
+          <div className="text-gray-400 text-sm">Active Holders</div>
+        </div>
+        <div className="p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
+          <div className="flex items-center justify-between mb-4">
+            <Bot className="h-8 w-8 text-blue-400" />
+            <span className="text-green-400 text-sm">+8.2%</span>
+          </div>
+          <div className="text-3xl font-bold">2.1M</div>
+          <div className="text-gray-400 text-sm">Tasks Executed</div>
+        </div>
+        <div className="p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
+          <div className="flex items-center justify-between mb-4">
+            <DollarSign className="h-8 w-8 text-blue-400" />
+            <span className="text-green-400 text-sm">+24.8%</span>
+          </div>
+          <div className="text-3xl font-bold">$18.4M</div>
+          <div className="text-gray-400 text-sm">Protocol Volume</div>
+        </div>
+      </section>
+
+      {/* Trending Agents */}
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Trending Agents</h2>
+          <button 
+            onClick={() => setCurrentView('agents')}
+            className="text-blue-400 hover:text-blue-300"
+          >
+            View All →
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {agents.slice(0, 4).map(agent => (
+            <AgentCard key={agent.id} agent={agent} onClick={() => { setSelectedAgent(agent); setCurrentView('detail'); }} />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+
+  const renderAgents = () => (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold">Discover Agents</h2>
+          <p className="text-gray-400">Browse and search the live markets for autonomous agents</p>
+        </div>
+        <div className="flex gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <input 
+              type="text" 
+              placeholder="Search agents..."
+              className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <select className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl">
+            <option>All Types</option>
+            <option>Research</option>
+            <option>Trading</option>
+            <option>Marketing</option>
+            <option>Security</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {agents.map(agent => (
+          <AgentCard key={agent.id} agent={agent} onClick={() => { setSelectedAgent(agent); setCurrentView('detail'); }} />
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderDetail = () => {
+    if (!selectedAgent) return null;
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <button 
+          onClick={() => setCurrentView('agents')}
+          className="text-gray-400 hover:text-white mb-4"
+        >
+          ← Back to Agents
+        </button>
+        
+        <div className="bg-gray-800/50 rounded-2xl p-8 border border-gray-700">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center">
+                <Bot className="h-8 w-8 text-blue-400" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">{selectedAgent.name}</h1>
+                <p className="text-gray-400">{selectedAgent.symbol} • {selectedAgent.type}</p>
+              </div>
             </div>
-            
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="p-6 bg-gray-800 rounded-xl">
-                <div className="text-3xl mb-4">🔑</div>
-                <h3 className="text-xl font-semibold mb-2">Buy Keys</h3>
-                <p className="text-gray-400">Purchase agent keys on a bonding curve</p>
-              </div>
-              <div className="p-6 bg-gray-800 rounded-xl">
-                <div className="text-3xl mb-4">📦</div>
-                <h3 className="text-xl font-semibold mb-2">Unlock Resources</h3>
-                <p className="text-gray-400">Access prompts, code, and training data</p>
-              </div>
-              <div className="p-6 bg-gray-800 rounded-xl">
-                <div className="text-3xl mb-4">💰</div>
-                <h3 className="text-xl font-semibold mb-2">Trade</h3>
-                <p className="text-gray-400">Sell keys anytime as agents grow</p>
-              </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold">{selectedAgent.price} SOL</div>
+              <div className="text-green-400">+{selectedAgent.change}%</div>
             </div>
           </div>
-        ) : (
-          <Dashboard />
-        )}
-      </div>
-    </main>
-  );
-}
 
-function Dashboard() {
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold">Trending Agents</h2>
-        <button className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold">
-          Create Agent
+          <p className="text-gray-300 mb-6">{selectedAgent.description}</p>
+
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="p-4 bg-gray-900/50 rounded-xl">
+              <div className="text-gray-400 text-sm">Holders</div>
+              <div className="text-xl font-semibold">{selectedAgent.holders.toLocaleString()}</div>
+            </div>
+            <div className="p-4 bg-gray-900/50 rounded-xl">
+              <div className="text-gray-400 text-sm">Revenue</div>
+              <div className="text-xl font-semibold">{selectedAgent.revenue}</div>
+            </div>
+            <div className="p-4 bg-gray-900/50 rounded-xl">
+              <div className="text-gray-400 text-sm">Keys Sold</div>
+              <div className="text-xl font-semibold">8,432</div>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <button className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors">
+              Buy Keys
+            </button>
+            <button className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl font-semibold transition-colors">
+              Sell Keys
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+          <h3 className="text-xl font-semibold mb-4">Key Holder Benefits</h3>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center text-xs">1</div>
+              <span>Access to premium agent outputs and capabilities</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center text-xs">5</div>
+              <span>Private terminal access and API keys</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center text-xs">20</div>
+              <span>Governance rights and revenue sharing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCreate = () => (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold mb-2">Create Your Agent</h2>
+        <p className="text-gray-400">Launch your own agent and start earning from key sales</p>
+      </div>
+
+      <div className="bg-gray-800/50 rounded-2xl p-8 border border-gray-700 space-y-6">
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">Agent Name</label>
+          <input 
+            type="text" 
+            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-blue-500"
+            placeholder="e.g., CodeWizard"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">Symbol</label>
+          <input 
+            type="text" 
+            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-blue-500"
+            placeholder="e.g., WIZARD"
+            maxLength={10}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">Description</label>
+          <textarea 
+            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-blue-500 h-32"
+            placeholder="What does your agent do?"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">Agent Type</label>
+          <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-blue-500">
+            <option>Research</option>
+            <option>Trading</option>
+            <option>Marketing</option>
+            <option>Security</option>
+            <option>Developer Tools</option>
+          </select>
+        </div>
+
+        <button className="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors">
+          Create Agent (0.5 SOL)
         </button>
       </div>
+    </div>
+  );
+
+  const renderPortfolio = () => (
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold">Your Portfolio</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AgentCard 
-          name="CodeBot"
-          symbol="CODE"
-          price={50}
-          change={25}
-          holders={42}
-          description="AI agent that writes and reviews code"
-        />
-        <AgentCard 
-          name="TradeBot"
-          symbol="TRADE"
-          price={32}
-          change={12}
-          holders={28}
-          description="Algorithmic trading strategies"
-        />
-        <AgentCard 
-          name="MemeLord"
-          symbol="MEME"
-          price={18}
-          change={-5}
-          holders={156}
-          description="Viral content generation"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
+          <div className="text-gray-400 text-sm mb-2">Total Value</div>
+          <div className="text-3xl font-bold">203.4 SOL</div>
+          <div className="text-green-400 text-sm">+$48.7 SOL</div>
+        </div>
+        <div className="p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
+          <div className="text-gray-400 text-sm mb-2">Total Keys</div>
+          <div className="text-3xl font-bold">121</div>
+          <div className="text-gray-400 text-sm">Across 3 agents</div>
+        </div>
+        <div className="p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
+          <div className="text-gray-400 text-sm mb-2">Profit/Loss</div>
+          <div className="text-3xl font-bold text-green-400">+48.7 SOL</div>
+          <div className="text-gray-400 text-sm">+31.5%</div>
+        </div>
       </div>
+
+      <div className="bg-gray-800/50 rounded-2xl border border-gray-700 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-900/50">
+            <tr>
+              <th className="text-left p-4 text-gray-400 font-medium">Agent</th>
+              <th className="text-left p-4 text-gray-400 font-medium">Keys</th>
+              <th className="text-left p-4 text-gray-400 font-medium">Value</th>
+              <th className="text-left p-4 text-gray-400 font-medium">PnL</th>
+              <th className="text-left p-4 text-gray-400 font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-t border-gray-700">
+              <td className="p-4">
+                <div className="font-semibold">ResearchOS</div>
+                <div className="text-sm text-gray-400">RSCH</div>
+              </td>
+              <td className="p-4">24</td>
+              <td className="p-4">57.8 SOL</td>
+              <td className="p-4 text-green-400">+12.4 SOL</td>
+              <td className="p-4">
+                <button className="text-blue-400 hover:text-blue-300">Manage</button>
+              </td>
+            </tr>
+            <tr className="border-t border-gray-700">
+              <td className="p-4">
+                <div className="font-semibold">TradePilot</div>
+                <div className="text-sm text-gray-400">TRADE</div>
+              </td>
+              <td className="p-4">9</td>
+              <td className="p-4">43.5 SOL</td>
+              <td className="p-4 text-green-400">+7.3 SOL</td>
+              <td className="p-4">
+                <button className="text-blue-400 hover:text-blue-300">Manage</button>
+              </td>
+            </tr>
+            <tr className="border-t border-gray-700">
+              <td className="p-4">
+                <div className="font-semibold">GrowthLoop</div>
+                <div className="text-sm text-gray-400">GROW</div>
+              </td>
+              <td className="p-4">88</td>
+              <td className="p-4">102.1 SOL</td>
+              <td className="p-4 text-green-400">+29.0 SOL</td>
+              <td className="p-4">
+                <button className="text-blue-400 hover:text-blue-300">Manage</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Header */}
+      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                <Layers className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="font-bold text-lg">AgentKeys</h1>
+                <p className="text-xs text-gray-400">Friend.tech for AI agents</p>
+              </div>
+            </div>
+
+            <nav className="hidden md:flex items-center gap-1">
+              {[
+                ['landing', 'Home'],
+                ['agents', 'Explore'],
+                ['create', 'Create'],
+                ['portfolio', 'Portfolio'],
+              ].map(([view, label]) => (
+                <button
+                  key={view}
+                  onClick={() => setCurrentView(view)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    currentView === view 
+                      ? 'bg-gray-800 text-white' 
+                      : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+
+            <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700 !rounded-lg" />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {!connected && currentView !== 'landing' ? (
+          <div className="text-center py-20">
+            <Wallet className="h-16 w-16 mx-auto mb-6 text-gray-600" />
+            <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
+            <p className="text-gray-400 mb-8">Please connect your Solana wallet to continue</p>
+            <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700 !px-8 !py-3" />
+          </div>
+        ) : (
+          <>
+            {currentView === 'landing' && renderLanding()}
+            {currentView === 'agents' && renderAgents()}
+            {currentView === 'detail' && renderDetail()}
+            {currentView === 'create' && renderCreate()}
+            {currentView === 'portfolio' && renderPortfolio()}
+          </>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-800 mt-20 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400">
+          <p>AgentKeys by Oshi - Infrastructure for the agent economy</p>
+        </div>
+      </footer>
     </div>
   );
 }
 
-function AgentCard({ 
-  name, 
-  symbol, 
-  price, 
-  change, 
-  holders,
-  description 
-}: { 
-  name: string;
-  symbol: string;
-  price: number;
-  change: number;
-  holders: number;
-  description: string;
-}) {
-  const isPositive = change >= 0;
-  
+// Agent Card Component
+function AgentCard({ agent, onClick }: { agent: any, onClick: () => void }) {
   return (
-    <div className="bg-gray-800 rounded-xl p-6 hover:bg-gray-750 transition-colors border border-gray-700">
-      <div className="flex justify-between items-start mb-4">
+    <div 
+      onClick={onClick}
+      className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 cursor-pointer transition-all hover:transform hover:-translate-y-1"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+            <Bot className="h-6 w-6 text-blue-400" />
+          </div>
+          <div>
+            <h3 className="font-bold">{agent.name}</h3>
+            <p className="text-sm text-gray-400">{agent.symbol}</p>
+          </div>
+        </div>
+        <span className="text-green-400 text-sm flex items-center gap-1">
+          <ArrowUpRight className="h-4 w-4" />
+          {agent.change}%
+        </span>
+      </div>
+
+      <p className="text-gray-400 text-sm mb-4 line-clamp-2">{agent.description}</p>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <h3 className="text-xl font-bold">{name}</h3>
-          <p className="text-gray-400 text-sm">${symbol}</p>
+          <div className="text-gray-400 text-xs">Price</div>
+          <div className="font-semibold">{agent.price} SOL</div>
         </div>
-        <div className="text-right">
-          <p className="text-2xl font-bold">${price}</p>
-          <p className={`text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-            {isPositive ? '▲' : '▼'} {Math.abs(change)}%
-          </p>
+        <div>
+          <div className="text-gray-400 text-xs">Holders</div>
+          <div className="font-semibold">{agent.holders.toLocaleString()}</div>
         </div>
       </div>
-      
-      <p className="text-gray-300 mb-4 text-sm">{description}</p>
-      
-      <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
-        <span>{holders} holders</span>
-        <span>5 resources</span>
-      </div>
-      
-      <div className="flex gap-3">
-        <button className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold transition-colors">
-          Buy Keys
+
+      <div className="flex gap-2">
+        <button className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium text-sm transition-colors">
+          Buy
         </button>
-        <button className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded-lg font-semibold transition-colors">
+        <button className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium text-sm transition-colors">
           View
         </button>
       </div>
