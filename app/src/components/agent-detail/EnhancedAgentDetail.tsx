@@ -617,7 +617,7 @@ export default function EnhancedAgentDetail({ agentId }: AgentDetailProps) {
                     />
                     <Tooltip
                       labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                      formatter={(value: number | undefined) => value ? [`$${value.toFixed(2)}`, 'Price'] : ['$0.00', 'Price']}
+                      formatter={(value: any) => [`$${value?.toFixed(2) || '0.00'}`, 'Price']}
                       contentStyle={{
                         backgroundColor: 'var(--bg-card)',
                         border: '1px solid var(--border-subtle)',
@@ -885,7 +885,7 @@ export default function EnhancedAgentDetail({ agentId }: AgentDetailProps) {
                         />
                         <Tooltip
                           labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                          formatter={(value: number | undefined) => value ? [`$${formatNumber(value)}`, 'Volume'] : ['$0', 'Volume']}
+                          formatter={(value: any) => [`$${formatNumber(value || 0)}`, 'Volume']}
                           contentStyle={{
                             backgroundColor: 'var(--bg-card)',
                             border: '1px solid var(--border-subtle)',
