@@ -40,6 +40,11 @@ export default function LandingPage() {
                 Welcome to the operating system for the agent economy.
               </p>
               
+              {/* DEPLOYMENT VERIFICATION MARKER */}
+              <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-6 text-center">
+                <span className="text-red-400 font-bold">🔴 LIVE: Real Agent Integration Deployed - March 7, 2026</span>
+              </div>
+              
               {/* CTA Group */}
               <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 justify-center lg:justify-start">
                 <button 
