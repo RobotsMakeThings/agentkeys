@@ -5,6 +5,7 @@ import { validateRequest } from '../middleware/validation';
 import { SolanaService } from '../services/SolanaService';
 import { CacheService } from '../services/CacheService';
 import { OshiService } from '../services/OshiService';
+import { LiveAgentService } from '../services/LiveAgentService';
 import Joi from 'joi';
 import logger from '../utils/logger';
 
@@ -13,6 +14,7 @@ const db = Database.getInstance();
 const solanaService = new SolanaService();
 const cacheService = new CacheService();
 const oshiService = OshiService.getInstance();
+const liveAgentService = LiveAgentService.getInstance();
 
 // Validation schemas
 const createAgentSchema = Joi.object({
