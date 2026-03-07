@@ -533,7 +533,7 @@ export default function LeaderboardSystem() {
                           <YAxis stroke="rgba(255,255,255,0.5)" />
                           <Tooltip
                             labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                            formatter={(value: number | undefined) => value ? [`$${value.toFixed(2)}`, 'Price'] : ['$0.00', 'Price']}
+                            formatter={(value: any) => [`$${value?.toFixed(2) || '0.00'}`, 'Price']}
                             contentStyle={{
                               backgroundColor: 'var(--bg-card)',
                               border: '1px solid var(--border-subtle)',
