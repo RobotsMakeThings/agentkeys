@@ -32,8 +32,8 @@ export default function SiteFooter() {
               <Link href="/explore" className="block text-secondary hover:text-primary text-sm transition-colors">
                 Explore Agents
               </Link>
-              <Link href="/network" className="block text-secondary hover:text-primary text-sm transition-colors">
-                Agent Network
+              <Link href="/explore" className="block text-secondary hover:text-primary text-sm transition-colors">
+                Marketplace
               </Link>
               <Link href="/leaderboard" className="block text-secondary hover:text-primary text-sm transition-colors">
                 Leaderboard

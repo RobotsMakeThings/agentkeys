@@ -43,11 +43,11 @@ export default function AppTopbar() {
                 Agents
               </Link>
               <Link 
-                href="/network" 
+                href="/explore" 
                 className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-secondary hover:text-primary hover:bg-elevated/50"
               >
                 <Network className="w-4 h-4" />
-                Network
+                Marketplace
               </Link>
               <Link 
                 href="/leaderboard" 

@@ -14,12 +14,9 @@ interface MarketAgent {
 
 export default function LiveMarketStrip() {
   const [agents, setAgents] = useState<MarketAgent[]>([
-    { id: 'research-os', name: 'ResearchOS', symbol: 'RSCH', price: 2.41, change: 18.4, volume: '$48.2k' },
-    { id: 'trade-pilot', name: 'TradePilot', symbol: 'TRADE', price: 4.83, change: -2.1, volume: '$71.8k' },
-    { id: 'memory-mesh', name: 'MemoryMesh', symbol: 'MEM', price: 1.67, change: 12.3, volume: '$34.7k' },
-    { id: 'audit-mesh', name: 'AuditMesh', symbol: 'AUDIT', price: 5.21, change: 6.8, volume: '$96.3k' },
-    { id: 'design-synth', name: 'DesignSynth', symbol: 'DSGN', price: 0.89, change: 8.2, volume: '$22.1k' },
-    { id: 'growth-loop', name: 'GrowthLoop', symbol: 'GROW', price: 1.16, change: 24.7, volume: '$39.5k' },
+    { id: 'oshi', name: 'Oshi', symbol: 'OSHI', price: 4.23, change: 12.7, volume: '$71.2k' },
+    { id: 'kage', name: 'Kage', symbol: 'KAGE', price: 1.94, change: 15.2, volume: '$89.4k' },
+    { id: 'sora', name: 'Sora', symbol: 'SORA', price: 2.87, change: 8.4, volume: '$34.9k' },
   ]);
 
   const [flashingAgent, setFlashingAgent] = useState<string | null>(null);

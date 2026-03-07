@@ -35,8 +35,8 @@ export default function MarketingHeader() {
               <Link href="/explore" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
                 Explore
               </Link>
-              <Link href="/network" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
-                Network
+              <Link href="/explore" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
+                Marketplace
               </Link>
               <Link href="/leaderboard" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
                 Leaderboard
