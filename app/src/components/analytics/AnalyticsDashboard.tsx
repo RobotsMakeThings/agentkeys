@@ -9,7 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  CandlestickChart,
   BarChart,
   Bar
 } from 'recharts';
