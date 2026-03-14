@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import CapabilityMarketplace from '@/components/v3/CapabilityMarketplace';
+import { AgentGrid } from '@/components/SimplifiedAgentCard';
+import { mockAgents } from '@/lib/mockData';
 import { GitBranch, Star, Network, Activity, TrendingUp, Award, BarChart3, Plus, User, Bot, Users } from 'lucide-react';
 import Link from 'next/link';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -105,8 +106,30 @@ export default function CapabilitiesPage() {
 
       <LiveMarketStrip />
 
-      {/* Capability Marketplace */}
-      <CapabilityMarketplace />
+      {/* Agent Marketplace - 2-Tier System */}
+      <section className="relative py-16">
+        <div className="container max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                AI Agent Marketplace
+              </span>
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Simple 2-tier access: Buy 1 key ($5) for Basic access, 3+ keys ($15+) for Premium with research and early signals.
+            </p>
+          </div>
+          
+          <AgentGrid 
+            agents={mockAgents}
+            userKeysMap={{}} // Default to no keys owned (in real app, get from wallet)
+            onKeyPurchase={(agentId, tier) => {
+              console.log(`Purchase ${tier} for ${agentId}`);
+              // In real app, trigger wallet transaction
+            }}
+          />
+        </div>
+      </section>
 
       {/* Auth Modal */}
       <AuthModal 

@@ -76,9 +76,9 @@ export default function AboutPage() {
             </div>
             <div className="bg-gray-800/50 rounded-2xl p-8 border border-gray-700">
               <TrendingUp className="h-12 w-12 gradient-agentkeys-text mb-4" />
-              <h3 className="text-xl font-semibold mb-4">For Traders</h3>
+              <h3 className="text-xl font-semibold mb-4">For Key Holders</h3>
               <p className="text-gray-400">
-                Trade agent keys like any other asset. As agents gain popularity and provide value, their key prices increase following our bonding curve mechanism.
+                Buy agent keys for consistent $5 pricing. Own 1 key for Basic access or 3+ keys for Premium access with research reports and early signals.
               </p>
             </div>
           </div>
@@ -143,19 +143,24 @@ export default function AboutPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-8 h-8 gradient-agentkeys rounded-full flex items-center justify-center text-white font-bold">3</div>
-                  <h3 className="text-2xl font-semibold">Bonding Curve Pricing</h3>
+                  <h3 className="text-2xl font-semibold">Simple 2-Tier Access</h3>
                 </div>
                 <p className="text-gray-400 text-lg">
-                  Key prices follow a <strong>Friend.tech-style bonding curve</strong> - early buyers get lower prices, and prices increase as more keys are purchased. This creates natural price discovery and rewards early supporters of promising agents.
+                  <strong>No complex pricing models.</strong> Every key costs $5, and your access level depends on how many keys you own. Buy 1 for basics, 3+ for premium features.
                 </p>
               </div>
               <div className="bg-gray-800/30 rounded-2xl p-6 border border-cyan-400/20">
                 <TrendingUp className="h-12 w-12 text-cyan-400 mb-4" />
-                <div className="text-sm text-cyan-400 mb-2">Price Formula:</div>
-                <div className="text-sm text-gray-300 font-mono">
-                  Price = Σ(supply²) × base_rate<br/>
-                  Early keys: Lower prices<br/>
-                  Popular agents: Higher prices
+                <div className="text-sm text-cyan-400 mb-2">Access Tiers:</div>
+                <div className="text-sm text-gray-300">
+                  <div className="flex justify-between mb-2">
+                    <span>🔵 Basic (1 key)</span>
+                    <span>$5 - Signals & analysis</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>⭐ Premium (3+ keys)</span>
+                    <span>$15+ - Everything + research</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -169,23 +174,32 @@ export default function AboutPage() {
           <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl p-8 border border-cyan-400/30 mb-8">
             <div className="text-center mb-8">
               <DollarSign className="h-16 w-16 gradient-agentkeys-text mx-auto mb-4" />
-              <h3 className="text-2xl font-semibold mb-2">3% Total Trading Fee</h3>
-              <p className="text-gray-400">Applied to all key purchases and sales</p>
+              <h3 className="text-2xl font-semibold mb-2">2.5% Platform Fee</h3>
+              <p className="text-gray-400">Industry-leading revenue share for agents</p>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-gray-800/50 rounded-xl p-6">
-                <div className="text-cyan-400 text-3xl font-bold mb-2">2%</div>
+                <div className="text-green-400 text-3xl font-bold mb-2">97.5%</div>
                 <h4 className="text-lg font-semibold mb-2">To Agent Creator</h4>
                 <p className="text-gray-400 text-sm">
-                  The original agent creator earns 2% on every key trade. Fees accumulate in your account and can be claimed anytime when they exceed $5.
+                  Agents keep 97.5% of all key sales - the highest revenue share in the market. Simple $5 per key pricing means predictable earnings.
                 </p>
               </div>
               <div className="bg-gray-800/50 rounded-xl p-6">
-                <div className="text-purple-400 text-3xl font-bold mb-2">1%</div>
+                <div className="text-purple-400 text-3xl font-bold mb-2">2.5%</div>
                 <h4 className="text-lg font-semibold mb-2">To Platform</h4>
                 <p className="text-gray-400 text-sm">
-                  Platform fees fund continued development, security audits, and ecosystem growth. These go directly to the AgentKeys treasury.
+                  Minimal platform fees fund development, security audits, and ecosystem growth. Lower fees mean more revenue for creators.
+                </p>
+              </div>
+            </div>
+            
+            <div className="text-center mt-6">
+              <div className="bg-gradient-to-r from-green-500/10 to-cyan-500/10 rounded-lg p-4 border border-green-400/30">
+                <h4 className="text-lg font-semibold text-green-400 mb-2">Simple Pricing: $5 Per Key</h4>
+                <p className="text-gray-400 text-sm">
+                  No complex bonding curves. Every key costs $5, making it easy for users to understand and agents to predict revenue.
                 </p>
               </div>
             </div>
@@ -287,8 +301,8 @@ export default function AboutPage() {
                 <h4 className="font-semibold text-purple-400 mb-2">Key Trading</h4>
                 <ul className="space-y-1 text-gray-400">
                   <li>• SPL token-based keys</li>
-                  <li>• Bonding curve pricing</li>
-                  <li>• Atomic buy/sell operations</li>
+                  <li>• Simple $5 per key pricing</li>
+                  <li>• 2-tier access system</li>
                   <li>• Automatic fee distribution</li>
                 </ul>
               </div>

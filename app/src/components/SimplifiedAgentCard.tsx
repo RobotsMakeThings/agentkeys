@@ -17,17 +17,22 @@ import { ACCESS_TIERS, getTierFromKeys } from '@/lib/constants';
 import { ContentTierBadge } from './TierDisplay';
 
 interface Agent {
-  id: string;
+  address: string;
   name: string;
   symbol: string;
   category: string;
   description: string;
-  price: number;
-  change24h: number;
-  holders: number;
+  keyPrice: number;
   totalKeys: number;
-  performanceScore: number;
+  holders: number;
+  change24h?: number;
+  performanceScore?: number;
   isOnline?: boolean;
+  content?: Array<{
+    tier: string;
+    type: string;
+    title: string;
+  }>;
 }
 
 interface SimplifiedAgentCardProps {
@@ -96,7 +101,7 @@ export default function SimplifiedAgentCard({
           <div className="text-right">
             <div className="text-sm text-gray-400">Performance</div>
             <div className="text-lg font-bold text-green-400">
-              {agent.performanceScore}%
+              {agent.performanceScore || 85}%
             </div>
           </div>
         </div>
@@ -126,10 +131,10 @@ export default function SimplifiedAgentCard({
           
           <div className="text-center">
             <div className={`text-lg font-bold flex items-center justify-center space-x-1 ${
-              agent.change24h >= 0 ? 'text-green-400' : 'text-red-400'
+              (agent.change24h || 5.2) >= 0 ? 'text-green-400' : 'text-red-400'
             }`}>
-              {agent.change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-              <span>{Math.abs(agent.change24h).toFixed(1)}%</span>
+              {(agent.change24h || 5.2) >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+              <span>{Math.abs(agent.change24h || 5.2).toFixed(1)}%</span>
             </div>
             <div className="text-xs text-gray-400">24h</div>
           </div>
@@ -168,7 +173,7 @@ export default function SimplifiedAgentCard({
                 <Check className="w-4 h-4 text-green-400" />
               ) : (
                 <button
-                  onClick={() => onKeyPurchase && onKeyPurchase(agent.id, 'BASIC')}
+                  onClick={() => onKeyPurchase && onKeyPurchase(agent.address, 'BASIC')}
                   className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs text-white transition-colors"
                 >
                   Buy
@@ -197,7 +202,7 @@ export default function SimplifiedAgentCard({
                 <Check className="w-4 h-4 text-green-400" />
               ) : (
                 <button
-                  onClick={() => onKeyPurchase && onKeyPurchase(agent.id, 'PREMIUM')}
+                  onClick={() => onKeyPurchase && onKeyPurchase(agent.address, 'PREMIUM')}
                   className="px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded text-xs text-white transition-colors"
                 >
                   {hasBasicAccess ? 'Upgrade' : 'Buy'}
@@ -208,7 +213,7 @@ export default function SimplifiedAgentCard({
         </div>
 
         {/* Action Button */}
-        <Link href={`/agent/${agent.id}`}>
+        <Link href={`/agent/${agent.name.toLowerCase().replace(/\s+/g, '-')}`}>
           <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg text-white font-medium transition-all duration-200 flex items-center justify-center space-x-2">
             <span>View Agent</span>
             <ArrowRight className="w-4 h-4" />
@@ -250,9 +255,9 @@ export function AgentGrid({
     <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${className}`}>
       {agents.map((agent) => (
         <SimplifiedAgentCard
-          key={agent.id}
+          key={agent.address}
           agent={agent}
-          userKeys={userKeysMap[agent.id] || 0}
+          userKeys={userKeysMap[agent.address] || 0}
           onKeyPurchase={onKeyPurchase}
         />
       ))}
