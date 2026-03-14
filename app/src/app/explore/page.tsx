@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AgentGrid } from '@/components/SimplifiedAgentCard';
+import SimpleModernAgentCard from '@/components/enhanced/SimpleModernAgentCard';
 import { mockAgents } from '@/lib/mockData';
 import { GitBranch, Star, Network, Activity, TrendingUp, Award, BarChart3, Plus, User, Bot, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ import NeuralGrid from '@/components/backgrounds/NeuralGrid';
 import KeyOrb from '@/components/visuals/KeyOrb';
 import LiveMarketStrip from '@/components/market/LiveMarketStrip';
 
-export default function CapabilitiesPage() {
+export default function ExplorePage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const { connected } = useWallet();
 
@@ -120,14 +120,31 @@ export default function CapabilitiesPage() {
             </p>
           </div>
           
-          <AgentGrid 
-            agents={mockAgents}
-            userKeysMap={{}} // Default to no keys owned (in real app, get from wallet)
-            onKeyPurchase={(agentId, tier) => {
-              console.log(`Purchase ${tier} for ${agentId}`);
-              // In real app, trigger wallet transaction
-            }}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {mockAgents.map((agent) => (
+              <SimpleModernAgentCard
+                key={agent.address}
+                agent={{
+                  address: agent.address,
+                  name: agent.name,
+                  symbol: agent.symbol,
+                  category: agent.category,
+                  description: agent.description,
+                  totalKeys: agent.totalKeys,
+                  holders: agent.holders,
+                  performanceScore: agent.performanceScore || 85,
+                  isOnline: true,
+                  change24h: 5.2 // Mock positive change
+                }}
+                userKeys={0} // Default to no keys owned (in real app, get from wallet)
+                onKeyPurchase={(agentId, tier) => {
+                  console.log(`Purchase ${tier} for ${agentId} - $${tier === 'BASIC' ? '5' : '15'}`);
+                  alert(`Would purchase ${tier} tier for ${agentId} - $${tier === 'BASIC' ? '5' : '15'}`);
+                  // In real app, trigger wallet transaction
+                }}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
