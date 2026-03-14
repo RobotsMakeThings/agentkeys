@@ -117,142 +117,142 @@ export default function DramaticAgentCard({
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
-        {/* Header Section */}
-        <div className="relative p-8 pb-6">
+        {/* Mobile-Responsive Header Section */}
+        <div className="relative p-4 sm:p-6 lg:p-8 pb-3 sm:pb-4 lg:pb-6">
           
-          {/* Online Status Indicator */}
+          {/* Mobile-Optimized Online Status */}
           {agent.isOnline && (
-            <div className="absolute top-4 right-4 flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50" />
-              <span className="text-green-400 text-sm font-bold">LIVE</span>
+            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center space-x-1 sm:space-x-2">
+              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50" />
+              <span className="text-green-400 text-xs sm:text-sm font-bold">LIVE</span>
             </div>
           )}
           
-          {/* Agent Avatar & Category */}
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center space-x-4">
+          {/* Mobile-Friendly Avatar & Category */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <div className={`
-                relative w-20 h-20 rounded-2xl bg-gradient-to-br ${theme.gradient}
-                flex items-center justify-center text-white font-black text-2xl
-                shadow-2xl transform transition-transform duration-300 group-hover:rotate-3
+                relative w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br ${theme.gradient}
+                flex items-center justify-center text-white font-black text-lg sm:text-xl lg:text-2xl
+                shadow-2xl transform transition-transform duration-300 group-hover:rotate-3 flex-shrink-0
               `}>
                 {agent.symbol.substring(0, 2)}
                 
-                {/* Sparkle Effect */}
+                {/* Mobile-friendly Sparkle Effect */}
                 {isHovered && (
                   <div className="absolute -top-1 -right-1">
-                    <Sparkles className="w-6 h-6 text-yellow-300 animate-spin" />
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-300 animate-spin" />
                   </div>
                 )}
               </div>
               
-              <div>
-                <div className="text-2xl font-black text-white mb-1 tracking-tight">
+              <div className="min-w-0 flex-1">
+                <div className="text-xl sm:text-2xl font-black text-white mb-1 tracking-tight truncate">
                   {agent.name}
                 </div>
                 <div className={`
-                  inline-flex items-center px-3 py-1 rounded-full text-sm font-bold
+                  inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold
                   bg-gradient-to-r ${theme.gradient} text-white shadow-lg
                 `}>
-                  <span className="mr-2 text-lg">{theme.icon}</span>
-                  {agent.category}
+                  <span className="mr-1 sm:mr-2 text-sm sm:text-lg">{theme.icon}</span>
+                  <span className="truncate">{agent.category}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Performance Score - MASSIVE */}
-          <div className="text-center mb-6">
+          {/* Mobile-Responsive Performance Score */}
+          <div className="text-center mb-4 sm:mb-6">
             <div className="relative inline-block">
-              <div className={`text-6xl font-black bg-gradient-to-r ${theme.gradient} bg-clip-text text-transparent mb-2`}>
+              <div className={`text-4xl sm:text-5xl lg:text-6xl font-black bg-gradient-to-r ${theme.gradient} bg-clip-text text-transparent mb-2`}>
                 {agent.performanceScore}%
               </div>
-              <div className="text-gray-400 font-bold tracking-widest">PERFORMANCE</div>
+              <div className="text-gray-400 font-bold tracking-widest text-xs sm:text-sm">PERFORMANCE</div>
               
-              {/* Performance Ring */}
-              <div className="absolute -inset-4 rounded-full border-4 border-gray-700/30" />
+              {/* Mobile-friendly Performance Ring */}
+              <div className="absolute -inset-2 sm:-inset-3 lg:-inset-4 rounded-full border-2 sm:border-3 lg:border-4 border-gray-700/30" />
               <div 
-                className={`absolute -inset-4 rounded-full border-4 border-transparent border-t-green-400 animate-spin`}
+                className={`absolute -inset-2 sm:-inset-3 lg:-inset-4 rounded-full border-2 sm:border-3 lg:border-4 border-transparent border-t-green-400 animate-spin`}
                 style={{ animationDuration: '3s' }}
               />
             </div>
           </div>
 
-          {/* Description */}
-          <p className="text-gray-300 text-center text-lg leading-relaxed mb-6 min-h-[3rem]">
+          {/* Mobile-Optimized Description */}
+          <p className="text-gray-300 text-center text-sm sm:text-base lg:text-lg leading-relaxed mb-4 sm:mb-6 min-h-[2.5rem] sm:min-h-[3rem] px-2">
             {agent.description}
           </p>
 
-          {/* Stats Row */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="text-center p-4 rounded-2xl bg-black/20 backdrop-blur-sm">
-              <div className="text-2xl font-black text-white">{agent.totalKeys}</div>
+          {/* Mobile-Responsive Stats Row */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mb-6 sm:mb-8">
+            <div className="text-center p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/20 backdrop-blur-sm">
+              <div className="text-lg sm:text-xl lg:text-2xl font-black text-white">{agent.totalKeys}</div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">Keys</div>
             </div>
-            <div className="text-center p-4 rounded-2xl bg-black/20 backdrop-blur-sm">
-              <div className="text-2xl font-black text-blue-400">{agent.holders}</div>
+            <div className="text-center p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/20 backdrop-blur-sm">
+              <div className="text-lg sm:text-xl lg:text-2xl font-black text-blue-400">{agent.holders}</div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">Holders</div>
             </div>
-            <div className="text-center p-4 rounded-2xl bg-black/20 backdrop-blur-sm">
-              <div className={`text-2xl font-black flex items-center justify-center space-x-1 ${
+            <div className="text-center p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/20 backdrop-blur-sm">
+              <div className={`text-lg sm:text-xl lg:text-2xl font-black flex items-center justify-center space-x-1 ${
                 change >= 0 ? 'text-green-400' : 'text-red-400'
               }`}>
                 {change >= 0 ? 
-                  <TrendingUp className="w-5 h-5" /> : 
-                  <TrendingDown className="w-5 h-5" />
+                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" /> : 
+                  <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5" />
                 }
-                <span>{Math.abs(change).toFixed(1)}%</span>
+                <span className="text-sm sm:text-lg lg:text-2xl">{Math.abs(change).toFixed(1)}%</span>
               </div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">24H</div>
             </div>
           </div>
         </div>
 
-        {/* Access Tiers Section */}
-        <div className="relative p-8 pt-4 bg-black/30 backdrop-blur-sm">
+        {/* Mobile-Responsive Access Tiers Section */}
+        <div className="relative p-4 sm:p-6 lg:p-8 pt-3 sm:pt-4 bg-black/30 backdrop-blur-sm">
           
-          {/* Current Access Status */}
+          {/* Mobile-Optimized Current Access Status */}
           {userKeys > 0 && (
-            <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="w-6 h-6 text-green-400" />
-                <span className="text-green-400 font-bold text-lg">
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-400 flex-shrink-0" />
+                <span className="text-green-400 font-bold text-sm sm:text-base lg:text-lg">
                   You own {userKeys} key{userKeys > 1 ? 's' : ''} • {hasPremiumAccess ? 'Premium' : 'Basic'} Access
                 </span>
               </div>
             </div>
           )}
 
-          {/* Tier Selection */}
-          <div className="space-y-4">
+          {/* Mobile-Friendly Tier Selection */}
+          <div className="space-y-3 sm:space-y-4">
             
-            {/* Basic Tier */}
+            {/* Mobile-Optimized Basic Tier */}
             <div className={`
-              relative overflow-hidden rounded-2xl border-2 transition-all duration-300
+              relative overflow-hidden rounded-xl sm:rounded-2xl border-2 transition-all duration-300 touch-manipulation
               ${hasBasicAccess 
                 ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/50' 
                 : 'bg-gradient-to-r from-gray-800/50 to-gray-900/50 border-gray-600/30 hover:border-blue-500/50 hover:scale-[1.02]'
               }
             `}>
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+              <div className="p-4 sm:p-5 lg:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
                     {hasBasicAccess ? 
-                      <Unlock className="w-8 h-8 text-green-400" /> :
-                      <Lock className="w-8 h-8 text-gray-400" />
+                      <Unlock className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-green-400" /> :
+                      <Lock className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-gray-400" />
                     }
                     <div>
-                      <div className="text-xl font-bold text-white">BASIC ACCESS</div>
-                      <div className="text-sm text-gray-400">1 key • $5 total</div>
+                      <div className="text-lg sm:text-xl font-bold text-white">BASIC ACCESS</div>
+                      <div className="text-xs sm:text-sm text-gray-400">1 key • $5 total</div>
                     </div>
                   </div>
                   
                   <button
                     className={`
-                      px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform
+                      w-full sm:w-auto px-6 sm:px-7 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base lg:text-lg transition-all duration-300 transform min-h-[44px] sm:min-h-[48px]
                       ${hasBasicAccess 
                         ? 'bg-green-500 text-white cursor-default' 
-                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white hover:shadow-2xl hover:scale-110 hover:shadow-blue-500/50'
+                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white hover:shadow-2xl hover:scale-105 sm:hover:scale-110 hover:shadow-blue-500/50'
                       }
                       ${isPurchasing === 'BASIC' ? 'animate-pulse' : ''}
                     `}
@@ -265,40 +265,40 @@ export default function DramaticAgentCard({
               </div>
             </div>
 
-            {/* Premium Tier */}
+            {/* Mobile-Optimized Premium Tier */}
             <div className={`
-              relative overflow-hidden rounded-2xl border-2 transition-all duration-300
+              relative overflow-hidden rounded-xl sm:rounded-2xl border-2 transition-all duration-300 touch-manipulation
               ${hasPremiumAccess 
                 ? 'bg-gradient-to-r from-purple-500/20 to-violet-500/20 border-purple-500/50' 
                 : 'bg-gradient-to-r from-gray-800/50 to-gray-900/50 border-gray-600/30 hover:border-purple-500/50 hover:scale-[1.02]'
               }
             `}>
-              {/* Premium Badge */}
+              {/* Mobile-friendly Premium Badge */}
               {!hasPremiumAccess && (
-                <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-bold text-xs px-3 py-1 rounded-bl-xl rounded-tr-2xl">
+                <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-bold text-xs px-2 sm:px-3 py-1 rounded-bl-lg sm:rounded-bl-xl rounded-tr-xl sm:rounded-tr-2xl">
                   PREMIUM
                 </div>
               )}
               
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+              <div className="p-4 sm:p-5 lg:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
                     {hasPremiumAccess ? 
-                      <Zap className="w-8 h-8 text-purple-400" /> :
-                      <Zap className="w-8 h-8 text-gray-400" />
+                      <Zap className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-purple-400" /> :
+                      <Zap className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-gray-400" />
                     }
                     <div>
-                      <div className="text-xl font-bold text-white">PREMIUM ACCESS</div>
-                      <div className="text-sm text-gray-400">3+ keys • $15+ total</div>
+                      <div className="text-lg sm:text-xl font-bold text-white">PREMIUM ACCESS</div>
+                      <div className="text-xs sm:text-sm text-gray-400">3+ keys • $15+ total</div>
                     </div>
                   </div>
                   
                   <button
                     className={`
-                      px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform
+                      w-full sm:w-auto px-6 sm:px-7 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base lg:text-lg transition-all duration-300 transform min-h-[44px] sm:min-h-[48px]
                       ${hasPremiumAccess 
                         ? 'bg-purple-500 text-white cursor-default' 
-                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white hover:shadow-2xl hover:scale-110 hover:shadow-purple-500/50'
+                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white hover:shadow-2xl hover:scale-105 sm:hover:scale-110 hover:shadow-purple-500/50'
                       }
                       ${isPurchasing === 'PREMIUM' ? 'animate-pulse' : ''}
                     `}
@@ -314,20 +314,21 @@ export default function DramaticAgentCard({
             </div>
           </div>
 
-          {/* View Details Button */}
+          {/* Mobile-Optimized View Details Button */}
           <a
             href={`/agent/${agent.name.toLowerCase().replace(/\s+/g, '-')}`}
             className="
-              mt-6 flex items-center justify-center space-x-3 p-4 
-              rounded-2xl border-2 border-gray-600/30 
+              mt-4 sm:mt-6 flex items-center justify-center space-x-2 sm:space-x-3 p-3 sm:p-4 
+              rounded-xl sm:rounded-2xl border-2 border-gray-600/30 
               text-gray-300 hover:text-white hover:border-white/50
               transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-white/20
-              backdrop-blur-xl font-bold text-lg
+              backdrop-blur-xl font-bold text-sm sm:text-base lg:text-lg
+              min-h-[44px] touch-manipulation
             "
           >
-            <Bot className="w-6 h-6" />
+            <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
             <span>VIEW AGENT DETAILS</span>
-            <ArrowRight className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" />
+            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 group-hover:translate-x-2" />
           </a>
         </div>
       </div>

@@ -36,12 +36,11 @@ export default function ExplorePage() {
                 Agentic Infrastructure
               </div>
               
-              <h1 className="text-6xl lg:text-8xl font-black text-white mb-8 leading-none">
-                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 sm:mb-8 leading-[0.9] px-4 sm:px-0">
+                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent block">
                   AI INTELLIGENCE
                 </span>
-                <br />
-                <span className="text-white">MARKETPLACE</span>
+                <span className="text-white block">MARKETPLACE</span>
               </h1>
               
               <p className="text-xl text-secondary max-w-2xl mb-12 leading-relaxed">
