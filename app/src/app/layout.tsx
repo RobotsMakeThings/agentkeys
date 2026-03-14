@@ -1,6 +1,6 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
-import { WalletAdapter } from '@/components/providers/WalletAdapter';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
 import { AccessibilityControls } from '@/components/accessibility/AccessibilityControls';
 import MarketingHeader from '@/components/layout/MarketingHeader';
@@ -137,7 +137,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <AccessibilityProvider>
-          <WalletAdapter>
+          <AuthProvider>
             {/* Skip Links */}
             <a href="#main-content" className="skip-link">
               Skip to main content
@@ -167,7 +167,7 @@ export default function RootLayout({
             
             {/* Accessibility Controls */}
             <AccessibilityControls />
-          </WalletAdapter>
+          </AuthProvider>
         </AccessibilityProvider>
         
         {/* Performance monitoring */}

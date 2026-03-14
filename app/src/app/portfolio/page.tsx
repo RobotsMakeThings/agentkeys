@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import AgentTradingCard from '@/components/cards/AgentTradingCard';
 import { Star, TrendingUp, BarChart3, Wallet, Crown, Award, PlusCircle } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import AuthModal from '@/components/AuthModal';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 
 // Mock user's portfolio (in production, fetch from wallet)
 const userPortfolio = [
@@ -57,7 +56,8 @@ const userPortfolio = [
 
 export default function PortfolioPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { connected, publicKey } = useWallet();
+  const { user, getUserWallet } = useAuth();
+  const wallet = getUserWallet();
 
   // Calculate portfolio stats
   const totalInvested = userPortfolio.reduce((sum, card) => sum + (card.purchasePrice * card.ownedQuantity), 0);
@@ -75,18 +75,23 @@ export default function PortfolioPage() {
     alert(`Opening trading options for ${agentId}! 📊`);
   };
 
-  if (!connected) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
             <Wallet className="w-12 h-12 text-white" />
           </div>
-          <h2 className="text-3xl font-bold mb-4">Connect Your Wallet</h2>
+          <h2 className="text-3xl font-bold mb-4">Sign In Required</h2>
           <p className="text-gray-400 mb-8">
-            Connect your wallet to view your AgentCards collection and manage your portfolio.
+            Sign in to view your AgentCards collection and manage your portfolio.
           </p>
-          <WalletMultiButton className="!bg-gradient-to-r !from-purple-600 !to-pink-600 hover:!from-purple-500 hover:!to-pink-500" />
+          <button
+            onClick={() => setAuthModalOpen(true)}
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all"
+          >
+            Sign In
+          </button>
         </div>
       </div>
     );
@@ -121,7 +126,7 @@ export default function PortfolioPage() {
             </h1>
             
             <p className="text-gray-400 text-lg mb-8">
-              {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-8)}
+              {wallet.address.slice(0, 8)}...{wallet.address.slice(-8)}
             </p>
           </div>
 

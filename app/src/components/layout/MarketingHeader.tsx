@@ -2,15 +2,15 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useWallet } from '@solana/wallet-adapter-react';
-import UserAccountButton from '@/components/UserAccountButton';
-import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import UserAccountButton from '@/components/auth/UserAccountButton';
+import AuthModal from '@/components/auth/AuthModal';
 import MobileMenu from '@/components/navigation/MobileMenu';
 import { User } from 'lucide-react';
 
 export default function MarketingHeader() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { connected } = useWallet();
+  const { user } = useAuth();
 
   return (
     <>
@@ -47,7 +47,10 @@ export default function MarketingHeader() {
                 Portfolio
               </Link>
               <Link href="/bonding-demo" className="text-blue-400 hover:text-blue-300 transition-colors min-h-touch flex items-center">
-                NEW System
+                NEW Cards
+              </Link>
+              <Link href="/auth-demo" className="text-purple-400 hover:text-purple-300 transition-colors min-h-touch flex items-center">
+                NEW Auth
               </Link>
               <Link href="/about" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
                 About
@@ -58,21 +61,21 @@ export default function MarketingHeader() {
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Desktop Actions */}
               <div className="hidden lg:block">
-                {connected ? (
+                {user ? (
                   <UserAccountButton />
                 ) : (
                   <button
                     onClick={() => setAuthModalOpen(true)}
-                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600 text-white rounded-lg font-medium transition-all neural-glow min-h-touch touch-manipulation"
+                    className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg font-medium transition-all min-h-touch touch-manipulation"
                   >
-                    Connect Wallet
+                    Sign In
                   </button>
                 )}
               </div>
               
               {/* Mobile Actions */}
               <div className="lg:hidden flex items-center gap-2">
-                {connected && (
+                {user && (
                   <div className="hidden sm:block">
                     <UserAccountButton />
                   </div>
