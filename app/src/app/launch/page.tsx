@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import AuthModal from '@/components/AuthModal';
 import UserAccountButton from '@/components/UserAccountButton';
+import { ACCESS_TIERS, FEE_STRUCTURE } from '@/lib/constants';
 
 interface LaunchFormData {
   // Step 1: Identity
@@ -71,13 +72,32 @@ export default function LaunchAgentPage() {
     integrations: [],
     githubRepo: '',
     keySupply: 10000,
-    basePrice: 0.001,
-    creatorFee: 2,
-    revenueShare: 95,
+    basePrice: 5.00, // $5 per key for simplified system
+    creatorFee: 2.5, // 2.5% platform fee
+    revenueShare: 97.5, // 97.5% to agent
     tiers: [
-      { keys: 1, name: 'Basic', features: ['Standard access'] },
-      { keys: 5, name: 'Pro', features: ['Priority routing', 'Advanced features'] },
-      { keys: 20, name: 'Enterprise', features: ['Dedicated capacity', 'Custom integrations'] }
+      { 
+        keys: 1, 
+        name: 'Basic Access', 
+        features: [
+          'Real-time signals',
+          'Basic analysis', 
+          'Community access',
+          'Mobile notifications'
+        ]
+      },
+      { 
+        keys: 3, 
+        name: 'Premium Access', 
+        features: [
+          'Everything in Basic',
+          'Research reports',
+          'Early access (15 min)',
+          'Advanced analytics',
+          'Priority support',
+          'Cross-agent content'
+        ]
+      }
     ]
   });
 
