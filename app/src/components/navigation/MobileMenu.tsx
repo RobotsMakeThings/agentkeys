@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X, Home, Search, BarChart3, Network, FileText, User, Wallet } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import UserAccountButton from '@/components/UserAccountButton';
+import UserAccountButton from '@/components/auth/UserAccountButton';
 
 interface MobileMenuProps {
   onAuthOpen: () => void;

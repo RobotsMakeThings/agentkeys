@@ -24,9 +24,9 @@ import {
   Plus
 } from 'lucide-react';
 import Link from 'next/link';
-import { useWallet } from '@solana/wallet-adapter-react';
-import AuthModal from '@/components/AuthModal';
-import UserAccountButton from '@/components/UserAccountButton';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
+import UserAccountButton from '@/components/auth/UserAccountButton';
 import { ACCESS_TIERS, FEE_STRUCTURE } from '@/lib/constants';
 
 interface LaunchFormData {
@@ -60,7 +60,7 @@ interface LaunchFormData {
 export default function LaunchAgentPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { connected } = useWallet();
+  const { user } = useAuth();
   const [formData, setFormData] = useState<LaunchFormData>({
     agentName: '',
     symbol: '',

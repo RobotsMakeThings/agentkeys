@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import AgentTradingCard from '@/components/cards/AgentTradingCard';
 import { Star, TrendingUp, BarChart3, ShoppingBag, Filter, Grid3x3 } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 import LiveMarketStrip from '@/components/market/LiveMarketStrip';
 
 // Marketplace shows cards currently for sale (with current owners)
@@ -76,7 +76,7 @@ const marketplaceListings = [
 
 export default function MarketplacePage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { connected } = useWallet();
+  const { user } = useAuth();
   const [selectedRarity, setSelectedRarity] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<string>('PRICE_LOW');
 

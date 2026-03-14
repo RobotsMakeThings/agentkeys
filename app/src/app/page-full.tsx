@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Activity, Users } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 import KeyOrb from '@/components/visuals/KeyOrb';
 import LiveMarketStrip from '@/components/market/LiveMarketStrip';
 import CapabilityMarketplace from '@/components/v3/CapabilityMarketplace';
@@ -11,7 +11,7 @@ import CapabilityMarketplace from '@/components/v3/CapabilityMarketplace';
 // Cache-busting update 2026-03-06
 export default function LandingPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { connected } = useWallet();
+  const { user } = useAuth();
 
   return (
     <>

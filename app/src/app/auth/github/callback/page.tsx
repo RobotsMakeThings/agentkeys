@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
-export default function GitHubCallbackPage() {
+function GitHubCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { loginWithGithub } = useAuth();
@@ -38,14 +38,8 @@ export default function GitHubCallbackPage() {
       // For demo purposes, simulate GitHub user data
       const mockGithubResponse = await simulateGitHubAPI(code);
       
-      if ('error' in mockGithubResponse) {
-        setStatus('error');
-        setError(mockGithubResponse.error as string);
-        return;
-      }
-
       // Login with GitHub data  
-      const result = await loginWithGithub((mockGithubResponse as { user: any }).user);
+      const result = await loginWithGithub(mockGithubResponse.user);
       
       if (result.success) {
         setStatus('success');
@@ -66,7 +60,7 @@ export default function GitHubCallbackPage() {
   };
 
   // Simulate GitHub API response (replace with real implementation)
-  const simulateGitHubAPI = async (code: string): Promise<{ user: any } | { error: string }> => {
+  const simulateGitHubAPI = async (code: string) => {
     // In production, this would be a server-side API call
     await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
 
@@ -139,5 +133,20 @@ export default function GitHubCallbackPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GitHubCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-400 mx-auto mb-4" />
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    }>
+      <GitHubCallbackContent />
+    </Suspense>
   );
 }

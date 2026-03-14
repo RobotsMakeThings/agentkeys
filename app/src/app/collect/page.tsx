@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import AgentTradingCard from '@/components/cards/AgentTradingCard';
 import { Star, Gem, TrendingUp, BarChart3, Filter, Grid3x3, Crown, Zap } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 import LiveMarketStrip from '@/components/market/LiveMarketStrip';
 
 // Complete Agent Cards Collection
@@ -115,7 +115,7 @@ const mockAgentCards = [
 
 export default function CardCollectionPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { connected } = useWallet();
+  const { user } = useAuth();
   const [selectedRarity, setSelectedRarity] = useState<string>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 

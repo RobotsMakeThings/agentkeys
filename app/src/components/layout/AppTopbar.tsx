@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useWallet } from '@solana/wallet-adapter-react';
-import UserAccountButton from '@/components/UserAccountButton';
-import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import UserAccountButton from '@/components/auth/UserAccountButton';
+import AuthModal from '@/components/auth/AuthModal';
 import { BarChart3, Network, Plus, Trophy, Terminal, Search, Bell } from 'lucide-react';
 
 export default function AppTopbar() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { connected } = useWallet();
+  const { user } = useAuth();
 
   return (
     <>
@@ -101,7 +101,7 @@ export default function AppTopbar() {
               </button>
 
               {/* Wallet */}
-              {connected ? (
+              {user ? (
                 <UserAccountButton />
               ) : (
                 <button

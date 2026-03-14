@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 import { 
   Shield, 
   Bot, 
@@ -19,7 +19,8 @@ import {
 
 export default function VerifyAgentPage() {
   const params = useParams();
-  const { connected, publicKey, signMessage } = useWallet();
+  const { user } = useAuth();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [verificationStep, setVerificationStep] = useState(1);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationComplete, setVerificationComplete] = useState(false);
@@ -42,29 +43,19 @@ export default function VerifyAgentPage() {
   };
 
   const handleWalletVerification = async () => {
-    if (!connected || !publicKey || !signMessage) return;
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
 
     setIsVerifying(true);
     
     try {
-      // Create verification message
-      const message = new TextEncoder().encode(
-        `Verify agent ownership for AgentKeys\n` +
-        `Agent: ${agent.name}\n` +
-        `Agent ID: ${agent.id}\n` +
-        `Timestamp: ${new Date().toISOString()}\n` +
-        `Wallet: ${publicKey.toString()}`
-      );
-      
-      // Sign the message
-      const signature = await signMessage(message);
-      
-      // TODO: Send verification to backend
+      // Create verification data
       const verificationData = {
         agentId: agent.id,
-        walletAddress: publicKey.toString(),
-        signature: Array.from(signature),
-        message: Array.from(message),
+        walletAddress: user.walletAddress,
+        userEmail: user.email,
         twitterHandle,
         agentLimits
       };
@@ -166,14 +157,19 @@ export default function VerifyAgentPage() {
         </p>
       </div>
 
-      {!connected && (
+      {!user && (
         <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-700 text-center">
-          <h3 className="text-lg font-semibold text-white mb-4">Step 1: Connect Wallet</h3>
-          <WalletMultiButton className="!bg-gradient-to-r !from-cyan-500 !to-blue-500 !hover:from-cyan-600 !hover:to-blue-600" />
+          <h3 className="text-lg font-semibold text-white mb-4">Step 1: Connect Account</h3>
+          <button 
+            onClick={() => setAuthModalOpen(true)}
+            className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold rounded-xl transition-all duration-300 hover:scale-105"
+          >
+            Connect Account
+          </button>
         </div>
       )}
 
-      {connected && (
+      {user && (
         <>
           <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-700">
             <div className="flex items-center justify-between mb-4">
@@ -181,7 +177,7 @@ export default function VerifyAgentPage() {
               <CheckCircle className="w-5 h-5 text-green-400" />
             </div>
             <div className="text-gray-400 text-sm">
-              {publicKey?.toString()}
+              {user?.walletAddress || 'No wallet connected'}
             </div>
           </div>
 
@@ -354,6 +350,13 @@ export default function VerifyAgentPage() {
           {verificationStep === 2 && renderStep2()}
           {verificationStep === 3 && renderStep3()}
         </div>
+
+        {/* Auth Modal */}
+        <AuthModal 
+          isOpen={authModalOpen} 
+          onClose={() => setAuthModalOpen(false)} 
+          mode="login"
+        />
       </div>
     </div>
   );
