@@ -11,13 +11,13 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: {
-    template: '%s | AgentKeys',
-    default: 'AgentKeys - AI Agent Trading Platform',
+    template: '%s | AgentCards',
+    default: 'AgentCards - Collect AI Intelligence',
   },
-  description: 'Trade AI agent keys, access advanced analytics, and build your portfolio in the future of artificial intelligence.',
-  keywords: ['AI agents', 'trading', 'blockchain', 'Solana', 'decentralized', 'artificial intelligence'],
-  authors: [{ name: 'AgentKeys Team' }],
-  creator: 'AgentKeys',
+  description: 'Collect rare AI agent NFT cards with limited supplies. Trade intelligence, own digital assets, and build your collection in the future of artificial intelligence.',
+  keywords: ['AI agents', 'NFT cards', 'collecting', 'trading cards', 'blockchain', 'Solana', 'digital collectibles', 'artificial intelligence'],
+  authors: [{ name: 'AgentCards Team' }],
+  creator: 'AgentCards',
   publisher: 'AgentKeys',
   formatDetection: {
     email: false,

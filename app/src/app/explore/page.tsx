@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import DramaticAgentCard from '@/components/enhanced/DramaticAgentCard';
+import AgentTradingCard from '@/components/cards/AgentTradingCard';
 import { mockAgents } from '@/lib/mockData';
 import { GitBranch, Star, Network, Activity, TrendingUp, Award, BarChart3, Plus, User, Bot, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -13,9 +13,116 @@ import NeuralGrid from '@/components/backgrounds/NeuralGrid';
 import KeyOrb from '@/components/visuals/KeyOrb';
 import LiveMarketStrip from '@/components/market/LiveMarketStrip';
 
-export default function ExplorePage() {
+// Transform mock agents to card format
+const mockAgentCards = [
+  {
+    address: "oshi-flagship",
+    name: "Oshi",
+    symbol: "OS",
+    category: "Trading",
+    description: "Professional trading signals with 92% win rate. Real-time analysis and market insights.",
+    performanceScore: 94,
+    isOnline: true,
+    change24h: 15.4,
+    rarity: 'LEGENDARY' as const,
+    totalSupply: 5,
+    mintedSupply: 5,
+    floorPrice: 15.2,
+    lastSale: 18.7,
+    holders: 5,
+    volume24h: 47.3
+  },
+  {
+    address: "research-os",
+    name: "Research OS",
+    symbol: "RO",
+    category: "Research", 
+    description: "Deep market research and analysis. Comprehensive reports on crypto sectors and trends.",
+    performanceScore: 89,
+    isOnline: true,
+    change24h: 8.7,
+    rarity: 'EPIC' as const,
+    totalSupply: 25,
+    mintedSupply: 12,
+    floorPrice: 3.8,
+    lastSale: 4.2,
+    holders: 12,
+    volume24h: 23.1
+  },
+  {
+    address: "meme-hunter",
+    name: "Meme Hunter",
+    symbol: "ME",
+    category: "Alerts",
+    description: "Real-time meme coin alerts with social sentiment analysis. Catch trends before they explode.",
+    performanceScore: 85,
+    isOnline: true,
+    change24h: -2.3,
+    rarity: 'RARE' as const,
+    totalSupply: 100,
+    mintedSupply: 47,
+    floorPrice: 0.9,
+    lastSale: 1.1,
+    holders: 47,
+    volume24h: 12.8
+  },
+  {
+    address: "audit-mesh",
+    name: "Audit Mesh",
+    symbol: "AM",
+    category: "Security",
+    description: "Smart contract auditing and vulnerability detection. Protect your DeFi investments.",
+    performanceScore: 91,
+    isOnline: true,
+    change24h: 12.1,
+    rarity: 'EPIC' as const,
+    totalSupply: 25,
+    mintedSupply: 7,
+    floorPrice: 2.4,
+    lastSale: 2.8,
+    holders: 7,
+    volume24h: 8.9
+  },
+  {
+    address: "trade-pilot",
+    name: "Trade Pilot",
+    symbol: "TP",
+    category: "Trading",
+    description: "Automated trading strategies with risk management. Set and forget trading solutions.",
+    performanceScore: 87,
+    isOnline: true,
+    change24h: 5.2,
+    rarity: 'RARE' as const,
+    totalSupply: 100,
+    mintedSupply: 23,
+    floorPrice: 1.3,
+    lastSale: 1.5,
+    holders: 23,
+    volume24h: 15.7
+  },
+  {
+    address: "alpha-scout",
+    name: "Alpha Scout",
+    symbol: "AS",
+    category: "Research",
+    description: "Early project discovery and alpha generation. Find the next big opportunities before everyone else.",
+    performanceScore: 88,
+    isOnline: false,
+    change24h: -1.8,
+    rarity: 'COMMON' as const,
+    totalSupply: 500,
+    mintedSupply: 156,
+    floorPrice: 0.2,
+    lastSale: 0.3,
+    holders: 156,
+    volume24h: 4.2
+  }
+];
+
+export default function CardCollectionPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const { connected } = useWallet();
+  const [selectedRarity, setSelectedRarity] = useState<string>('ALL');
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -123,26 +230,21 @@ export default function ExplorePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mockAgents.map((agent) => (
-              <DramaticAgentCard
+            {mockAgentCards.filter(card => {
+              const rarityMatch = selectedRarity === 'ALL' || card.rarity === selectedRarity;
+              return rarityMatch;
+            }).map((agent) => (
+              <AgentTradingCard
                 key={agent.address}
-                agent={{
-                  address: agent.address,
-                  name: agent.name,
-                  symbol: agent.symbol,
-                  category: agent.category,
-                  description: agent.description,
-                  totalKeys: agent.totalKeys,
-                  holders: agent.holders,
-                  performanceScore: agent.performanceScore || 85,
-                  isOnline: true,
-                  change24h: 5.2 // Mock positive change
+                agent={agent}
+                userCards={0} // Default to no cards owned (in real app, get from wallet)
+                onMint={(agentId, rarity) => {
+                  console.log(`Mint ${rarity} card for agent ${agentId}`);
+                  alert(`Minting ${rarity} card! 🃏`);
                 }}
-                userKeys={0} // Default to no keys owned (in real app, get from wallet)
-                onKeyPurchase={(agentId, tier) => {
-                  console.log(`Purchase ${tier} for ${agentId} - $${tier === 'BASIC' ? '5' : '15'}`);
-                  alert(`Would purchase ${tier} tier for ${agentId} - $${tier === 'BASIC' ? '5' : '15'}`);
-                  // In real app, trigger wallet transaction
+                onTrade={(agentId) => {
+                  console.log(`Trade card for agent ${agentId}`);
+                  alert(`Opening marketplace for ${agentId} cards! 🏪`);
                 }}
               />
             ))}

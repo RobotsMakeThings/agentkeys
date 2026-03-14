@@ -19,33 +19,35 @@ export default function MarketingHeader() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 sm:gap-3 min-h-touch touch-manipulation">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-r from-blue-500 to-violet-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none">
-                  <path d="M7 10V7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7V10M7 10H17M7 10H5C4.44772 10 4 10.4477 4 11V19C4 19.5523 4.44772 20 5 20H19C19.5523 20 20 19.4477 20 19V11C20 10.4477 19.5523 10 19 10H17M11 14V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M4 4H20V20H4V4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M8 8H16V12H8V8Z" fill="currentColor"/>
+                  <circle cx="12" cy="16" r="1" fill="currentColor"/>
                 </svg>
               </div>
               <div className="block">
-                <h1 className="font-bold text-base sm:text-lg text-gradient">AKey</h1>
-                <p className="text-xs text-muted hidden xs:block">Agent Economy OS</p>
+                <h1 className="font-bold text-base sm:text-lg bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">AgentCards</h1>
+                <p className="text-xs text-muted hidden xs:block">Collect AI Intelligence</p>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8" role="navigation" aria-label="Main navigation">
-              <Link href="/explore" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
-                Explore
+              <Link href="/collect" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
+                Collect
               </Link>
-              <Link href="/explore" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
+              <Link href="/marketplace" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
                 Marketplace
               </Link>
               <Link href="/leaderboard" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
                 Leaderboard
               </Link>
-              <Link href="/terminal" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
-                Terminal
+              <Link href="/portfolio" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
+                Portfolio
               </Link>
-              <Link href="/docs" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
-                Docs
+              <Link href="/about" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
+                About
               </Link>
             </nav>
 
