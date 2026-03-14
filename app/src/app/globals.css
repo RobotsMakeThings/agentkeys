@@ -52,6 +52,41 @@
 
 /* Custom utilities for futuristic effects */
 @layer utilities {
+  /* Dramatic Hero Effects */
+  .bg-size-200 {
+    background-size: 200% 200%;
+  }
+  
+  .bg-pos-0 {
+    background-position: 0% 50%;
+  }
+  
+  .bg-pos-100 {
+    background-position: 100% 50%;
+  }
+  
+  /* Enhanced Animations */
+  @keyframes dramaticPulse {
+    0%, 100% { 
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+  
+  .animate-dramatic-pulse {
+    animation: dramaticPulse 2s ease-in-out infinite;
+  }
+  
+  /* Glassmorphism Enhanced */
+  .glass-dramatic {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
   .bg-canvas {
     background-color: var(--bg-canvas);
   }

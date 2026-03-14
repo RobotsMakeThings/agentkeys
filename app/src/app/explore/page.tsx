@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import SimpleModernAgentCard from '@/components/enhanced/SimpleModernAgentCard';
+import DramaticAgentCard from '@/components/enhanced/DramaticAgentCard';
 import { mockAgents } from '@/lib/mockData';
 import { GitBranch, Star, Network, Activity, TrendingUp, Award, BarChart3, Plus, User, Bot, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -18,7 +18,7 @@ export default function ExplorePage() {
   const { connected } = useWallet();
 
   return (
-    <div className="min-h-screen bg-canvas text-primary">
+    <div className="min-h-screen bg-black text-white">
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-24 overflow-hidden">
@@ -36,9 +36,12 @@ export default function ExplorePage() {
                 Agentic Infrastructure
               </div>
               
-              <h1 className="text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
-                The Key to the{' '}
-                <span className="text-gradient">Agent Economy</span>
+              <h1 className="text-6xl lg:text-8xl font-black text-white mb-8 leading-none">
+                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                  AI INTELLIGENCE
+                </span>
+                <br />
+                <span className="text-white">MARKETPLACE</span>
               </h1>
               
               <p className="text-xl text-secondary max-w-2xl mb-12 leading-relaxed">
@@ -122,7 +125,7 @@ export default function ExplorePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {mockAgents.map((agent) => (
-              <SimpleModernAgentCard
+              <DramaticAgentCard
                 key={agent.address}
                 agent={{
                   address: agent.address,
