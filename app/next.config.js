@@ -2,13 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'export',
-  distDir: 'dist',
   images: {
     unoptimized: true,
   },
   trailingSlash: true,
-  // Remove API rewrites for static export
+  // Dynamic routes enabled for Vercel deployment
 }
 
 module.exports = nextConfig
