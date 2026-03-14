@@ -35,17 +35,25 @@ interface AgentTradingCardProps {
     lastSale: number;
     holders: number;
     volume24h: number;
+    // Optional marketplace properties
+    listingPrice?: number;
+    seller?: string;
+    ownedQuantity?: number;
   };
   userCards?: number;
   onMint?: (agentId: string, rarity: string) => void;
   onTrade?: (agentId: string) => void;
+  buttonText?: string; // Custom button text
+  context?: 'mint' | 'marketplace' | 'portfolio';
 }
 
 export default function AgentTradingCard({ 
   agent, 
   userCards = 0, 
   onMint,
-  onTrade 
+  onTrade,
+  buttonText,
+  context = 'mint'
 }: AgentTradingCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
@@ -296,7 +304,11 @@ export default function AgentTradingCard({
                 min-h-[44px] touch-manipulation
               `}
             >
-              {isMinting ? 'MINTING...' : `MINT ${agent.floorPrice.toFixed(1)} SOL`}
+              {isMinting ? 'PROCESSING...' : 
+               buttonText || 
+               (context === 'marketplace' ? `BUY ${(agent.listingPrice || agent.floorPrice).toFixed(1)} SOL` :
+                context === 'portfolio' ? 'LIST FOR SALE' :
+                `MINT ${agent.floorPrice.toFixed(1)} SOL`)}
             </button>
           ) : (
             <div className="w-full px-4 py-3 rounded-xl bg-gray-700/50 text-gray-400 font-bold text-sm text-center">

@@ -46,6 +46,9 @@ export default function MarketingHeader() {
               <Link href="/portfolio" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
                 Portfolio
               </Link>
+              <Link href="/bonding-demo" className="text-blue-400 hover:text-blue-300 transition-colors min-h-touch flex items-center">
+                NEW System
+              </Link>
               <Link href="/about" className="text-secondary hover:text-primary transition-colors min-h-touch flex items-center">
                 About
               </Link>
