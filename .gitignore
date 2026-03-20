@@ -1,0 +1,25 @@
+# Agent Runtime Files
+*.log
+*.tmp
+__pycache__/
+.env
+.DS_Store
+node_modules/
+*.pid
+
+# Sensitive Data
+*key*
+*token*
+*secret*
+credentials/
+auth/
+.env.local
+
+# Large Data Files
+data/*.json
+data/*.csv
+logs/
+cache/
+
+# Local Netlify folder
+.netlify
