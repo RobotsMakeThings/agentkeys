@@ -68,7 +68,7 @@ export default function MintPage() {
       
       setMessage({ 
         type: 'success', 
-        text: `Collection "${collection.name}" created successfully! Collection ID: ${collection.id}` 
+        text: `Collection "${(collection as any).name}" created successfully! Collection ID: ${(collection as any).id}` 
       })
       
       // Reset form
