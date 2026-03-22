@@ -1,11 +1,12 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import SkillCard from '@/components/ui/SkillCard'
 
 export default function HeroCard() {
   const panelRef = useRef<HTMLDivElement>(null)
   const tiltRef = useRef<HTMLDivElement>(null)
-  const artRef = useRef<HTMLImageElement>(null)
+  const artRef = useRef<HTMLDivElement>(null)
   const [summoned, setSummoned] = useState(false)
   const [summoning, setSummoning] = useState(false)
 
@@ -166,19 +167,18 @@ export default function HeroCard() {
               willChange: 'transform',
             }}
           >
-            <img
-              ref={artRef}
-              src="/images/card-oshi.webp"
-              alt="Oshi — Oracle of Signal"
-              style={{
-                width: '100%', display: 'block', borderRadius: 24,
-                boxShadow: '0 0 70px rgba(139,92,246,.22)',
-                transition: 'transform .18s var(--ease-premium), filter .18s ease, box-shadow .18s ease',
-                transformOrigin: 'center center',
-                willChange: 'transform',
-                position: 'relative', zIndex: 1,
-              }}
-            />
+            <div ref={artRef} style={{ position: 'relative', zIndex: 1 }}>
+              <SkillCard
+                artImageUrl="/images/card-oshi.webp"
+                name="Oshi"
+                subtitle="Oracle of Signal"
+                rarityTier="legendary"
+                serial="AK-001"
+                size="lg"
+                interactive={true}
+                skillTags={[]}
+              />
+            </div>
             <div className="hero-holo" />
             <div className="hero-glare" />
             <div className="hero-edge" />

@@ -6,6 +6,7 @@ import { api } from '../../lib/api'
 import type { Collection } from '../../types/agentkeys'
 import AgentKeysBadge from '../../components/ui/AgentKeysBadge'
 import { computeBadgeStateFull } from '@/lib/verification'
+import SkillCard from '@/components/ui/SkillCard'
 
 interface LookupAgent {
   id: string
@@ -265,8 +266,19 @@ export default function LookupPage() {
             }
           </div>
 
-          {/* Holo card preview — decorative, keep as-is */}
-          <HoloCard img="/images/card-oshi.webp" />
+          {/* Holo card preview */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
+            <SkillCard
+              artImageUrl="/images/card-oshi.webp"
+              name="Oshi"
+              subtitle="Oracle of Signal"
+              rarityTier="legendary"
+              serial="AK-001"
+              size="md"
+              interactive={true}
+              skillTags={[]}
+            />
+          </div>
         </div>
 
         {/* Trending */}

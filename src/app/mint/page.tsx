@@ -3,7 +3,8 @@ import { useRef, useEffect, useState } from 'react'
 import SiteShell from '../../components/SiteShell'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { api } from '../../lib/api'
-import type { Collection } from '../../types/agentkeys'
+import type { Collection, RarityTier } from '../../types/agentkeys'
+import SkillCard from '@/components/ui/SkillCard'
 
 function MintVisual() {
   const panelRef = useRef<HTMLDivElement>(null)
@@ -76,12 +77,20 @@ function MintVisual() {
   )
 }
 
-const FAN_CARDS = [
-  { img: '/images/card-oshi.webp', rot: -24, tx: -80 },
-  { img: '/images/card-sora.webp', rot: -10, tx: -36 },
-  { img: '/images/card-nova.webp', rot: 2, tx: 0 },
-  { img: '/images/card-4.webp', rot: 14, tx: 36 },
-  { img: '/images/card-5.webp', rot: 26, tx: 80 },
+const FAN_CARDS: Array<{
+  img: string
+  rot: number
+  tx: number
+  name: string
+  subtitle: string
+  rarityTier: RarityTier
+  serial: string
+}> = [
+  { img: '/images/card-oshi.webp', rot: -24, tx: -80, name: 'Oshi', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001' },
+  { img: '/images/card-sora.webp', rot: -10, tx: -36, name: 'Sora', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002' },
+  { img: '/images/card-nova.webp', rot: 2, tx: 0, name: 'Nova', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003' },
+  { img: '/images/card-4.webp', rot: 14, tx: 36, name: 'Kira', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004' },
+  { img: '/images/card-5.webp', rot: 26, tx: 80, name: 'Axe', subtitle: 'Protocol Handler', rarityTier: 'basic', serial: 'AK-005' },
 ]
 
 export default function MintPage() {
@@ -169,14 +178,19 @@ export default function MintPage() {
           <div style={{ display: 'flex', justifyContent: 'center', gap: 8, perspective: 900, marginBottom: 20, animation: 'fanBob 6s ease-in-out infinite' }}>
             {FAN_CARDS.map((c, i) => (
               <div key={i} style={{
-                width: 120, flexShrink: 0,
+                flexShrink: 0,
                 transform: `rotate(${c.rot}deg) translateX(${c.tx * 0.3}px)`,
-                borderRadius: 14, overflow: 'hidden',
-                boxShadow: '0 0 28px rgba(139,92,246,.14)',
-                border: '1px solid rgba(255,255,255,.1)',
                 animationDelay: `${i * 0.15}s`,
               }}>
-                <img src={c.img} alt="" style={{ width: '100%', display: 'block' }} />
+                <SkillCard
+                  artImageUrl={c.img}
+                  name={c.name}
+                  subtitle={c.subtitle}
+                  rarityTier={c.rarityTier}
+                  serial={c.serial}
+                  size="sm"
+                  skillTags={[]}
+                />
               </div>
             ))}
           </div>

@@ -1,12 +1,21 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import SkillCard from '@/components/ui/SkillCard'
+import type { RarityTier } from '@/types/agentkeys'
 
-const CARDS = [
-  { img: '/images/card-oshi.webp', name: 'Oshi', sub: 'Oracle of Signal · Legendary' },
-  { img: '/images/card-sora.webp', name: 'Sora', sub: 'Signal Weaver · Epic' },
-  { img: '/images/card-nova.webp', name: 'Nova', sub: 'Data Architect · Rare' },
-  { img: '/images/card-4.webp', name: 'Kira', sub: 'Market Oracle · Legendary' },
-  { img: '/images/card-5.webp', name: 'Axe', sub: 'Protocol Handler · Common' },
+const CARDS: Array<{
+  img: string
+  name: string
+  sub: string
+  subtitle: string
+  rarityTier: RarityTier
+  serial: string
+}> = [
+  { img: '/images/card-oshi.webp', name: 'Oshi', sub: 'Oracle of Signal · Legendary', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001' },
+  { img: '/images/card-sora.webp', name: 'Sora', sub: 'Signal Weaver · Epic', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002' },
+  { img: '/images/card-nova.webp', name: 'Nova', sub: 'Data Architect · Rare', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003' },
+  { img: '/images/card-4.webp', name: 'Kira', sub: 'Market Oracle · Uncommon', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004' },
+  { img: '/images/card-5.webp', name: 'Axe', sub: 'Protocol Handler · Basic', subtitle: 'Protocol Handler', rarityTier: 'basic', serial: 'AK-005' },
 ]
 
 export default function CardCarousel() {
@@ -92,7 +101,15 @@ export default function CardCarousel() {
       >
         {CARDS.map((card, i) => (
           <div key={i} className="carousel-item">
-            <img src={card.img} alt={card.name} />
+            <SkillCard
+              artImageUrl={card.img}
+              name={card.name}
+              subtitle={card.subtitle}
+              rarityTier={card.rarityTier}
+              serial={card.serial}
+              size="sm"
+              skillTags={[]}
+            />
           </div>
         ))}
       </div>

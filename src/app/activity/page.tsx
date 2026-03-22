@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react'
 import SiteShell from '../../components/SiteShell'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { api } from '../../lib/api'
-import type { Transaction } from '../../types/agentkeys'
+import type { Transaction, RarityTier } from '../../types/agentkeys'
+import SkillCard from '@/components/ui/SkillCard'
 
-const TOP_MOVERS = [
-  { img: '/images/card-oshi.webp', name: 'Oshi', change: '+24.6%', up: true },
-  { img: '/images/card-4.webp', name: 'Kira', change: '+18.2%', up: true },
-  { img: '/images/card-sora.webp', name: 'Sora', change: '+8.9%', up: true },
-  { img: '/images/card-nova.webp', name: 'Nova', change: '-3.1%', up: false },
+const TOP_MOVERS: Array<{ img: string; name: string; subtitle: string; rarityTier: RarityTier; serial: string; change: string; up: boolean }> = [
+  { img: '/images/card-oshi.webp', name: 'Oshi', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001', change: '+24.6%', up: true },
+  { img: '/images/card-4.webp', name: 'Kira', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004', change: '+18.2%', up: true },
+  { img: '/images/card-sora.webp', name: 'Sora', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002', change: '+8.9%', up: true },
+  { img: '/images/card-nova.webp', name: 'Nova', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003', change: '-3.1%', up: false },
 ]
 
 const FILTERS = ['All', 'Sales', 'Listings', 'Mints', 'Transfers']
@@ -209,7 +210,15 @@ export default function ActivityPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {TOP_MOVERS.map((m, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <img src={m.img} alt={m.name} style={{ width: 40, height: 40, borderRadius: 10, objectFit: 'cover' }} />
+                    <SkillCard
+                      artImageUrl={m.img}
+                      name={m.name}
+                      subtitle={m.subtitle}
+                      rarityTier={m.rarityTier}
+                      serial={m.serial}
+                      size="thumb"
+                      skillTags={[]}
+                    />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 800, fontSize: 14 }}>{m.name}</div>
                     </div>
