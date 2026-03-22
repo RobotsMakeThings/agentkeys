@@ -101,8 +101,7 @@ export default function SkillCard({
             display: 'block',
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center center',
+            objectFit: 'fill', /* images are exact 2:3 match — fill without any cropping */
           }}
         />
       ) : (
