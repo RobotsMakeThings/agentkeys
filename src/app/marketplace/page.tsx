@@ -50,13 +50,13 @@ export default function MarketplacePage() {
     <SiteShell>
       <div className="panel section-pad page-enter" style={{ marginTop: 26 }}>
         {/* Head */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'flex-end', marginBottom: 26 }}>
+        <div className="stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'flex-end', marginBottom: 26 }}>
           <div>
             <div className="section-label" style={{ marginBottom: 8 }}>Marketplace</div>
             <h2 style={{ fontSize: 52, lineHeight: 1, letterSpacing: '-.05em', margin: '0 0 10px', fontWeight: 900 }}>KeyCard Market</h2>
             <p style={{ color: 'var(--muted)', margin: 0, fontSize: 16 }}>Trade AI agent skill access as digital collectibles on Solana.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          <div className="four-col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
             {[
               { label: 'Floor', value: floorPrice != null ? `${floorPrice} SOL` : '—' },
               { label: '24h Volume', value: '42.8 SOL' }, // no route available
@@ -72,7 +72,7 @@ export default function MarketplacePage() {
         </div>
 
         {/* Hero grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr .8fr', gap: 22, marginBottom: 22 }}>
+        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr .8fr', gap: 22, marginBottom: 22 }}>
           {/* Spotlight */}
           <div className="panel" style={{ padding: 24 }}>
             {collectionsLoading

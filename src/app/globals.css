@@ -521,6 +521,58 @@ body::before {
   .four-col-grid { grid-template-columns: 1fr 1fr !important; }
 }
 
+@media (max-width: 767px) {
+  /* Grid collapses */
+  .four-col-grid { grid-template-columns: 1fr 1fr !important; }
+  .two-col-grid { grid-template-columns: 1fr !important; }
+  .three-col-grid { grid-template-columns: 1fr !important; }
+
+  /* Architecture flow — stack vertically */
+  .arch-flow { grid-template-columns: 1fr !important; }
+  .arch-flow > div[style*="22"] { display: none !important; } /* hide arrows */
+
+  /* Layout utilities */
+  .hide-mobile { display: none !important; }
+  .stack-mobile { flex-direction: column !important; }
+  .full-width-mobile { width: 100% !important; max-width: 100% !important; }
+
+  /* Panel padding */
+  .panel { padding: 16px !important; }
+  .section-pad { padding: 16px !important; }
+
+  /* Nav */
+  .nav-links { display: none !important; }
+
+  /* Page enter padding */
+  .page-enter { padding-left: 0 !important; padding-right: 0 !important; }
+
+  /* Typography */
+  .wrap { padding: 0 16px 40px; }
+  h1 { font-size: 42px !important; }
+  h2 { font-size: 32px !important; }
+
+  /* Hero ghost cards hidden on mobile */
+  .hero-ghost { display: none !important; }
+
+  /* Carousel shell height on mobile */
+  .carousel-shell { height: 340px !important; }
+
+  /* Tap targets — ensure min 44px */
+  .btn { min-height: 44px; }
+  .chip { min-height: 44px; padding: 12px 14px !important; }
+  .nav-link { min-height: 44px; display: flex !important; align-items: center; }
+}
+
+@media (min-width: 768px) {
+  /* Hide hamburger on desktop */
+  .nav-hamburger { display: none !important; }
+  .nav-mobile-menu { display: none !important; }
+}
+
+@media (max-width: 1023px) {
+  .four-col-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
 @media (max-width: 700px) {
   .wrap { padding: 0 16px 40px; }
   .section-pad { padding: 20px; }

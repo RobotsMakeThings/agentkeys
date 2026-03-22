@@ -73,7 +73,7 @@ export default function DevelopersPage() {
     <SiteShell>
       <div className="panel section-pad page-enter" style={{ marginTop: 26 }}>
         {/* Head */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'flex-end', marginBottom: 26 }}>
+        <div className="stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'flex-end', marginBottom: 26 }}>
           <div>
             <div className="section-label" style={{ color: 'rgba(96,165,250,.58)', marginBottom: 8 }}>Developer Tools</div>
             <h2 style={{ fontSize: 52, lineHeight: 1, letterSpacing: '-.05em', margin: '0 0 10px', fontWeight: 900 }}>Build on AgentKeys</h2>
@@ -81,7 +81,7 @@ export default function DevelopersPage() {
               Integrate AI agent skill verification into any app. Open API, TypeScript SDK, and full documentation.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          <div className="three-col-grid full-width-mobile" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
             {[
               { label: 'Agents', value: agentCount != null ? String(agentCount) : '127' },
               { label: 'API Calls/day', value: '42.8K' }, // no route available
@@ -98,7 +98,7 @@ export default function DevelopersPage() {
         {/* Architecture */}
         <div className="panel" style={{ padding: 24, marginBottom: 18 }}>
           <h3 style={{ fontSize: 20, margin: '0 0 16px', fontWeight: 800 }}>Architecture Flow</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 10, alignItems: 'center', marginBottom: 14 }}>
+          <div className="arch-flow" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 10, alignItems: 'center', marginBottom: 14 }}>
             {[
               { label: 'Wallet', sub: 'SOL / NFT auth' },
               null,

@@ -1,9 +1,11 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 export default function Navbar() {
   const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const links = [
     { href: '/', label: 'Home' },
@@ -19,7 +21,7 @@ export default function Navbar() {
   return (
     <header style={{
       position: 'sticky', top: 0, zIndex: 1000,
-      background: 'rgba(4,3,10,.82)', backdropFilter: 'blur(18px)',
+      background: 'rgba(4,3,10,.92)', backdropFilter: 'blur(18px)',
       borderBottom: '1px solid rgba(255,255,255,.05)',
     }}>
       <nav style={{
@@ -43,7 +45,7 @@ export default function Navbar() {
           <span>AgentKeys</span>
         </Link>
 
-        {/* Links */}
+        {/* Desktop Links */}
         <div className="nav-links" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           {links.map(l => (
             <Link
@@ -56,16 +58,76 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Badge */}
-        <div style={{
-          padding: '10px 14px', borderRadius: 12,
-          fontSize: 12, fontWeight: 800, color: '#34d399',
-          background: 'rgba(52,211,153,.08)', border: '1px solid rgba(52,211,153,.14)',
-          whiteSpace: 'nowrap',
-        }}>
-          4 Agents Live
+        {/* Right side */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Badge */}
+          <div className="hide-mobile" style={{
+            padding: '10px 14px', borderRadius: 12,
+            fontSize: 12, fontWeight: 800, color: '#34d399',
+            background: 'rgba(52,211,153,.08)', border: '1px solid rgba(52,211,153,.14)',
+            whiteSpace: 'nowrap',
+          }}>
+            4 Agents Live
+          </div>
+
+          {/* Hamburger */}
+          <button
+            className="nav-hamburger"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+            style={{
+              background: 'rgba(255,255,255,.06)',
+              border: '1px solid rgba(255,255,255,.1)',
+              borderRadius: 10,
+              color: '#f5f2ef',
+              cursor: 'pointer',
+              fontSize: 20,
+              padding: '8px 12px',
+              lineHeight: 1,
+              minWidth: 44,
+              minHeight: 44,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {mobileOpen ? '✕' : '☰'}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile dropdown */}
+      {mobileOpen && (
+        <div className="nav-mobile-menu" style={{
+          background: 'rgba(4,3,10,.98)',
+          borderTop: '1px solid rgba(255,255,255,.06)',
+          padding: '12px 20px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}>
+          {links.map(l => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={`nav-link${pathname === l.href ? ' active' : ''}`}
+              onClick={() => setMobileOpen(false)}
+              style={{ display: 'block', padding: '12px 16px' }}
+            >
+              {l.label}
+            </Link>
+          ))}
+          <div style={{
+            marginTop: 8,
+            padding: '10px 14px', borderRadius: 12,
+            fontSize: 12, fontWeight: 800, color: '#34d399',
+            background: 'rgba(52,211,153,.08)', border: '1px solid rgba(52,211,153,.14)',
+            textAlign: 'center',
+          }}>
+            4 Agents Live
+          </div>
+        </div>
+      )}
     </header>
   )
 }

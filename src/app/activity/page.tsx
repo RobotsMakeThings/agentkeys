@@ -84,7 +84,7 @@ export default function ActivityPage() {
               <span style={{ fontWeight: 800, fontSize: 14, color: '#34d399' }}>Live Market Signal</span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 18 }}>
+            <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 18 }}>
               {[
                 { label: 'Floor Price', value: '1.82 SOL', change: '+2.4%', up: true },
                 { label: 'Avg Sale', value: '0.84 SOL', change: '+6.8%', up: true },

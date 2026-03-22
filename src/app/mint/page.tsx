@@ -175,7 +175,7 @@ export default function MintPage() {
             <h3 style={{ fontSize: 28, margin: 0, fontWeight: 900, letterSpacing: '-.04em' }}>Pack Contents</h3>
             <div style={{ fontSize: 13, color: 'var(--muted)' }}>5 cards per pack</div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, perspective: 900, marginBottom: 20, animation: 'fanBob 6s ease-in-out infinite' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, perspective: 900, marginBottom: 20, animation: 'fanBob 6s ease-in-out infinite', overflowX: 'auto', paddingBottom: 8 }}>
             {FAN_CARDS.map((c, i) => (
               <div key={i} style={{
                 flexShrink: 0,
@@ -231,7 +231,7 @@ export default function MintPage() {
         </div>
 
         {/* Trust */}
-        <div className="panel" style={{ padding: 24, display: 'flex', justifyContent: 'center', gap: 40 }}>
+        <div className="panel stack-mobile" style={{ padding: 24, display: 'flex', justifyContent: 'center', gap: 40, flexWrap: 'wrap' }}>
           {['On-chain Verified', 'Instant Delivery', 'Solana Devnet', 'Open Source'].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: 'var(--muted)' }}>
               <span style={{ color: '#34d399' }}>✓</span> {t}

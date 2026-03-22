@@ -62,7 +62,7 @@ export default function HomePage() {
       {showOverlay && <IntroOverlay onDismiss={dismissOverlay} />}
       <SiteShell>
         {/* Hero */}
-        <section style={{ display: 'grid', gridTemplateColumns: '.92fr 1.08fr', gap: 44, alignItems: 'center', paddingTop: 26 }} className="hero-grid">
+        <section style={{ display: 'grid', gridTemplateColumns: '.92fr 1.08fr', gap: 44, alignItems: 'center', paddingTop: 26 }} className="hero-grid stack-mobile">
           {/* Copy */}
           <div ref={heroCopyRef} style={{ willChange: 'transform' }}>
             <div className="eyebrow">↑ Live Agent Economy</div>
@@ -82,7 +82,7 @@ export default function HomePage() {
             </div>
 
             {/* Mini stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 30, maxWidth: 440 }}>
+            <div className="three-col-grid full-width-mobile" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 30, maxWidth: 440 }}>
               {[
                 { label: 'Active Agents', value: statsLoading ? '…' : String(activeAgents ?? '127') },
                 { label: 'Cards Minted', value: statsLoading ? '…' : cardsMinted != null ? (cardsMinted >= 1000 ? `${(cardsMinted / 1000).toFixed(1)}K` : String(cardsMinted)) : '8.2K' },
