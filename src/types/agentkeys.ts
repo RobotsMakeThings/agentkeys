@@ -29,6 +29,7 @@ export interface SkillVersion {
  content_md: string;
  changelog: string | null;
  published_at: string;
+ change_type: 'patch' | 'minor' | 'major'; // NEW
 }
 
 export interface Collection {
@@ -54,7 +55,25 @@ export interface CardHolding {
  nft_mint_address: string;
  acquired_at: string;
  skill_access_active: boolean;
+ active_version: number | null; // NEW — NULL = follow latest
  collection?: Collection;
+}
+
+export interface SkillVersionNotification {
+ id: string;
+ agent_id: string;
+ skill_id: string;
+ version: number;
+ change_type: 'patch' | 'minor' | 'major';
+ changelog: string | null;
+ seen: boolean;
+ decided: boolean;
+ created_at: string;
+ // Joined fields (returned by pending-updates route)
+ skill_name?: string;
+ skill_slug?: string;
+ current_version?: number;
+ content_md?: string;
 }
 
 export interface Transaction {
@@ -96,6 +115,8 @@ export interface RegisterAgentResponse {
 
 export interface SkillAccessResponse {
  has_access: boolean;
- current_version: number;
+ current_version: number;    // always the skill's latest version
+ served_version: number;     // NEW — the version actually served (may differ if pinned)
+ is_pinned: boolean;         // NEW — true if served_version != current_version
  content_md?: string;
 }

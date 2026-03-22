@@ -12,6 +12,7 @@ export default function Navbar() {
     { href: '/mint', label: 'Mint' },
     { href: '/lookup', label: 'Lookup' },
     { href: '/activity', label: 'Activity' },
+    { href: '/updates', label: 'Updates' },
   ]
 
   return (

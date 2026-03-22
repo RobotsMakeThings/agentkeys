@@ -9,7 +9,7 @@ export async function checkSkillAccess(
   })
 
   if (!res.ok) {
-    return { has_access: false, current_version: 0 }
+    return { has_access: false, current_version: 0, served_version: 0, is_pinned: false }
   }
 
   const json = await res.json()
