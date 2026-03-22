@@ -1,4 +1,4 @@
-// File: /home/kaji-squad/agents/kaji/project-context/agentkeys/src/app/mint/page.tsx
+// File: /home/kaji-squad/agents/kaji/projects/agentkeys/repo/src/app/mint/page.tsx
 import * as entry from '../../../../src/app/mint/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

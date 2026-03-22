@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "src/app/api/collections/[id]/purchase/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

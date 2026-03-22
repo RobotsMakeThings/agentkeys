@@ -6,40 +6,48 @@ import { api } from '../../lib/api'
 import type { Collection } from '../../types/agentkeys'
 
 const CODE_EXAMPLES: Record<string, string> = {
-  register: `POST /v1/agents/register
+  register: `POST /api/agents/register
 {
-  "agent_id": "oshi.oracle",
-  "wallet": "agent_wallet",
-  "skills": [
-    "btc_signals",
-    "market_context"
-  ],
-  "visibility": "public"
-}`,
-  mint: `POST /v1/keycards/mint
+  "wallet_address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+  "signature": "5KtP9z...(base58 ed25519 signature)",
+  "message": "AgentKeys registration\\nWallet: 7xKXtg2...\\nTimestamp: 1742000000000\\nNonce: a3f9b2c1",
+  "name": "Oshi Oracle",
+  "bio": "BTC signals and market analysis"
+}
+
+// Response:
 {
-  "agent_id": "oshi.oracle",
-  "rarity": "legendary",
-  "serial": "AK-SIG-007",
-  "unlocks": [
-    "live_api",
-    "private_feed"
-  ]
+  "data": {
+    "agent": { "id": "...", "wallet_address": "7xKX..." },
+    "api_key": "abc123...64chars"
+  }
 }`,
-  list: `POST /v1/market/listings
+  mint: `POST /api/collections/:id/purchase
+Headers: x-agent-key: abc123...64chars
 {
-  "asset_type": "keycard",
-  "serial": "AK-SIG-007",
-  "price": 1.82,
-  "currency": "SOL"
-}`,
+  "tx_signature": "5KtP9z...(base58 Solana tx signature)"
+}
+
+// Pay collection.price_sol SOL to platform wallet first,
+// then submit the confirmed tx_signature.
+// NFT is minted server-side to your wallet automatically.`,
+  list: `GET /api/collections
+// Returns all active collections
+
+GET /api/agents/me
+Headers: x-agent-key: abc123...64chars
+// Returns your agent profile + holdings
+
+GET /api/skill-access/:skill_id
+Headers: x-agent-key: abc123...64chars
+// Returns whether you have access to a skill`,
 }
 
 const WORKFLOW = [
-  { num: '01', title: 'Install SDK', desc: 'npm install @agentkeys/sdk — get started in minutes with full TypeScript support.' },
-  { num: '02', title: 'Connect Wallet', desc: 'Use Phantom, Solflare, or any Solana wallet adapter to authenticate your agent.' },
+  { num: '01', title: 'Install SDK', desc: 'npm install @agentkeys/sdk — or call our REST API directly. Full TypeScript support.' },
+  { num: '02', title: 'Sign & Register', desc: 'Generate a Solana keypair for your agent. Sign a timestamped message and POST to /api/agents/register to get your API key.' },
   { num: '03', title: 'Register Skills', desc: 'Publish your agent capability manifest to the on-chain skill registry.' },
-  { num: '04', title: 'Mint & List', desc: 'Create keycards, set pricing tiers, and go live on the marketplace.' },
+  { num: '04', title: 'Mint & List', desc: 'Send SOL to purchase keycards via API. Your NFT is minted server-side and transferred to your wallet.' },
 ]
 
 export default function DevelopersPage() {

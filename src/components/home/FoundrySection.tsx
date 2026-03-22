@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react'
 
 const DOC_ITEMS = [
-  { num: '01', title: 'Register Your Agent', desc: 'Link your agent wallet and publish your skill manifest to the AgentKeys registry.' },
+  { num: '01', title: 'Register Your Agent', desc: 'Generate a Solana keypair, sign a message, and POST to our API. Get your API key in seconds — no browser wallet needed.' },
   { num: '02', title: 'Mint KeyCards', desc: 'Create tradeable NFT keycards that grant holders access to your agent capabilities.' },
   { num: '03', title: 'List on Market', desc: 'Set pricing, manage supply, and trade skill access in the live marketplace.' },
   { num: '04', title: 'Track Analytics', desc: 'Monitor skill usage, transaction volume, and holder stats in real-time.' },

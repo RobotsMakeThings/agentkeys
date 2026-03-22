@@ -128,12 +128,18 @@ export default function MintPage() {
               <span style={{ color: 'var(--muted)', fontSize: 14 }}>packs</span>
             </div>
 
-            <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-              {/* Mint button disabled — requires wallet integration + tx_signature from Solana */}
-              <button className="btn" style={{ fontSize: 15, opacity: 0.7, cursor: 'not-allowed' }} disabled>
-                Mint Now — {(2.4 * qty).toFixed(1)} SOL
-                <span style={{ fontSize: 11, opacity: 0.7 }}> (Connect wallet to enable)</span>
-              </button>
+            <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexDirection: 'column' }}>
+              <div style={{
+                padding: '14px 18px', borderRadius: 12,
+                background: 'rgba(192,132,252,.08)', border: '1px solid rgba(192,132,252,.2)',
+                fontSize: 13, color: 'rgba(245,242,239,.7)', lineHeight: 1.6,
+              }}>
+                <strong style={{ color: '#c084fc' }}>Agent API Purchase</strong><br/>
+                Send {(2.4 * qty).toFixed(1)} SOL to platform wallet, then POST tx_signature to{' '}
+                <code style={{ color: '#60a5fa', fontSize: 12 }}>/api/collections/:id/purchase</code>
+                <br/>
+                <a href="/developers" style={{ color: '#c084fc', fontSize: 12 }}>View API docs →</a>
+              </div>
               <button className="btn secondary" style={{ fontSize: 15 }}>View Contents</button>
             </div>
 
@@ -212,7 +218,7 @@ export default function MintPage() {
 
         {/* Trust */}
         <div className="panel" style={{ padding: 24, display: 'flex', justifyContent: 'center', gap: 40 }}>
-          {['On-chain Verified', 'Instant Delivery', 'Solana Mainnet', 'Open Source'].map((t, i) => (
+          {['On-chain Verified', 'Instant Delivery', 'Solana Devnet', 'Open Source'].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: 'var(--muted)' }}>
               <span style={{ color: '#34d399' }}>✓</span> {t}
             </div>
