@@ -1,1 +1,1 @@
-{"version":1,"functions":{"/api/secondary/listings/[id]/purchase":{},"/api/collections/[id]/purchase":{}}}
+{"version":1,"functions":{"/api/collections/[id]/purchase":{},"/api/secondary/listings/[id]/purchase":{}}}

@@ -35,8 +35,8 @@ export default function CardCarousel() {
       if (!items) return
       const isMobile = window.innerWidth < 700
       const isTablet = window.innerWidth < 1100
-      const radiusX = isMobile ? 130 : isTablet ? 190 : 250
-      const radiusZ = isMobile ? 110 : isTablet ? 160 : 215
+      const radiusX = isMobile ? 160 : isTablet ? 260 : 360
+      const radiusZ = isMobile ? 120 : isTablet ? 200 : 280
       let frontIdx = 0, frontScore = -Infinity
 
       items.forEach((item, i) => {
@@ -87,7 +87,7 @@ export default function CardCarousel() {
       ref={shellRef}
       className="carousel-shell"
       style={{
-        position: 'relative', height: 680,
+        position: 'relative', height: 520,
         perspective: 1800, perspectiveOrigin: '50% 42%',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
@@ -95,7 +95,7 @@ export default function CardCarousel() {
       <div
         ref={carouselRef}
         style={{
-          position: 'relative', width: '100%', maxWidth: 1100, height: 620,
+          position: 'relative', width: '100%', maxWidth: 980, height: 460,
           transformStyle: 'preserve-3d',
         }}
       >
@@ -107,7 +107,7 @@ export default function CardCarousel() {
               subtitle={card.subtitle}
               rarityTier={card.rarityTier}
               serial={card.serial}
-              size="md"
+              size="sm"
               skillTags={card.tags}
             />
           </div>

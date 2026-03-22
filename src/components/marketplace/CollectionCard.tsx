@@ -53,7 +53,7 @@ export default function CollectionCard({ collection: c, onClick }: CollectionCar
       serial={c.serial_number ?? undefined}
       rarityTier={rarityTier}
       verifiedState={getBadgeState(c)}
-      size="md"
+      size="sm"
       interactive={interactive}
       onClick={onClick}
     />

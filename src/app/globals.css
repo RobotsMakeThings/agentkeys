@@ -377,7 +377,7 @@ body::before {
 /* Carousel */
 .carousel-item {
   position: absolute; left: 50%; top: 50%;
-  width: 300px; margin-left: -150px; margin-top: -225px;
+  width: 200px; margin-left: -100px; margin-top: -150px;
   transform-style: preserve-3d; will-change: transform, filter;
   transition: transform .28s var(--ease-premium), filter .28s ease;
   backface-visibility: hidden;
