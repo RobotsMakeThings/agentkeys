@@ -8,6 +8,7 @@ export default function Navbar() {
   const links = [
     { href: '/', label: 'Home' },
     { href: '/marketplace', label: 'Marketplace' },
+    { href: '/secondary', label: 'Market' },
     { href: '/developers', label: 'Developers' },
     { href: '/mint', label: 'Mint' },
     { href: '/lookup', label: 'Lookup' },

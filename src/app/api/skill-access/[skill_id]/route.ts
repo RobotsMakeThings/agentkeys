@@ -37,33 +37,71 @@ export async function GET(req: NextRequest, { params }: { params: { skill_id: st
     return successResponse(response)
   }
 
-  // Non-creator: find holding and check active_version
-  const { data: collections } = await supabaseAdmin
+  // Non-creator: check access via two paths
+  // Path A: Legacy — holds a collection directly linked to this skill (skill_id on collections)
+  // Path B: New — holds a skill set that contains this skill (via skill_set_members)
+
+  // --- Path A: Legacy single-skill collection holding ---
+  const { data: directCollections } = await supabaseAdmin
     .from('collections')
     .select('id')
     .eq('skill_id', params.skill_id)
 
-  const collectionIds = (collections ?? []).map((c: { id: string }) => c.id)
+  const directCollectionIds = (directCollections ?? []).map((c: { id: string }) => c.id)
 
-  if (collectionIds.length === 0) {
-    const response: SkillAccessResponse = {
-      has_access: false,
-      current_version: skill.current_version,
-      served_version: skill.current_version,
-      is_pinned: false,
-    }
-    return successResponse(response)
+  let holdingDirectPath: { id: string; active_version: number | null } | null = null
+
+  if (directCollectionIds.length > 0) {
+    const { data: dh } = await supabaseAdmin
+      .from('card_holdings')
+      .select('id, active_version')
+      .eq('owner_agent_id', auth.agentId)
+      .eq('skill_access_active', true)
+      .in('collection_id', directCollectionIds)
+      .single()
+    holdingDirectPath = dh ?? null
   }
 
-  const { data: holding } = await supabaseAdmin
-    .from('card_holdings')
-    .select('id, active_version')
-    .eq('owner_agent_id', auth.agentId)
-    .eq('skill_access_active', true)
-    .in('collection_id', collectionIds)
-    .single()
+  // --- Path B: Skill set membership ---
+  // Find skill sets that contain this skill
+  const { data: setMemberships } = await supabaseAdmin
+    .from('skill_set_members')
+    .select('skill_set_id')
+    .eq('skill_id', params.skill_id)
 
-  if (!holding) {
+  const skillSetIds = (setMemberships ?? []).map((m: any) => m.skill_set_id)
+
+  let holdingSetPath: { id: string; card_holding_id: string; active_version: number | null } | null = null
+
+  if (skillSetIds.length > 0) {
+    // Find a card_holding where owner = caller and skill_set_id in skillSetIds
+    const { data: setHolding } = await supabaseAdmin
+      .from('card_holdings')
+      .select('id, skill_set_id, skill_access_active')
+      .eq('owner_agent_id', auth.agentId)
+      .eq('skill_access_active', true)
+      .in('skill_set_id', skillSetIds)
+      .single()
+
+    if (setHolding) {
+      // Fetch per-skill version state from holding_skill_versions
+      const { data: hsv } = await supabaseAdmin
+        .from('holding_skill_versions')
+        .select('id, active_version')
+        .eq('card_holding_id', setHolding.id)
+        .eq('skill_id', params.skill_id)
+        .single()
+
+      holdingSetPath = hsv ? {
+        id: hsv.id,
+        card_holding_id: setHolding.id,
+        active_version: hsv.active_version,
+      } : null
+    }
+  }
+
+  // No access on either path
+  if (!holdingDirectPath && !holdingSetPath) {
     const response: SkillAccessResponse = {
       has_access: false,
       current_version: skill.current_version,
@@ -74,10 +112,10 @@ export async function GET(req: NextRequest, { params }: { params: { skill_id: st
   }
 
   // Determine which version to serve
-  // active_version === null → serve latest (current_version)
-  // active_version !== null → serve pinned version
-  const serveVersion = holding.active_version ?? skill.current_version
-  const isPinned = holding.active_version !== null && holding.active_version !== skill.current_version
+  // Prefer skill-set path if available (more granular); fall back to direct path
+  const activeVersion = holdingSetPath?.active_version ?? holdingDirectPath?.active_version ?? null
+  const serveVersion = activeVersion ?? skill.current_version
+  const isPinned = activeVersion !== null && activeVersion !== skill.current_version
 
   const { data: version, error: versionError } = await supabaseAdmin
     .from('skill_versions')
@@ -87,7 +125,7 @@ export async function GET(req: NextRequest, { params }: { params: { skill_id: st
     .single()
 
   if (versionError || !version) {
-    // Pinned version row missing — fall back to current_version
+    // Fallback to current version
     const { data: fallbackVersion } = await supabaseAdmin
       .from('skill_versions')
       .select('content_md')

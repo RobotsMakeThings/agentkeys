@@ -24,7 +24,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   // 2. Fetch collection details
   const { data: collection, error: collectionError } = await supabaseAdmin
     .from('collections')
-    .select('id, max_supply, minted_count, price_sol, agent_id, is_active, name, skill_id')
+    .select('id, max_supply, minted_count, price_sol, agent_id, is_active, name, skill_id, skill_set_id, rarity_tier')
     .eq('id', params.id)
     .single()
 
@@ -138,6 +138,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       owner_agent_id: auth.agentId,
       nft_mint_address: mintResult.mintAddress, // server-generated, not client-supplied
       skill_access_active: true,
+      skill_set_id: collection.skill_set_id ?? null,
+      acquired_via: 'mint',
     })
     .select()
     .single()
@@ -150,6 +152,36 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       collectionId: params.id,
     })
     return errorResponse('Failed to create holding record', 500)
+  }
+
+  // 9b. If this is a skill-set collection, create holding_skill_versions for each skill in the set
+  // This initializes per-skill version tracking for the new holder (all start as NULL = follow latest)
+  if (collection.skill_set_id) {
+    const { data: members } = await supabaseAdmin
+      .from('skill_set_members')
+      .select('skill_id')
+      .eq('skill_set_id', collection.skill_set_id)
+
+    if (members && members.length > 0) {
+      const versionRows = members.map((m: { skill_id: string }) => ({
+        card_holding_id: holding.id,
+        skill_id: m.skill_id,
+        active_version: null,  // follow latest by default
+      }))
+
+      const { error: versionError } = await supabaseAdmin
+        .from('holding_skill_versions')
+        .insert(versionRows)
+
+      if (versionError) {
+        // Non-fatal: holding was created; log for reconciliation
+        console.error('Failed to create holding_skill_versions on mint', {
+          holding_id: holding.id,
+          skill_set_id: collection.skill_set_id,
+          error: versionError,
+        })
+      }
+    }
   }
 
   // 10. Increment minted_count atomically
