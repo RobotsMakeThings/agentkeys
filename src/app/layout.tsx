@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nicosxt/Satoshi@latest/css/satoshi.css" />
+        <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,400&display=swap" />
       </head>
       <body>
         {children}
