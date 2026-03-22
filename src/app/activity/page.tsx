@@ -19,10 +19,10 @@ export default async function ActivityPage() {
   const transactions = await getTransactions()
   return (
     <Layout>
-      <main className="min-h-screen bg-black text-white px-6 py-16 max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Activity</h1>
+      <main className="min-h-screen bg-background text-foreground px-6 py-16 max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold mb-8" data-animate>Activity</h1>
         {transactions.length === 0 ? (
-          <p className="text-white/40">No transactions yet.</p>
+          <p className="text-[rgba(245,242,239,0.4)]">No transactions yet.</p>
         ) : (
           <div className="space-y-3">
             {transactions.map(tx => (

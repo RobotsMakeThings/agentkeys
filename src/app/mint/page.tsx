@@ -100,7 +100,7 @@ export default function MintPage() {
           className="mb-12"
         />
         
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto" data-animate>
           {message && (
             <div className={`mb-6 p-4 rounded-lg ${
               message.type === 'success' 
@@ -111,7 +111,7 @@ export default function MintPage() {
             </div>
           )}
           
-          <div className="bg-[rgba(255,255,255,.035)] border border-[rgba(255,255,255,.09)] rounded-lg p-8">
+          <div className="bg-[rgba(255,255,255,.035)] border border-[rgba(255,255,255,.09)] rounded-[18px] p-8" data-animate>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="skillName" className="block text-[#f5f2ef] font-medium mb-2">

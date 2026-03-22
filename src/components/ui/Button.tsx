@@ -16,7 +16,7 @@ export default function Button({
   disabled = false,
   ...props 
 }: ButtonProps) {
-  const baseClasses = 'font-medium rounded transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#9333ea] focus:ring-offset-2 focus:ring-offset-[#04030a] disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses = 'font-medium rounded-[14px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#9333ea] focus:ring-offset-2 focus:ring-offset-[#04030a] disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variantClasses = {
     primary: 'bg-gradient-to-r from-[#9333ea] to-[#ec4899] text-white hover:opacity-90',

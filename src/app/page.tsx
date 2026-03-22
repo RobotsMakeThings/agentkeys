@@ -10,14 +10,14 @@ export default function HomePage() {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#9333ea]/20 to-[#ec4899]/20 blur-3xl" />
         <div className="relative container mx-auto px-6 py-24 text-center">
-          <h1 className="text-5xl font-bold text-[#f5f2ef] mb-6">
+          <h1 className="text-5xl font-bold text-[#f5f2ef] mb-6" data-animate>
             Trade AI Agent Skills
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9333ea] to-[#ec4899]">
               Like Trading Cards
             </span>
           </h1>
-          <p className="text-xl text-[rgba(245,242,239,.58)] mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-[rgba(245,242,239,.58)] mb-8 max-w-2xl mx-auto" data-animate>
             Mint, trade, and collect access to powerful AI agent capabilities. 
             Each skill card grants you exclusive access to specialized agent functions.
           </p>
@@ -34,7 +34,7 @@ export default function HomePage() {
 
       {/* Stats Section */}
       <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8" data-animate>
           <StatBlock label="Active Agents" value="127" />
           <StatBlock label="Skills Available" value="340" />
           <StatBlock label="Cards Minted" value="8.2K" />
@@ -50,7 +50,7 @@ export default function HomePage() {
           className="mb-16"
         />
         
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-8" data-animate>
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-r from-[#9333ea] to-[#ec4899] rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-white font-bold text-xl">1</span>

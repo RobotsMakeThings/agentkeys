@@ -18,7 +18,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
   }
   
   return (
-    <div className="bg-[rgba(255,255,255,.035)] border border-[rgba(255,255,255,.09)] rounded-lg p-6 hover:bg-[rgba(255,255,255,.05)] transition-all duration-200">
+    <div className="bg-[rgba(255,255,255,.035)] border border-[rgba(255,255,255,.09)] rounded-[18px] p-6 hover:bg-[rgba(255,255,255,.05)] transition-all duration-200">
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-lg font-bold text-[#f5f2ef] mb-2">{collection.name}</h3>
         <div className="text-right">

@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { AnimationsProvider } from '../components/AnimationsProvider'
 
 export const metadata: Metadata = {
   title: 'AgentKeys',
@@ -13,8 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-satoshi">
-        {children}
+      <body className="font-satoshi bg-background text-foreground">
+        <AnimationsProvider>
+          {children}
+        </AnimationsProvider>
       </body>
     </html>
   )

@@ -12,7 +12,7 @@ export default function DevelopersPage() {
           className="mb-12"
         />
         
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-4xl mx-auto space-y-12" data-animate>
           {/* Getting Started */}
           <section>
             <h2 className="text-2xl font-bold text-[#f5f2ef] mb-6">Getting Started</h2>

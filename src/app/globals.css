@@ -1,10 +1,50 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap');
-
-html,
-body {
-  font-family: 'Satoshi', sans-serif;
+:root {
+  --bg: #04030a;
+  --accent-violet: #9333ea;
+  --accent-pink: #ec4899;
+  --accent-amber: #f59e0b;
+  --text: #f5f2ef;
+  --text-muted: rgba(245,242,239,.58);
+  --panel-bg: rgba(255,255,255,.035);
+  --panel-border: rgba(255,255,255,.09);
+  --ease-premium: cubic-bezier(.22,1,.36,1);
 }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-in {
+  animation: slideUp 0.6s var(--ease-premium) both;
+}
+
+.animate-fade {
+  animation: fadeIn 0.5s var(--ease-premium) both;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
