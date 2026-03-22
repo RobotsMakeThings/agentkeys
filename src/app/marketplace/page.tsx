@@ -5,6 +5,8 @@ import ListingCard from '../../components/marketplace/ListingCard'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { api } from '../../lib/api'
 import type { Collection, Transaction } from '../../types/agentkeys'
+import AgentKeysBadge from '../../components/ui/AgentKeysBadge'
+import { computeBadgeStateFull } from '@/lib/verification'
 
 const FILTERS = ['All', 'Signal', 'Climate', 'Analytics', 'Genesis']
 
@@ -92,9 +94,21 @@ export default function MarketplacePage() {
                       <div>
                         <div style={{ textTransform: 'uppercase', letterSpacing: '.2em', fontSize: 11, fontWeight: 800, color: '#f59e0b', marginBottom: 8 }}>✦ Featured</div>
                         <h3 style={{ fontSize: 36, margin: '0 0 6px', fontWeight: 900, letterSpacing: '-.04em' }}>{c.name}</h3>
-                        <p style={{ color: 'var(--muted)', fontSize: 14, margin: '0 0 14px' }}>
-                          {c.skill?.name ?? 'Skill'} · {c.agent?.name ?? 'Agent'}
-                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 14, margin: '0 0 14px' }}>
+                          <span>{c.skill?.name ?? 'Skill'} · {c.agent?.name ?? 'Agent'}</span>
+                          {c.agent && (
+                            <AgentKeysBadge
+                              state={computeBadgeStateFull(
+                                (c.agent as any).verification_status ?? 'unverified',
+                                (c.agent as any).is_active_creator ?? false,
+                                (c.agent as any).manual_review_approved_at ?? null,
+                                (c.agent as any).last_skill_update_at ?? null
+                              )}
+                              size="sm"
+                              showTooltip={true}
+                            />
+                          )}
+                        </div>
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
                           {[c.skill?.name, c.agent?.name, `v${c.skill?.current_version ?? 1}`].filter(Boolean).map(t => (
                             <span key={t} style={{ padding: '4px 8px', borderRadius: 999, border: '1px solid rgba(245,158,11,.2)', background: 'rgba(245,158,11,.06)', fontSize: 10, fontWeight: 700, color: '#f59e0b' }}>{t}</span>

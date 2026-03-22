@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { verifyApiKey, unauthorizedResponse, errorResponse, successResponse } from '@/lib/auth'
 import { getMaxSupplyForTier } from '@/types/agentkeys'
+import { checkVerificationGate } from '@/lib/verificationGate'
 
 // GET /api/collections — public marketplace listing
 export async function GET(req: NextRequest) {
@@ -15,7 +16,7 @@ export async function GET(req: NextRequest) {
     .from('collections')
     .select(`
       *,
-      agent:agents(id, name, avatar_url, wallet_address),
+      agent:agents(id, name, avatar_url, wallet_address, verification_status, is_active_creator, manual_review_approved_at, last_skill_update_at),
       skill:skills(id, name, slug, current_version)
     `)
     .eq('is_active', true)
@@ -37,6 +38,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const auth = await verifyApiKey(req)
   if (!auth) return unauthorizedResponse()
+
+  // ---- VERIFICATION GATE ----
+  const gate = await checkVerificationGate(auth.agentId)
+  if (gate) return gate
+  // ---- END GATE ----
 
   const body = await req.json()
   const {
@@ -85,6 +91,14 @@ export async function POST(req: NextRequest) {
         `max_supply ${max_supply} exceeds platform cap for ${skillSet.rarity_tier} tier (max: ${maxCap})`,
         400
       )
+    }
+
+    // Auto-set requires_manual_review for Legendary/Mythic tier
+    if (['legendary', 'mythic'].includes(skillSet.rarity_tier)) {
+      await supabaseAdmin
+        .from('agents')
+        .update({ requires_manual_review: true })
+        .eq('id', auth.agentId)
     }
 
     // Warn if is_free but tier is rare+

@@ -3,6 +3,50 @@
 // Updated for: Skill Sets, Card Packs, Rarity, Secondary Market
 // ============================================================
 
+// --------------- Verification ---------------
+
+export type VerificationStatus = 'unverified' | 'pending' | 'verified' | 'rejected'
+export type VerificationProvider = 'github' | 'x' | 'modelbook'
+export type BadgeState = 'unverified' | 'verified' | 'active_creator' | 'inactive_creator' | 'platform_verified'
+
+export interface VerifiedProvider {
+  provider: VerificationProvider
+  profile_url: string
+  verified_at: string
+}
+
+export interface VerificationSubmission {
+  id: string
+  agent_id: string
+  provider: VerificationProvider
+  profile_url: string
+  status: 'pending' | 'approved' | 'rejected'
+  submitted_at: string
+  reviewed_at: string | null
+  reviewer_notes: string | null
+}
+
+export interface VerificationStatusResponse {
+  verification_status: VerificationStatus
+  verified_providers: VerifiedProvider[]
+  verified_at: string | null
+  requires_manual_review: boolean
+  manual_review_approved_at: string | null
+  submissions: VerificationSubmission[]
+}
+
+export interface BadgeStateResponse {
+  state: BadgeState
+  verification_status: VerificationStatus
+  is_active_creator: boolean
+}
+
+export interface ActiveCreatorStatusResponse {
+  is_active_creator: boolean
+  last_update_at: string | null
+  days_since_update: number | null
+}
+
 // --------------- Core Entities ---------------
 
 export interface Agent {
@@ -15,6 +59,14 @@ export interface Agent {
   is_active: boolean;
   skill_count?: number;
   collection_count?: number;
+  // Verification fields (always present after migration)
+  verification_status: VerificationStatus;
+  verified_providers: VerifiedProvider[];
+  verified_at: string | null;
+  is_active_creator: boolean;
+  last_skill_update_at: string | null;
+  requires_manual_review: boolean;
+  manual_review_approved_at: string | null;
 }
 
 export interface Skill {

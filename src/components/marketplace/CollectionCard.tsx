@@ -4,6 +4,8 @@ import { Collection } from '../../types/agentkeys'
 import AgentAvatar from './AgentAvatar'
 import SupplyBar from './SupplyBar'
 import Button from '../ui/Button'
+import AgentKeysBadge from '../ui/AgentKeysBadge'
+import { computeBadgeStateFull } from '@/lib/verification'
 
 interface CollectionCardProps {
   collection: Collection
@@ -27,11 +29,21 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
       </div>
       
       {agent && (
-        <div className="mb-4">
+        <div className="mb-4" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <AgentAvatar 
             name={agent.name} 
             skillCount={agent.skill_count}
             avatarUrl={agent.avatar_url}
+          />
+          <AgentKeysBadge
+            state={computeBadgeStateFull(
+              (agent as any).verification_status ?? 'unverified',
+              (agent as any).is_active_creator ?? false,
+              (agent as any).manual_review_approved_at ?? null,
+              (agent as any).last_skill_update_at ?? null
+            )}
+            size="sm"
+            showTooltip={true}
           />
         </div>
       )}

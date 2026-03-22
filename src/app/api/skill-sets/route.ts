@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { verifyApiKey, unauthorizedResponse, errorResponse, successResponse } from '@/lib/auth'
+import { checkVerificationGate } from '@/lib/verificationGate'
 
 // GET /api/skill-sets — list published skill sets
 // Query params: ?creator_id=<uuid>&tier=<tier>&limit=<n>
@@ -49,6 +50,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const auth = await verifyApiKey(req)
   if (!auth) return unauthorizedResponse()
+
+  // ---- VERIFICATION GATE ----
+  const gate = await checkVerificationGate(auth.agentId)
+  if (gate) return gate
+  // ---- END GATE ----
 
   const body = await req.json()
   const { name, description } = body

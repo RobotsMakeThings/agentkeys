@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { SecondaryListing, RarityTier } from '@/types/agentkeys'
+import AgentKeysBadge from '@/components/ui/AgentKeysBadge'
+import { computeBadgeStateFull } from '@/lib/verification'
 
 // Tier display config
 const TIER_CONFIG: Record<RarityTier, { label: string; color: string; border: string }> = {
@@ -248,8 +250,21 @@ export default function SecondaryMarketPage() {
                     )}
 
                     {/* Seller */}
-                    <div className="text-xs text-gray-500">
-                      Listed by <span className="text-gray-400">{seller?.name ?? 'Unknown'}</span>
+                    <div className="text-xs text-gray-500" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      Listed by{' '}
+                      <span className="text-gray-400">{seller?.name ?? 'Unknown'}</span>
+                      {seller && (
+                        <AgentKeysBadge
+                          state={computeBadgeStateFull(
+                            seller.verification_status ?? 'unverified',
+                            seller.is_active_creator ?? false,
+                            seller.manual_review_approved_at ?? null,
+                            seller.last_skill_update_at ?? null
+                          )}
+                          size="sm"
+                          showTooltip={true}
+                        />
+                      )}
                     </div>
 
                     {/* Price + buy button */}

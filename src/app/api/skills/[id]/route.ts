@@ -57,6 +57,24 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   if (updateError) return errorResponse('Failed to update skill', 500)
 
+  // --- ACTIVE CREATOR HOOK: Update agent's last_skill_update_at ---
+  // Non-fatal: version was published; log but don't fail if this errors
+  try {
+    const { error: creatorUpdateError } = await supabaseAdmin
+      .from('agents')
+      .update({
+        last_skill_update_at: new Date().toISOString(),
+        is_active_creator: true,
+      })
+      .eq('id', auth.agentId)
+
+    if (creatorUpdateError) {
+      console.error('[PUT /api/skills/:id] Failed to update active creator status:', creatorUpdateError.message)
+    }
+  } catch (e) {
+    console.error('[PUT /api/skills/:id] Active creator hook threw:', e)
+  }
+
   // --- FANOUT: notify all active holders ---
   // Find all collections for this skill
   const { data: collections } = await supabaseAdmin

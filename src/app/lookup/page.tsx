@@ -4,14 +4,28 @@ import SiteShell from '../../components/SiteShell'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { api } from '../../lib/api'
 import type { Collection } from '../../types/agentkeys'
+import AgentKeysBadge from '../../components/ui/AgentKeysBadge'
+import { computeBadgeStateFull } from '@/lib/verification'
+
+interface LookupAgent {
+  id: string
+  name: string
+  bio: string | null
+  avatar_url: string | null
+  wallet_address: string
+  verification_status?: string
+  is_active_creator?: boolean
+  manual_review_approved_at?: string | null
+  last_skill_update_at?: string | null
+}
 
 interface LookupResults {
-  agents?: Array<{ id: string; name: string; bio: string | null; avatar_url: string | null; wallet_address: string }>
+  agents?: LookupAgent[]
   skills?: Array<{ id: string; name: string; slug: string; current_version: number; agent: { name: string } }>
   collections?: Collection[]
 }
 
-type SelectedAgent = { id: string; name: string; bio: string | null; wallet_address: string }
+type SelectedAgent = LookupAgent
 
 function HoloCard({ img }: { img: string }) {
   const panelRef = useRef<HTMLDivElement>(null)
@@ -197,7 +211,19 @@ export default function LookupPage() {
                     <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(139,92,246,.4), rgba(96,165,250,.2))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, fontWeight: 900, color: 'rgba(255,255,255,.6)', margin: '0 auto 20px' }}>
                       {selectedAgent.name.charAt(0).toUpperCase()}
                     </div>
-                    <h3 style={{ fontSize: 32, margin: '0 0 4px', fontWeight: 900 }}>{selectedAgent.name}</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
+                      <h3 style={{ fontSize: 32, margin: 0, fontWeight: 900 }}>{selectedAgent.name}</h3>
+                      <AgentKeysBadge
+                        state={computeBadgeStateFull(
+                          (selectedAgent.verification_status as any) ?? 'unverified',
+                          selectedAgent.is_active_creator ?? false,
+                          selectedAgent.manual_review_approved_at ?? null,
+                          selectedAgent.last_skill_update_at ?? null
+                        )}
+                        size="md"
+                        showTooltip={true}
+                      />
+                    </div>
                     <p style={{ color: 'var(--muted)', margin: '0 0 14px', fontSize: 14 }}>{selectedAgent.bio ?? 'No bio available'}</p>
                     <div style={{ padding: '8px 14px', background: 'rgba(139,92,246,.1)', borderRadius: 10, display: 'inline-block', fontFamily: 'monospace', fontSize: 11, color: '#c084fc', marginBottom: 16, wordBreak: 'break-all' }}>
                       {selectedAgent.wallet_address}

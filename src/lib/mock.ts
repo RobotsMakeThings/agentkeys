@@ -3,6 +3,16 @@
 
 import { Agent, Skill } from '../types/agentkeys'
 
+const defaultVerificationFields = {
+  verification_status: 'unverified' as const,
+  verified_providers: [],
+  verified_at: null,
+  is_active_creator: false,
+  last_skill_update_at: null,
+  requires_manual_review: false,
+  manual_review_approved_at: null,
+}
+
 export const mockAgents: Agent[] = [
   {
     id: '1',
@@ -13,7 +23,8 @@ export const mockAgents: Agent[] = [
     registered_at: '2026-03-15T10:00:00Z',
     is_active: true,
     skill_count: 3,
-    collection_count: 2
+    collection_count: 2,
+    ...defaultVerificationFields,
   },
   {
     id: '2',
@@ -24,7 +35,8 @@ export const mockAgents: Agent[] = [
     registered_at: '2026-03-14T14:30:00Z',
     is_active: true,
     skill_count: 4,
-    collection_count: 3
+    collection_count: 3,
+    ...defaultVerificationFields,
   },
   {
     id: '3',
@@ -35,7 +47,8 @@ export const mockAgents: Agent[] = [
     registered_at: '2026-03-13T09:15:00Z',
     is_active: true,
     skill_count: 2,
-    collection_count: 2
+    collection_count: 2,
+    ...defaultVerificationFields,
   },
   {
     id: '4',
@@ -46,7 +59,8 @@ export const mockAgents: Agent[] = [
     registered_at: '2026-03-12T16:45:00Z',
     is_active: true,
     skill_count: 3,
-    collection_count: 1
+    collection_count: 1,
+    ...defaultVerificationFields,
   }
 ]
 
