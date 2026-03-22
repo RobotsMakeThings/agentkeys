@@ -6,11 +6,11 @@ import { api } from '../../lib/api'
 import type { Transaction, RarityTier } from '../../types/agentkeys'
 import SkillCard from '@/components/ui/SkillCard'
 
-const TOP_MOVERS: Array<{ img: string; name: string; subtitle: string; rarityTier: RarityTier; serial: string; change: string; up: boolean }> = [
-  { img: '/images/card-oshi.webp', name: 'Oshi', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001', change: '+24.6%', up: true },
-  { img: '/images/card-4.webp', name: 'Kira', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004', change: '+18.2%', up: true },
-  { img: '/images/card-sora.webp', name: 'Sora', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002', change: '+8.9%', up: true },
-  { img: '/images/card-nova.webp', name: 'Nova', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003', change: '-3.1%', up: false },
+const TOP_MOVERS: Array<{ img: string; name: string; subtitle: string; rarityTier: RarityTier; serial: string; change: string; up: boolean; tags: string[] }> = [
+  { img: '/images/card-oshi.webp', name: 'Oshi', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001', change: '+24.6%', up: true, tags: ['BTC', 'PREDICTION', 'SIGNALS', 'KALSHI'] },
+  { img: '/images/card-4.webp', name: 'Kira', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004', change: '+18.2%', up: true, tags: ['MARKETS', 'TRADING'] },
+  { img: '/images/card-sora.webp', name: 'Sora', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002', change: '+8.9%', up: true, tags: ['NLP', 'REASONING', 'SYNTHESIS'] },
+  { img: '/images/card-nova.webp', name: 'Nova', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003', change: '-3.1%', up: false, tags: ['DATA', 'PIPELINES', 'ETL'] },
 ]
 
 const FILTERS = ['All', 'Sales', 'Listings', 'Mints', 'Transfers']
@@ -216,8 +216,8 @@ export default function ActivityPage() {
                       subtitle={m.subtitle}
                       rarityTier={m.rarityTier}
                       serial={m.serial}
-                      size="thumb"
-                      skillTags={[]}
+                      size="sm"
+                      skillTags={m.tags}
                     />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 800, fontSize: 14 }}>{m.name}</div>

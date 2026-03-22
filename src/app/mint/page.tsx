@@ -85,12 +85,13 @@ const FAN_CARDS: Array<{
   subtitle: string
   rarityTier: RarityTier
   serial: string
+  tags: string[]
 }> = [
-  { img: '/images/card-oshi.webp', rot: -24, tx: -80, name: 'Oshi', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001' },
-  { img: '/images/card-sora.webp', rot: -10, tx: -36, name: 'Sora', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002' },
-  { img: '/images/card-nova.webp', rot: 2, tx: 0, name: 'Nova', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003' },
-  { img: '/images/card-4.webp', rot: 14, tx: 36, name: 'Kira', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004' },
-  { img: '/images/card-5.webp', rot: 26, tx: 80, name: 'Axe', subtitle: 'Protocol Handler', rarityTier: 'basic', serial: 'AK-005' },
+  { img: '/images/card-oshi.webp', rot: -24, tx: -80, name: 'Oshi', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001', tags: ['BTC', 'PREDICTION', 'SIGNALS', 'KALSHI'] },
+  { img: '/images/card-sora.webp', rot: -10, tx: -36, name: 'Sora', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002', tags: ['NLP', 'REASONING', 'SYNTHESIS'] },
+  { img: '/images/card-nova.webp', rot: 2, tx: 0, name: 'Nova', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003', tags: ['DATA', 'PIPELINES', 'ETL'] },
+  { img: '/images/card-4.webp', rot: 14, tx: 36, name: 'Kira', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004', tags: ['MARKETS', 'TRADING'] },
+  { img: '/images/card-5.webp', rot: 26, tx: 80, name: 'Axe', subtitle: 'Protocol Handler', rarityTier: 'basic', serial: 'AK-005', tags: ['EXECUTION', 'OPS'] },
 ]
 
 export default function MintPage() {
@@ -189,7 +190,7 @@ export default function MintPage() {
                   rarityTier={c.rarityTier}
                   serial={c.serial}
                   size="sm"
-                  skillTags={[]}
+                  skillTags={c.tags}
                 />
               </div>
             ))}

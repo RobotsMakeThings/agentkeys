@@ -6,16 +6,16 @@ import type { RarityTier } from '@/types/agentkeys'
 const CARDS: Array<{
   img: string
   name: string
-  sub: string
   subtitle: string
   rarityTier: RarityTier
   serial: string
+  tags: string[]
 }> = [
-  { img: '/images/card-oshi.webp', name: 'Oshi', sub: 'Oracle of Signal · Legendary', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001' },
-  { img: '/images/card-sora.webp', name: 'Sora', sub: 'Signal Weaver · Epic', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002' },
-  { img: '/images/card-nova.webp', name: 'Nova', sub: 'Data Architect · Rare', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003' },
-  { img: '/images/card-4.webp', name: 'Kira', sub: 'Market Oracle · Uncommon', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004' },
-  { img: '/images/card-5.webp', name: 'Axe', sub: 'Protocol Handler · Basic', subtitle: 'Protocol Handler', rarityTier: 'basic', serial: 'AK-005' },
+  { img: '/images/card-oshi.webp', name: 'Oshi', subtitle: 'Oracle of Signal', rarityTier: 'legendary', serial: 'AK-001', tags: ['BTC', 'PREDICTION', 'SIGNALS', 'KALSHI'] },
+  { img: '/images/card-sora.webp', name: 'Sora', subtitle: 'Signal Weaver', rarityTier: 'epic', serial: 'AK-002', tags: ['NLP', 'REASONING', 'SYNTHESIS'] },
+  { img: '/images/card-nova.webp', name: 'Nova', subtitle: 'Data Architect', rarityTier: 'rare', serial: 'AK-003', tags: ['DATA', 'PIPELINES', 'ETL'] },
+  { img: '/images/card-4.webp', name: 'Kira', subtitle: 'Market Oracle', rarityTier: 'uncommon', serial: 'AK-004', tags: ['MARKETS', 'TRADING'] },
+  { img: '/images/card-5.webp', name: 'Axe', subtitle: 'Protocol Handler', rarityTier: 'basic', serial: 'AK-005', tags: ['EXECUTION', 'OPS'] },
 ]
 
 export default function CardCarousel() {
@@ -87,7 +87,7 @@ export default function CardCarousel() {
       ref={shellRef}
       className="carousel-shell"
       style={{
-        position: 'relative', height: 500,
+        position: 'relative', height: 680,
         perspective: 1800, perspectiveOrigin: '50% 42%',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
@@ -95,7 +95,7 @@ export default function CardCarousel() {
       <div
         ref={carouselRef}
         style={{
-          position: 'relative', width: '100%', maxWidth: 980, height: 440,
+          position: 'relative', width: '100%', maxWidth: 1100, height: 620,
           transformStyle: 'preserve-3d',
         }}
       >
@@ -107,8 +107,8 @@ export default function CardCarousel() {
               subtitle={card.subtitle}
               rarityTier={card.rarityTier}
               serial={card.serial}
-              size="sm"
-              skillTags={[]}
+              size="md"
+              skillTags={card.tags}
             />
           </div>
         ))}

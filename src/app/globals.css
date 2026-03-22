@@ -377,17 +377,24 @@ body::before {
 /* Carousel */
 .carousel-item {
   position: absolute; left: 50%; top: 50%;
-  width: 288px; margin-left: -144px; margin-top: -212px;
+  width: 300px; margin-left: -150px; margin-top: -225px;
   transform-style: preserve-3d; will-change: transform, filter;
   transition: transform .28s var(--ease-premium), filter .28s ease;
   backface-visibility: hidden;
   transform-origin: center center;
+  display: flex; align-items: center; justify-content: center;
 }
+/* Legacy img support (kept for safety) */
 .carousel-item img {
   width: 100%; display: block; border-radius: 18px;
   box-shadow: 0 0 40px rgba(139,92,246,.18);
   transition: transform .22s var(--ease-premium), box-shadow .22s ease, filter .22s ease;
   will-change: transform; backface-visibility: hidden;
+}
+.carousel-shell.paused .carousel-item.is-front .skill-card,
+.carousel-item.is-front:hover .skill-card {
+  transform: translateY(-10px) scale(1.03);
+  filter: brightness(1.05);
 }
 .carousel-shell.paused .carousel-item.is-front img,
 .carousel-item.is-front:hover img {
@@ -600,6 +607,9 @@ body::before {
     transform 0.18s var(--ease-premium),
     box-shadow 0.22s ease;
   font-family: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  border-radius: 18px; /* base radius — inherited by bg/frame absolute layers */
+  background: #08060e; /* fallback so card is never transparent */
+  flex-shrink: 0; /* never let parent compress the fixed dimensions */
 }
 
 /* ---- Background Layer ---- */
