@@ -200,6 +200,9 @@ export default function SkillCard({
   const showTagline = !!tagline && size !== 'thumb'
   const showTags = size !== 'thumb'
 
+  // Percent of image height to show as art (hides placeholder text at bottom of pre-rendered card images)
+  const artHeightPct = 58 // show top 58% of image — captures character art, hides baked-in template text
+
   return (
     <div
       ref={cardRef}
@@ -213,14 +216,17 @@ export default function SkillCard({
         width: dims.w,
         height: dims.h,
         position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
         borderRadius: 18,
         overflow: 'hidden',
         flexShrink: 0,
         cursor: onClick ? 'pointer' : 'default',
         transformStyle: 'preserve-3d',
+        background: '#08060e',
         boxShadow: tierStyle.particlesEnabled
           ? `0 0 60px ${tierStyle.accentColor}55, 0 0 120px ${tierStyle.accentColor}22`
-          : `0 0 30px ${tierStyle.accentColor}33`,
+          : `0 0 24px ${tierStyle.accentColor}33`,
         border: `2px solid ${tierStyle.accentColor}66`,
         animation: rarityTier === 'legendary' ? 'legendaryGlow 4s ease-in-out infinite'
           : rarityTier === 'mythic' ? 'mythicGlow 3s ease-in-out infinite'
@@ -228,122 +234,139 @@ export default function SkillCard({
       } as React.CSSProperties}
       onClick={onClick}
     >
-      {/* FULL-BLEED ART IMAGE — fills the entire card */}
-      {artImageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={artImageUrl}
-          alt={name}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center top',
-            display: 'block',
-            zIndex: 1,
-          }}
-        />
-      ) : (
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 1,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: `linear-gradient(135deg, ${tierStyle.accentColor}22, #08060e)`,
-          fontSize: dims.w * 0.3, fontWeight: 900, color: `${tierStyle.accentColor}66`,
-        }}>
-          {name.charAt(0).toUpperCase()}
-        </div>
-      )}
-
-      {/* Holographic sheen (epic+) */}
-      {tierStyle.holoEnabled && (
-        <div className="skill-card__holo" style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }} />
-      )}
-
-      {/* Verification badge — top right */}
-      {verifiedState && (
-        <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 5 }}>
-          <AgentKeysBadge state={verifiedState} size="sm" showTooltip={false} />
-        </div>
-      )}
-
-      {/* Corner ornaments (legendary/mythic) */}
-      {showCorners && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 4, pointerEvents: 'none' }}>
-          <CornerOrnaments tier={rarityTier} />
-        </div>
-      )}
-
-      {/* BOTTOM INFO STRIP — gradient overlay with name + tier */}
+      {/* ── ART ZONE: shows only top artHeightPct% of the image ── */}
       <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        zIndex: 6,
-        background: 'linear-gradient(to top, rgba(4,3,10,.95) 0%, rgba(4,3,10,.85) 60%, transparent 100%)',
-        padding: size === 'thumb' ? '16px 8px 8px' : '24px 12px 10px',
+        position: 'relative',
+        width: '100%',
+        height: `${artHeightPct}%`,
+        overflow: 'hidden',
+        flexShrink: 0,
+        background: `linear-gradient(135deg, ${tierStyle.accentColor}11, #08060e)`,
+      }}>
+        {artImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={artImageUrl}
+            alt={name}
+            style={{
+              width: '100%',
+              // Scale image so its actual height × artHeightPct% fills the zone
+              // image is ~2:3 card, we want top artHeightPct% → height = 100% / (artHeightPct/100)
+              height: `${100 / (artHeightPct / 100)}%`,
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              display: 'block',
+            }}
+          />
+        ) : (
+          <div style={{
+            width: '100%', height: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: dims.w * 0.25, fontWeight: 900,
+            color: `${tierStyle.accentColor}55`,
+          }}>
+            {name.charAt(0).toUpperCase()}
+          </div>
+        )}
+
+        {/* Holographic sheen (epic+) */}
+        {tierStyle.holoEnabled && (
+          <div className="skill-card__holo" style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+          }} />
+        )}
+
+        {/* Verification badge — top-right corner of art */}
+        {verifiedState && (
+          <div style={{ position: 'absolute', top: 6, right: 6 }}>
+            <AgentKeysBadge state={verifiedState} size="sm" showTooltip={false} />
+          </div>
+        )}
+
+        {/* Corner ornaments for legendary/mythic */}
+        {showCorners && (
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            <CornerOrnaments tier={rarityTier} />
+          </div>
+        )}
+
+        {/* Fade out bottom edge of art zone */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '30%',
+          background: 'linear-gradient(to top, #08060e 0%, transparent 100%)',
+          pointerEvents: 'none',
+        }} />
+      </div>
+
+      {/* ── INFO ZONE: pure HTML data, zero placeholders ── */}
+      <div style={{
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        justifyContent: 'center',
+        gap: size === 'thumb' ? 1 : 3,
+        padding: size === 'thumb' ? '4px 8px 6px' : size === 'sm' ? '6px 10px 8px' : '8px 14px 10px',
+        background: `linear-gradient(to bottom, #08060e 0%, #0a0810 100%)`,
+        minHeight: 0,
       }}>
-        {/* Name */}
+
+        {/* Name — always shown */}
         <div style={{
-          fontSize: size === 'thumb' ? 10 : size === 'sm' ? 13 : size === 'md' ? 15 : 18,
+          fontSize: size === 'thumb' ? 10 : size === 'sm' ? 12 : size === 'md' ? 15 : 18,
           fontWeight: 900,
-          letterSpacing: '0.04em',
+          letterSpacing: '0.05em',
           color: tierStyle.accentColor,
           textTransform: 'uppercase',
           lineHeight: 1.1,
-          whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}>
           {name}
         </div>
 
-        {/* Subtitle + tier (hidden at thumb) */}
-        {size !== 'thumb' && (
+        {/* Subtitle — hidden at thumb */}
+        {size !== 'thumb' && subtitle && (
           <div style={{
-            fontSize: size === 'sm' ? 9 : 11,
-            fontWeight: 700,
-            color: 'rgba(245,242,239,.55)',
+            fontSize: size === 'sm' ? 9 : 10,
+            fontWeight: 600,
+            color: 'rgba(245,242,239,.5)',
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}>
             {subtitle}
           </div>
         )}
 
-        {/* Tier label + serial row (md+ only) */}
-        {['md', 'lg', 'full'].includes(size) && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: 4,
-          }}>
+        {/* Tier badge + serial — sm+ */}
+        {size !== 'thumb' && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
             <span style={{
-              fontSize: 9,
+              fontSize: 8,
               fontWeight: 900,
-              letterSpacing: '0.2em',
+              letterSpacing: '0.18em',
               color: tierStyle.accentColor,
               textTransform: 'uppercase',
-              padding: '2px 6px',
-              borderRadius: 4,
+              padding: '1px 5px',
+              borderRadius: 3,
               border: `1px solid ${tierStyle.accentColor}44`,
               background: `${tierStyle.accentColor}11`,
+              flexShrink: 0,
             }}>
               {displayTier}
             </span>
             {serial && (
               <span style={{
-                fontSize: 9,
-                fontWeight: 700,
-                color: 'rgba(245,242,239,.35)',
-                letterSpacing: '0.1em',
+                fontSize: 8,
+                fontWeight: 600,
+                color: 'rgba(245,242,239,.28)',
+                letterSpacing: '0.08em',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}>
                 {serial}
               </span>
@@ -351,32 +374,47 @@ export default function SkillCard({
           </div>
         )}
 
-        {/* Skill tags (sm+ only, max 3) */}
-        {showTags && skillTags.length > 0 && size !== 'sm' && (
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
+        {/* Skill tags — md+ only, max 3 */}
+        {['md', 'lg', 'full'].includes(size) && skillTags && skillTags.length > 0 && (
+          <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
             {skillTags.slice(0, 3).map(tag => (
               <span key={tag} style={{
-                fontSize: 8,
+                fontSize: 7,
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 color: tierStyle.accentColor,
-                padding: '1px 5px',
+                padding: '1px 4px',
                 borderRadius: 3,
-                border: `1px solid ${tierStyle.accentColor}44`,
-                background: `${tierStyle.accentColor}11`,
+                border: `1px solid ${tierStyle.accentColor}33`,
+                background: `${tierStyle.accentColor}0d`,
                 textTransform: 'uppercase',
-              }}>{tag}</span>
+              }}>
+                {tag}
+              </span>
             ))}
+          </div>
+        )}
+
+        {/* Mint price — md+ only, only if provided */}
+        {['md', 'lg', 'full'].includes(size) && mintPrice != null && (
+          <div style={{
+            fontSize: 9,
+            fontWeight: 800,
+            color: 'rgba(245,242,239,.7)',
+            letterSpacing: '0.06em',
+          }}>
+            {mintPrice === 0 ? 'FREE' : `${mintPrice} SOL`}
           </div>
         )}
       </div>
 
-      {/* Particle glow — top gradient overlay for legendary/mythic */}
+      {/* Particle glow top edge — legendary/mythic */}
       {tierStyle.particlesEnabled && (
         <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: '30%',
-          zIndex: 3, pointerEvents: 'none',
-          background: `radial-gradient(ellipse at 50% 0%, ${tierStyle.accentColor}18 0%, transparent 70%)`,
+          position: 'absolute', top: 0, left: 0, right: 0, height: '25%',
+          pointerEvents: 'none',
+          background: `radial-gradient(ellipse at 50% 0%, ${tierStyle.accentColor}15 0%, transparent 70%)`,
+          zIndex: 2,
         }} />
       )}
     </div>

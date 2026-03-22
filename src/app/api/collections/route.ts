@@ -54,6 +54,12 @@ export async function POST(req: NextRequest) {
     metadata_uri,
     pack_image_uri,
     is_free,
+    // Card design fields
+    art_image_url,
+    card_subtitle,
+    card_tagline,
+    serial_number,
+    tier_unlocks,
   } = body
 
   if (!skill_set_id && !skill_id) return errorResponse('Either skill_id or skill_set_id is required')
@@ -131,6 +137,11 @@ export async function POST(req: NextRequest) {
         rarity_tier: skillSet.rarity_tier,
         pack_image_uri: pack_image_uri ?? null,
         metadata_uri: metadata_uri ?? null,
+        art_image_url: art_image_url ?? null,
+        card_subtitle: card_subtitle ?? null,
+        card_tagline: card_tagline ?? null,
+        serial_number: serial_number ?? null,
+        tier_unlocks: tier_unlocks ?? [],
         minted_count: 0,
         is_active: true,
       })
@@ -164,6 +175,11 @@ export async function POST(req: NextRequest) {
         price_sol: priceValue,
         is_free: isFree,
         metadata_uri: metadata_uri ?? null,
+        art_image_url: art_image_url ?? null,
+        card_subtitle: card_subtitle ?? null,
+        card_tagline: card_tagline ?? null,
+        serial_number: serial_number ?? null,
+        tier_unlocks: tier_unlocks ?? [],
         minted_count: 0,
         is_active: true,
       })
