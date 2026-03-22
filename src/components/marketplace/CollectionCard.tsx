@@ -1,78 +1,61 @@
 'use client'
 
-import { Collection } from '../../types/agentkeys'
-import AgentAvatar from './AgentAvatar'
-import SupplyBar from './SupplyBar'
-import Button from '../ui/Button'
-import AgentKeysBadge from '../ui/AgentKeysBadge'
+import { Collection, RarityTier, BadgeState } from '../../types/agentkeys'
+import SkillCard from '../ui/SkillCard'
 import { computeBadgeStateFull } from '@/lib/verification'
 
 interface CollectionCardProps {
   collection: Collection
+  onClick?: () => void
 }
 
-export default function CollectionCard({ collection }: CollectionCardProps) {
-  // Agent data comes from API relations now
-  const agent = collection.agent
-  
-  const handleMint = () => {
-    console.log('Minting collection:', collection.id)
+function buildSkillTags(c: Collection): string[] {
+  if (c.skill_set?.members?.length) {
+    return c.skill_set.members
+      .slice(0, 5)
+      .map((m: any) => m.skill?.name?.toUpperCase() ?? '')
+      .filter(Boolean)
   }
-  
+  if (c.skill?.name) return [c.skill.name.toUpperCase()]
+  return []
+}
+
+function getBadgeState(c: Collection): BadgeState | undefined {
+  const agent = c.agent
+  if (!agent) return undefined
+  return computeBadgeStateFull(
+    (agent as any).verification_status ?? 'unverified',
+    (agent as any).is_active_creator ?? false,
+    (agent as any).manual_review_approved_at ?? null,
+    (agent as any).last_skill_update_at ?? null,
+  )
+}
+
+export default function CollectionCard({ collection: c, onClick }: CollectionCardProps) {
+  const rarityTier = (c.rarity_tier ?? 'basic') as RarityTier
+  const interactive = ['epic', 'legendary', 'mythic'].includes(rarityTier)
+
+  const subtitle =
+    c.card_subtitle ??
+    c.skill_set?.name ??
+    c.agent?.name ??
+    `${c.skill_set?.members?.length ?? 0} skills`
+
   return (
-    <div className="bg-[rgba(255,255,255,.035)] border border-[rgba(255,255,255,.09)] rounded-[18px] p-6 hover:bg-[rgba(255,255,255,.05)] transition-all duration-200">
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="text-lg font-bold text-[#f5f2ef] mb-2">{collection.name}</h3>
-        <div className="text-right">
-          <div className="text-2xl font-bold text-[#9333ea]">{collection.price_sol} SOL</div>
-        </div>
-      </div>
-      
-      {agent && (
-        <div className="mb-4" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <AgentAvatar 
-            name={agent.name} 
-            skillCount={agent.skill_count}
-            avatarUrl={agent.avatar_url}
-          />
-          <AgentKeysBadge
-            state={computeBadgeStateFull(
-              (agent as any).verification_status ?? 'unverified',
-              (agent as any).is_active_creator ?? false,
-              (agent as any).manual_review_approved_at ?? null,
-              (agent as any).last_skill_update_at ?? null
-            )}
-            size="sm"
-            showTooltip={true}
-          />
-        </div>
-      )}
-      
-      <div className="mb-6">
-        <SupplyBar 
-          minted={collection.minted_count} 
-          total={collection.max_supply} 
-        />
-      </div>
-      
-      <div className="flex space-x-2">
-        <Button 
-          variant="primary" 
-          size="sm"
-          className="flex-1"
-          onClick={handleMint}
-          disabled={collection.minted_count >= collection.max_supply}
-        >
-          {collection.minted_count >= collection.max_supply ? 'Sold Out' : 'Mint Now'}
-        </Button>
-        <Button 
-          variant="secondary" 
-          size="sm"
-          onClick={() => console.log('View details:', collection.id)}
-        >
-          Details
-        </Button>
-      </div>
-    </div>
+    <SkillCard
+      artImageUrl={c.art_image_url ?? ''}
+      name={c.name}
+      subtitle={subtitle}
+      tagline={c.card_tagline ?? undefined}
+      skillTags={buildSkillTags(c)}
+      tierUnlocks={(c.tier_unlocks ?? []) as string[]}
+      mintPrice={c.is_free ? 0 : c.price_sol}
+      serial={c.serial_number ?? undefined}
+      rarityTier={rarityTier}
+      verifiedState={getBadgeState(c)}
+      size="sm"
+      interactive={interactive}
+      onClick={onClick}
+    />
   )
 }

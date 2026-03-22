@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { SecondaryListing, RarityTier } from '@/types/agentkeys'
+import { SecondaryListing, RarityTier, BadgeState } from '@/types/agentkeys'
 import AgentKeysBadge from '@/components/ui/AgentKeysBadge'
 import { computeBadgeStateFull } from '@/lib/verification'
+import SkillCard from '@/components/ui/SkillCard'
 
 // Tier display config
 const TIER_CONFIG: Record<RarityTier, { label: string; color: string; border: string }> = {
@@ -191,67 +192,49 @@ export default function SecondaryMarketPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {listings.map(listing => {
                 const tier = (listing.skill_set?.rarity_tier ?? 'basic') as RarityTier
-                const cfg = TIER_CONFIG[tier]
                 const skillSet = listing.skill_set as any
                 const seller = listing.seller as any
                 const holdingCollection = (listing.holding as any)?.collection
+                const interactive = ['epic', 'legendary', 'mythic'].includes(tier)
+
+                // Build skill tags from skill set members
+                const skillTags: string[] = skillSet?.members
+                  ? skillSet.members.slice(0, 5).map((m: any) => m.skill?.name?.toUpperCase() ?? '').filter(Boolean)
+                  : []
+
+                // Badge state for seller
+                const badgeState: BadgeState | undefined = seller
+                  ? computeBadgeStateFull(
+                      seller.verification_status ?? 'unverified',
+                      seller.is_active_creator ?? false,
+                      seller.manual_review_approved_at ?? null,
+                      seller.last_skill_update_at ?? null,
+                    )
+                  : undefined
 
                 return (
-                  <div
-                    key={listing.id}
-                    className={`bg-gray-900 border rounded-xl p-4 flex flex-col gap-3 transition-colors hover:bg-gray-850 ${cfg.border} border-opacity-40 hover:border-opacity-80`}
-                  >
-                    {/* Pack image or placeholder */}
-                    <div className="aspect-square bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden">
-                      {holdingCollection?.pack_image_uri ? (
-                        <img
-                          src={holdingCollection.pack_image_uri}
-                          alt={skillSet?.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="text-center">
-                          <div className="text-5xl mb-1">🃏</div>
-                          <div className={`text-xs font-bold uppercase tracking-wider ${cfg.color}`}>{cfg.label}</div>
-                        </div>
-                      )}
+                  <div key={listing.id} className="flex flex-col gap-3">
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <SkillCard
+                        artImageUrl={holdingCollection?.art_image_url ?? ''}
+                        name={skillSet?.name ?? 'Unknown Set'}
+                        subtitle={holdingCollection?.card_subtitle ?? skillSet?.description ?? `${skillSet?.power_level ?? 0} skills`}
+                        tagline={holdingCollection?.card_tagline ?? undefined}
+                        skillTags={skillTags}
+                        tierUnlocks={(holdingCollection?.tier_unlocks ?? []) as string[]}
+                        mintPrice={listing.price_sol}
+                        serial={holdingCollection?.serial_number ?? undefined}
+                        rarityTier={tier}
+                        verifiedState={badgeState}
+                        size="sm"
+                        interactive={interactive}
+                        onClick={() => setShowApiInfo(listing.id)}
+                      />
                     </div>
 
-                    {/* Tier + power */}
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border ${cfg.color} ${cfg.border} border-opacity-50`}>
-                        {cfg.label}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {skillSet?.power_level ?? 0} skill{skillSet?.power_level !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-
-                    {/* Name */}
-                    <div>
-                      <h3 className="font-semibold text-sm leading-tight">{skillSet?.name ?? 'Unknown Set'}</h3>
-                      {skillSet?.description && (
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">{skillSet.description}</p>
-                      )}
-                    </div>
-
-                    {/* Skills preview */}
-                    {skillSet?.members && skillSet.members.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {skillSet.members.slice(0, 4).map((m: any) => (
-                          <span key={m.id} className="text-xs bg-gray-800 px-2 py-0.5 rounded-full text-gray-300">
-                            {m.skill?.name ?? m.skill_id}
-                          </span>
-                        ))}
-                        {skillSet.members.length > 4 && (
-                          <span className="text-xs text-gray-500 self-center">+{skillSet.members.length - 4} more</span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Seller */}
-                    <div className="text-xs text-gray-500" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      Listed by{' '}
+                    {/* Seller info + buy button below card */}
+                    <div className="text-xs text-gray-500 flex items-center gap-2 justify-center">
+                      <span>Listed by</span>
                       <span className="text-gray-400">{seller?.name ?? 'Unknown'}</span>
                       {seller && (
                         <AgentKeysBadge
@@ -259,27 +242,19 @@ export default function SecondaryMarketPage() {
                             seller.verification_status ?? 'unverified',
                             seller.is_active_creator ?? false,
                             seller.manual_review_approved_at ?? null,
-                            seller.last_skill_update_at ?? null
+                            seller.last_skill_update_at ?? null,
                           )}
                           size="sm"
                           showTooltip={true}
                         />
                       )}
                     </div>
-
-                    {/* Price + buy button */}
-                    <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-800">
-                      <div>
-                        <span className="text-xl font-bold">{listing.price_sol}</span>
-                        <span className="text-sm text-gray-400 ml-1">SOL</span>
-                      </div>
-                      <button
-                        onClick={() => setShowApiInfo(listing.id)}
-                        className="px-4 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-lg transition-colors"
-                      >
-                        Purchase via API
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setShowApiInfo(listing.id)}
+                      className="w-full py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      Purchase via API — {listing.price_sol} SOL
+                    </button>
                   </div>
                 )
               })}

@@ -136,6 +136,12 @@ export interface Collection {
   metadata_uri: string;
   is_active: boolean;
   created_at: string;
+  // New card design fields
+  art_image_url: string | null;
+  card_subtitle: string | null;
+  card_tagline: string | null;
+  serial_number: string | null;
+  tier_unlocks: string[];          // JSONB array, defaults to []
   // Joined fields
   skill?: Skill;
   skill_set?: SkillSet;
@@ -282,6 +288,38 @@ export interface PurchaseListingRequest {
 export interface PatchVersionRequest {
   action: 'adopt' | 'reject' | 'pin' | 'rollback';
   version?: number;  // required for 'pin' action
+}
+
+// --------------- SkillCard Types ---------------
+
+export type SkillCardSize = 'thumb' | 'sm' | 'md' | 'lg' | 'full'
+
+export type TierDisplayName = 'NODE' | 'CIRCUIT' | 'CORE' | 'NEXUS' | 'ORACLE' | 'PHANTOM'
+
+export const TIER_DISPLAY_NAMES: Record<RarityTier, TierDisplayName> = {
+  basic:      'NODE',
+  uncommon:   'CIRCUIT',
+  rare:       'CORE',
+  epic:       'NEXUS',
+  legendary:  'ORACLE',
+  mythic:     'PHANTOM',
+}
+
+export interface SkillCardProps {
+  artImageUrl: string         // Agent's uploaded card art (art zone only)
+  name: string                // Card/agent name — large text below art
+  subtitle: string            // Role title e.g. "Oracle of Signal"
+  tagline?: string            // One-liner description below subtitle
+  skillTags: string[]         // Up to 5 skill pill tags
+  tierUnlocks?: string[]      // Unlocks list with checkmarks (max 4 shown)
+  mintPrice?: number          // Price in SOL — bottom-left
+  serial?: string             // e.g. "AK-007" — top-left and bottom-right
+  rarityTier: RarityTier      // Controls frame, colors, effects
+  verifiedState?: BadgeState  // Renders AgentKeysBadge if provided
+  size?: SkillCardSize        // Responsive size variant
+  interactive?: boolean       // Enables tilt + holographic effects (epic+)
+  onClick?: () => void        // Optional click handler
+  className?: string
 }
 
 // --------------- Helper Types ---------------

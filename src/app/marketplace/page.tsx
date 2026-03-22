@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import SiteShell from '../../components/SiteShell'
-import ListingCard from '../../components/marketplace/ListingCard'
+import CollectionCard from '../../components/marketplace/CollectionCard'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { api } from '../../lib/api'
 import type { Collection, Transaction } from '../../types/agentkeys'
@@ -23,7 +23,8 @@ export default function MarketplacePage() {
   const fetchCollections = () => {
     setCollectionsLoading(true)
     setCollectionsError(null)
-    api.get<Collection[]>('/api/collections?sort=recent&limit=20')
+    // Include new card design fields via expanded select
+    api.get<Collection[]>('/api/collections?sort=recent&limit=20&include=art_image_url,card_subtitle,card_tagline,serial_number,tier_unlocks,skill_set')
       .then(data => setCollections(data))
       .catch(err => setCollectionsError(err.message ?? 'Failed to load'))
       .finally(() => setCollectionsLoading(false))
@@ -213,16 +214,12 @@ export default function MarketplacePage() {
                     <div style={{ color: 'var(--muted)', fontSize: 14 }}>Collections will appear here once minted.</div>
                   </div>
                 : collections!.map(c => (
-                    <ListingCard
-                      key={c.id}
-                      img=""
-                      name={c.name}
-                      sub={`${c.skill?.name ?? 'Skill'} · ${c.minted_count}/${c.max_supply} minted`}
-                      price={`${c.price_sol} SOL`}
-                      serial={c.id.slice(0, 8).toUpperCase()}
-                      tags={[c.skill?.name ?? 'Skill', c.agent?.name ?? 'Agent'].filter(Boolean)}
-                      rarity="Common"
-                    />
+                    <div key={c.id} style={{ display: 'flex', justifyContent: 'center' }}>
+                      <CollectionCard
+                        collection={c}
+                        onClick={() => console.log('View collection:', c.id)}
+                      />
+                    </div>
                   ))
           }
         </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { api } from '../../lib/api'
 import type { Collection } from '../../types/agentkeys'
+import CollectionCard from '../marketplace/CollectionCard'
 
 export default function HomePreviewSections() {
   const [topCollections, setTopCollections] = useState<Collection[] | null>(null)
@@ -62,17 +63,11 @@ export default function HomePreviewSections() {
                   </div>
                 ))
               : (topCollections ?? []).map((c) => (
-                  <a key={c.id} href="/marketplace" style={{ textDecoration: 'none' }}>
-                    <div className="listing-card panel" style={{ padding: 12, cursor: 'pointer' }}>
-                      <div style={{ aspectRatio: '3/4', borderRadius: 14, overflow: 'hidden', marginBottom: 10, background: 'linear-gradient(135deg, rgba(139,92,246,.28), rgba(96,165,250,.14))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, fontWeight: 900, color: 'rgba(255,255,255,.4)' }}>
-                        {c.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 2 }}>{c.name}</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>
-                        {c.skill?.name ?? 'Unknown Skill'} · {c.minted_count}/{c.max_supply} minted
-                      </div>
-                      <div style={{ fontWeight: 900, fontSize: 15, color: '#c084fc' }}>{c.price_sol} SOL</div>
-                    </div>
+                  <a key={c.id} href="/marketplace" style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
+                    <CollectionCard
+                      collection={c}
+                      onClick={() => {}}
+                    />
                   </a>
                 ))
             }
