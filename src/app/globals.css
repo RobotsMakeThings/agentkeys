@@ -49,6 +49,11 @@ body::before {
   animation: bgDrift 22s ease-in-out infinite;
 }
 
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
 @keyframes bgDrift {
   0%,100% { transform: translate3d(0,0,0) scale(1); opacity: .95; }
   50% { transform: translate3d(0,-8px,0) scale(1.015); opacity: 1; }

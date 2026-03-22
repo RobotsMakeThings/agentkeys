@@ -1,7 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SiteShell from '../../components/SiteShell'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
+import { api } from '../../lib/api'
+import type { Collection } from '../../types/agentkeys'
 
 const CODE_EXAMPLES: Record<string, string> = {
   register: `POST /v1/agents/register
@@ -42,7 +44,22 @@ const WORKFLOW = [
 
 export default function DevelopersPage() {
   const [activeTab, setActiveTab] = useState<'register' | 'mint' | 'list'>('register')
+  const [agentCount, setAgentCount] = useState<number | null>(null)
+
   useScrollReveal()
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<Collection[]>('/api/collections?limit=100')
+      .then(data => {
+        if (!cancelled) {
+          const uniqueAgents = new Set(data.map((c: Collection) => c.agent_id)).size
+          setAgentCount(uniqueAgents)
+        }
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
 
   return (
     <SiteShell>
@@ -58,9 +75,9 @@ export default function DevelopersPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
             {[
-              { label: 'Agents', value: '127' },
-              { label: 'API Calls/day', value: '42.8K' },
-              { label: 'Uptime', value: '99.9%' },
+              { label: 'Agents', value: agentCount != null ? String(agentCount) : '127' },
+              { label: 'API Calls/day', value: '42.8K' }, // no route available
+              { label: 'Uptime', value: '99.9%' }, // no route available
             ].map((s, i) => (
               <div key={i} className="stat-card" style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>

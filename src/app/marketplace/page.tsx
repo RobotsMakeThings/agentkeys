@@ -1,29 +1,47 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SiteShell from '../../components/SiteShell'
 import ListingCard from '../../components/marketplace/ListingCard'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
-
-const LISTINGS = [
-  { img: '/images/card-oshi.webp', name: 'Oshi', sub: 'Oracle of Signal · Legendary', price: '1.82 SOL', serial: 'AK-SIG-007', tags: ['BTC', 'Signals', 'Live Skills'], rarity: 'Legendary' },
-  { img: '/images/card-sora.webp', name: 'Sora', sub: 'Signal Weaver · Epic', price: '0.94 SOL', serial: 'AK-SIG-012', tags: ['Signals', 'Weave', 'Feed'], rarity: 'Epic' },
-  { img: '/images/card-nova.webp', name: 'Nova', sub: 'Data Architect · Rare', price: '0.48 SOL', serial: 'AK-DAT-003', tags: ['Analytics', 'Data', 'Queries'], rarity: 'Rare' },
-  { img: '/images/card-4.webp', name: 'Kira', sub: 'Market Oracle · Legendary', price: '2.16 SOL', serial: 'AK-MKT-001', tags: ['Market', 'Predict', 'Live'], rarity: 'Legendary' },
-]
-
-const TAPE_ITEMS = [
-  { name: 'Oshi sold', serial: 'AK-SIG-007', price: '1.82 SOL', time: '2m', dot: 'emerald' },
-  { name: 'Sora listed', serial: 'AK-SIG-012', price: '0.94 SOL', time: '5m', dot: 'blue' },
-  { name: 'Nova sold', serial: 'AK-DAT-003', price: '0.48 SOL', time: '9m', dot: 'violet' },
-  { name: 'Kira listed', serial: 'AK-MKT-001', price: '2.16 SOL', time: '14m', dot: 'amber' },
-  { name: 'Oshi transfer', serial: 'AK-SIG-007', price: '—', time: '18m', dot: 'blue' },
-]
+import { api } from '../../lib/api'
+import type { Collection, Transaction } from '../../types/agentkeys'
 
 const FILTERS = ['All', 'Signal', 'Climate', 'Analytics', 'Genesis']
 
 export default function MarketplacePage() {
   const [activeFilter, setActiveFilter] = useState('All')
+  const [collections, setCollections] = useState<Collection[] | null>(null)
+  const [collectionsLoading, setCollectionsLoading] = useState(true)
+  const [collectionsError, setCollectionsError] = useState<string | null>(null)
+  const [activity, setActivity] = useState<Transaction[] | null>(null)
+  const [activityLoading, setActivityLoading] = useState(true)
+
   useScrollReveal()
+
+  const fetchCollections = () => {
+    setCollectionsLoading(true)
+    setCollectionsError(null)
+    api.get<Collection[]>('/api/collections?sort=recent&limit=20')
+      .then(data => setCollections(data))
+      .catch(err => setCollectionsError(err.message ?? 'Failed to load'))
+      .finally(() => setCollectionsLoading(false))
+  }
+
+  useEffect(() => { fetchCollections() }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<Transaction[]>('/api/activity?limit=5')
+      .then(data => { if (!cancelled) setActivity(data) })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setActivityLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  const floorPrice = collections?.length
+    ? Math.min(...collections.map(c => c.price_sol))
+    : null
+  const totalCards = collections?.reduce((sum, c) => sum + c.minted_count, 0) ?? null
 
   return (
     <SiteShell>
@@ -37,10 +55,10 @@ export default function MarketplacePage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
             {[
-              { label: 'Floor', value: '1.82 SOL' },
-              { label: '24h Volume', value: '42.8 SOL' },
-              { label: 'Cards', value: '8,200' },
-              { label: 'Holders', value: '2,847' },
+              { label: 'Floor', value: floorPrice != null ? `${floorPrice} SOL` : '—' },
+              { label: '24h Volume', value: '42.8 SOL' }, // no route available
+              { label: 'Cards', value: totalCards != null ? totalCards.toLocaleString() : '—' },
+              { label: 'Holders', value: '2,847' }, // no route available
             ].map((s, i) => (
               <div key={i} className="stat-card" style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
@@ -53,25 +71,45 @@ export default function MarketplacePage() {
         {/* Hero grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1.2fr .8fr', gap: 22, marginBottom: 22 }}>
           {/* Spotlight */}
-          <div className="panel" style={{ padding: 24, display: 'flex', gap: 24, alignItems: 'center' }}>
-            <div style={{ width: 200, flexShrink: 0 }}>
-              <img src="/images/card-oshi.webp" alt="Oshi" style={{ width: '100%', display: 'block', borderRadius: 18, boxShadow: '0 0 50px rgba(139,92,246,.2)' }} />
-            </div>
-            <div>
-              <div style={{ textTransform: 'uppercase', letterSpacing: '.2em', fontSize: 11, fontWeight: 800, color: '#f59e0b', marginBottom: 8 }}>✦ Featured</div>
-              <h3 style={{ fontSize: 36, margin: '0 0 6px', fontWeight: 900, letterSpacing: '-.04em' }}>Oshi</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14, margin: '0 0 14px' }}>Oracle of Signal · Legendary · Listed</p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-                {['BTC', 'Signals', 'Live Skills'].map(t => (
-                  <span key={t} style={{ padding: '4px 8px', borderRadius: 999, border: '1px solid rgba(245,158,11,.2)', background: 'rgba(245,158,11,.06)', fontSize: 10, fontWeight: 700, color: '#f59e0b' }}>{t}</span>
-                ))}
-              </div>
-              <div style={{ fontSize: 28, fontWeight: 900, color: '#c084fc', marginBottom: 12 }}>1.82 SOL</div>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button className="btn" style={{ padding: '12px 20px', fontSize: 14 }}>Buy Now</button>
-                <button className="btn secondary" style={{ padding: '12px 20px', fontSize: 14 }}>Details</button>
-              </div>
-            </div>
+          <div className="panel" style={{ padding: 24 }}>
+            {collectionsLoading
+              ? <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+                  <div style={{ width: 200, flexShrink: 0, aspectRatio: '3/4', borderRadius: 18, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ height: 12, width: '40%', borderRadius: 6, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                    <div style={{ height: 36, width: '70%', borderRadius: 6, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                    <div style={{ height: 12, width: '60%', borderRadius: 6, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                  </div>
+                </div>
+              : (() => {
+                  const c = collections?.[0]
+                  if (!c) return <div style={{ color: 'var(--muted)', fontSize: 14, padding: '40px 0', textAlign: 'center' }}>No featured collections</div>
+                  return (
+                    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+                      <div style={{ width: 200, flexShrink: 0, aspectRatio: '3/4', borderRadius: 18, background: 'linear-gradient(135deg, rgba(139,92,246,.28), rgba(96,165,250,.14))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 60, fontWeight: 900, color: 'rgba(255,255,255,.4)', boxShadow: '0 0 50px rgba(139,92,246,.2)' }}>
+                        {c.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div style={{ textTransform: 'uppercase', letterSpacing: '.2em', fontSize: 11, fontWeight: 800, color: '#f59e0b', marginBottom: 8 }}>✦ Featured</div>
+                        <h3 style={{ fontSize: 36, margin: '0 0 6px', fontWeight: 900, letterSpacing: '-.04em' }}>{c.name}</h3>
+                        <p style={{ color: 'var(--muted)', fontSize: 14, margin: '0 0 14px' }}>
+                          {c.skill?.name ?? 'Skill'} · {c.agent?.name ?? 'Agent'}
+                        </p>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+                          {[c.skill?.name, c.agent?.name, `v${c.skill?.current_version ?? 1}`].filter(Boolean).map(t => (
+                            <span key={t} style={{ padding: '4px 8px', borderRadius: 999, border: '1px solid rgba(245,158,11,.2)', background: 'rgba(245,158,11,.06)', fontSize: 10, fontWeight: 700, color: '#f59e0b' }}>{t}</span>
+                          ))}
+                        </div>
+                        <div style={{ fontSize: 28, fontWeight: 900, color: '#c084fc', marginBottom: 12 }}>{c.price_sol} SOL</div>
+                        <div style={{ display: 'flex', gap: 10 }}>
+                          <button className="btn" style={{ padding: '12px 20px', fontSize: 14 }}>Buy Now</button>
+                          <button className="btn secondary" style={{ padding: '12px 20px', fontSize: 14 }}>Details</button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })()
+            }
           </div>
 
           {/* Live tape */}
@@ -81,21 +119,39 @@ export default function MarketplacePage() {
               <div style={{ fontWeight: 800, fontSize: 14 }}>Live Sales</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {TAPE_ITEMS.map((item, i) => (
-                <div key={i} style={{
-                  display: 'grid', gridTemplateColumns: '8px 1fr auto auto', gap: 10,
-                  alignItems: 'center', padding: '10px 12px', borderRadius: 12,
-                  background: 'rgba(255,255,255,.024)', border: '1px solid rgba(255,255,255,.06)',
-                }}>
-                  <div className={`dot ${item.dot}`} />
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700 }}>{item.name}</div>
-                    <div style={{ fontSize: 10, color: 'rgba(245,242,239,.4)' }}>{item.serial}</div>
-                  </div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: '#c084fc' }}>{item.price}</div>
-                  <div style={{ fontSize: 10, color: 'rgba(245,242,239,.36)', textAlign: 'right' }}>{item.time}m</div>
-                </div>
-              ))}
+              {activityLoading
+                ? Array(5).fill(null).map((_, i) => (
+                    <div key={i} style={{ height: 44, borderRadius: 12, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                  ))
+                : (activity ?? []).length === 0
+                  ? <div style={{ color: 'var(--muted)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No recent activity</div>
+                  : activity!.map((tx) => {
+                      const dotColor = tx.type === 'mint' ? 'emerald' : tx.type === 'sale' ? 'violet' : 'blue'
+                      return (
+                        <div key={tx.id} style={{
+                          display: 'grid', gridTemplateColumns: '8px 1fr auto auto', gap: 10,
+                          alignItems: 'center', padding: '10px 12px', borderRadius: 12,
+                          background: 'rgba(255,255,255,.024)', border: '1px solid rgba(255,255,255,.06)',
+                        }}>
+                          <div className={`dot ${dotColor}`} />
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700 }}>
+                              {tx.collection?.name ?? 'Unknown'} {tx.type}
+                            </div>
+                            <div style={{ fontSize: 10, color: 'rgba(245,242,239,.4)' }}>
+                              {tx.tx_signature.slice(0, 8)}…
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 800, color: '#c084fc' }}>
+                            {tx.price_sol > 0 ? `${tx.price_sol} SOL` : '—'}
+                          </div>
+                          <div style={{ fontSize: 10, color: 'rgba(245,242,239,.36)', textAlign: 'right' }}>
+                            {Math.floor((Date.now() - new Date(tx.created_at).getTime()) / 60000)}m
+                          </div>
+                        </div>
+                      )
+                    })
+              }
             </div>
           </div>
         </div>
@@ -120,9 +176,41 @@ export default function MarketplacePage() {
 
         {/* Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18, marginBottom: 22 }} className="four-col-grid">
-          {LISTINGS.map((card, i) => (
-            <ListingCard key={i} {...card} />
-          ))}
+          {collectionsLoading
+            ? Array(4).fill(null).map((_, i) => (
+                <div key={i} className="panel" style={{ padding: 18 }}>
+                  <div style={{ aspectRatio: '3/4', borderRadius: 18, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', marginBottom: 14 }} />
+                  <div style={{ height: 16, borderRadius: 6, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', marginBottom: 8 }} />
+                  <div style={{ height: 12, width: '70%', borderRadius: 6, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                </div>
+              ))
+            : collectionsError
+              ? <div style={{ gridColumn: '1/-1' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 0', gap: 10 }}>
+                    <div style={{ fontSize: 13, color: '#f87171', fontWeight: 700 }}>⚠ Failed to load</div>
+                    <div style={{ fontSize: 12, color: 'var(--muted)' }}>{collectionsError}</div>
+                    <button className="btn secondary" style={{ marginTop: 8, fontSize: 12 }} onClick={fetchCollections}>Try again</button>
+                  </div>
+                </div>
+              : (collections ?? []).length === 0
+                ? <div style={{ gridColumn: '1/-1', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0', gap: 12 }}>
+                    <div style={{ fontSize: 40, opacity: 0.3 }}>◈</div>
+                    <div style={{ fontWeight: 800, fontSize: 18 }}>No listings yet</div>
+                    <div style={{ color: 'var(--muted)', fontSize: 14 }}>Collections will appear here once minted.</div>
+                  </div>
+                : collections!.map(c => (
+                    <ListingCard
+                      key={c.id}
+                      img=""
+                      name={c.name}
+                      sub={`${c.skill?.name ?? 'Skill'} · ${c.minted_count}/${c.max_supply} minted`}
+                      price={`${c.price_sol} SOL`}
+                      serial={c.id.slice(0, 8).toUpperCase()}
+                      tags={[c.skill?.name ?? 'Skill', c.agent?.name ?? 'Agent'].filter(Boolean)}
+                      rarity="Common"
+                    />
+                  ))
+          }
         </div>
 
         {/* Secondary */}

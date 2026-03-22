@@ -42,7 +42,12 @@ export default function ListingCard({ img, name, sub, price, serial, tags, rarit
   return (
     <div ref={cardRef} className="listing-card panel" style={{ padding: 18, cursor: 'pointer' }}>
       <div style={{ borderRadius: 18, overflow: 'hidden', marginBottom: 14 }}>
-        <img src={img} alt={name} style={{ width: '100%', display: 'block', transition: 'transform .22s ease' }} />
+        {img
+          ? <img src={img} alt={name} style={{ width: '100%', display: 'block', transition: 'transform .22s ease' }} />
+          : <div style={{ width: '100%', aspectRatio: '3/4', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(139,92,246,.28), rgba(96,165,250,.14))', fontSize: 36, fontWeight: 900, color: 'rgba(255,255,255,.4)' }}>
+              {name.charAt(0).toUpperCase()}
+            </div>
+        }
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
         <div>

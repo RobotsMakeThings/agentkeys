@@ -2,13 +2,16 @@
 import { useRef, useEffect, useState } from 'react'
 import SiteShell from '../../components/SiteShell'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
+import { api } from '../../lib/api'
+import type { Collection } from '../../types/agentkeys'
 
-const TRENDING = [
-  { serial: 'AK-SIG-007', name: 'Oshi', sub: 'Oracle of Signal · Legendary', price: '1.82 SOL', img: '/images/card-oshi.webp' },
-  { serial: 'AK-SIG-012', name: 'Sora', sub: 'Signal Weaver · Epic', price: '0.94 SOL', img: '/images/card-sora.webp' },
-  { serial: 'AK-DAT-003', name: 'Nova', sub: 'Data Architect · Rare', price: '0.48 SOL', img: '/images/card-nova.webp' },
-  { serial: 'AK-MKT-001', name: 'Kira', sub: 'Market Oracle · Legendary', price: '2.16 SOL', img: '/images/card-4.webp' },
-]
+interface LookupResults {
+  agents?: Array<{ id: string; name: string; bio: string | null; avatar_url: string | null; wallet_address: string }>
+  skills?: Array<{ id: string; name: string; slug: string; current_version: number; agent: { name: string } }>
+  collections?: Collection[]
+}
+
+type SelectedAgent = { id: string; name: string; bio: string | null; wallet_address: string }
 
 function HoloCard({ img }: { img: string }) {
   const panelRef = useRef<HTMLDivElement>(null)
@@ -65,8 +68,60 @@ function HoloCard({ img }: { img: string }) {
 export default function LookupPage() {
   const [activeTab, setActiveTab] = useState<'serial' | 'wallet' | 'agent'>('serial')
   const [query, setQuery] = useState('')
-  const [selectedCard, setSelectedCard] = useState(TRENDING[0])
+  const [searchResults, setSearchResults] = useState<LookupResults | null>(null)
+  const [searching, setSearching] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
+  const [trendingCollections, setTrendingCollections] = useState<Collection[] | null>(null)
+  const [trendingLoading, setTrendingLoading] = useState(true)
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null)
+  const [selectedAgent, setSelectedAgent] = useState<SelectedAgent | null>(null)
+
   useScrollReveal()
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<Collection[]>('/api/collections?sort=popular&limit=4')
+      .then(data => { if (!cancelled) setTrendingCollections(data) })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setTrendingLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    if (trendingCollections?.[0] && !selectedCollection) {
+      setSelectedCollection(trendingCollections[0])
+    }
+  }, [trendingCollections])
+
+  useEffect(() => {
+    if (searchResults?.collections?.[0]) {
+      setSelectedCollection(searchResults.collections[0])
+      setSelectedAgent(null)
+    } else if (searchResults?.agents?.[0]) {
+      setSelectedAgent(searchResults.agents[0])
+      setSelectedCollection(null)
+    }
+  }, [searchResults])
+
+  const handleSearch = () => {
+    if (!query.trim()) return
+    setSearching(true)
+    setSearchError(null)
+    setSearchResults(null)
+
+    const typeParam = activeTab === 'serial'
+      ? 'collection'
+      : activeTab === 'agent' || activeTab === 'wallet'
+      ? 'agent'
+      : undefined
+
+    const path = `/api/lookup?q=${encodeURIComponent(query.trim())}${typeParam ? `&type=${typeParam}` : ''}`
+
+    api.get<LookupResults>(path)
+      .then(data => setSearchResults(data))
+      .catch(err => setSearchError(err.message ?? 'Search failed'))
+      .finally(() => setSearching(false))
+  }
 
   return (
     <SiteShell>
@@ -94,7 +149,8 @@ export default function LookupPage() {
               <input
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder={activeTab === 'serial' ? 'e.g. AK-SIG-007' : activeTab === 'wallet' ? 'e.g. wallet_0xoshi...' : 'e.g. oshi.oracle'}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                placeholder={activeTab === 'serial' ? 'Search collection name…' : 'Search by agent name…'}
                 style={{
                   flex: 1, padding: '14px 18px', borderRadius: 14,
                   border: '1px solid rgba(255,255,255,.08)',
@@ -102,46 +158,88 @@ export default function LookupPage() {
                   color: '#f5f2ef', fontSize: 15, fontFamily: 'inherit', outline: 'none',
                 }}
               />
-              <button className="btn">Search</button>
+              <button className="btn" onClick={handleSearch}>
+                {searching ? 'Searching…' : 'Search'}
+              </button>
             </div>
+            {activeTab === 'wallet' && (
+              <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+                Wallet address search is not yet available. Showing agent name results.
+              </p>
+            )}
           </div>
+
+          {/* Search results message */}
+          {searchResults && !searching && (
+            <div style={{ marginTop: 16 }}>
+              {searchError
+                ? <div style={{ color: '#f87171', fontSize: 13 }}>⚠ {searchError}</div>
+                : ((searchResults.collections?.length ?? 0) === 0 && (searchResults.agents?.length ?? 0) === 0 && (searchResults.skills?.length ?? 0) === 0)
+                  ? <div style={{ color: 'var(--muted)', fontSize: 13 }}>No results for &quot;{query}&quot;</div>
+                  : null
+              }
+            </div>
+          )}
         </div>
 
         {/* Results */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 20, marginBottom: 22 }} className="two-col-grid">
-          {/* Detail */}
-          <div className="panel" style={{ padding: 24 }}>
-            <img src={selectedCard.img || '/images/card-oshi.webp'} alt={selectedCard.name} style={{ width: 200, display: 'block', margin: '0 auto 20px', borderRadius: 18, boxShadow: '0 0 40px rgba(139,92,246,.18)' }} />
-            <h3 style={{ fontSize: 32, margin: '0 0 4px', fontWeight: 900 }}>{selectedCard.name}</h3>
-            <p style={{ color: 'var(--muted)', margin: '0 0 14px', fontSize: 14 }}>{selectedCard.sub}</p>
-            <div style={{ padding: '8px 14px', background: 'rgba(139,92,246,.1)', borderRadius: 10, display: 'inline-block', fontFamily: 'monospace', fontSize: 13, color: '#c084fc', marginBottom: 16 }}>{selectedCard.serial}</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
-              {[
-                { label: 'Owner', value: 'wallet_0xoshi' },
-                { label: 'Floor', value: selectedCard.price },
-                { label: 'Status', value: 'Live Listing' },
-              ].map((s, i) => (
-                <div key={i} className="stat-card" style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
-                  <div style={{ fontWeight: 800, fontSize: 12 }}>{s.value}</div>
+          {/* Detail panel — replaced HoloCard entirely with data-driven panel */}
+          <div className="panel" style={{ padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            {trendingLoading && !selectedCollection
+              ? <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', alignItems: 'center' }}>
+                  <div style={{ width: 200, aspectRatio: '3/4', borderRadius: 18, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', marginBottom: 20 }} />
+                  <div style={{ height: 32, width: '60%', borderRadius: 8, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                  <div style={{ height: 14, width: '40%', borderRadius: 6, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
                 </div>
-              ))}
-            </div>
-            <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.7, margin: '0 0 16px' }}>
-              Legendary-tier keycard granting access to live market signal feed, BTC context window, and real-time analytics API.
-            </p>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
-              {['BTC', 'Signals', 'Live Skills'].map(t => (
-                <span key={t} style={{ padding: '4px 10px', borderRadius: 999, border: '1px solid rgba(192,132,252,.18)', background: 'rgba(139,92,246,.06)', fontSize: 11, fontWeight: 700, color: '#c084fc' }}>{t}</span>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <a href="/marketplace" className="btn" style={{ fontSize: 13, padding: '12px 18px' }}>View Market</a>
-              <a href="/mint" className="btn secondary" style={{ fontSize: 13, padding: '12px 18px' }}>Mint More</a>
-            </div>
+              : selectedAgent
+                ? <>
+                    <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(139,92,246,.4), rgba(96,165,250,.2))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, fontWeight: 900, color: 'rgba(255,255,255,.6)', margin: '0 auto 20px' }}>
+                      {selectedAgent.name.charAt(0).toUpperCase()}
+                    </div>
+                    <h3 style={{ fontSize: 32, margin: '0 0 4px', fontWeight: 900 }}>{selectedAgent.name}</h3>
+                    <p style={{ color: 'var(--muted)', margin: '0 0 14px', fontSize: 14 }}>{selectedAgent.bio ?? 'No bio available'}</p>
+                    <div style={{ padding: '8px 14px', background: 'rgba(139,92,246,.1)', borderRadius: 10, display: 'inline-block', fontFamily: 'monospace', fontSize: 11, color: '#c084fc', marginBottom: 16, wordBreak: 'break-all' }}>
+                      {selectedAgent.wallet_address}
+                    </div>
+                  </>
+                : selectedCollection
+                  ? <>
+                      <div style={{ width: 200, aspectRatio: '3/4', borderRadius: 18, background: 'linear-gradient(135deg, rgba(139,92,246,.28), rgba(96,165,250,.14))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 60, fontWeight: 900, color: 'rgba(255,255,255,.4)', margin: '0 auto 20px', boxShadow: '0 0 40px rgba(139,92,246,.18)' }}>
+                        {selectedCollection.name.charAt(0).toUpperCase()}
+                      </div>
+                      <h3 style={{ fontSize: 32, margin: '0 0 4px', fontWeight: 900 }}>{selectedCollection.name}</h3>
+                      <p style={{ color: 'var(--muted)', margin: '0 0 14px', fontSize: 14 }}>
+                        {selectedCollection.skill?.name ?? 'Skill'} · {selectedCollection.agent?.name ?? 'Agent'}
+                      </p>
+                      <div style={{ padding: '8px 14px', background: 'rgba(139,92,246,.1)', borderRadius: 10, display: 'inline-block', fontFamily: 'monospace', fontSize: 13, color: '#c084fc', marginBottom: 16 }}>
+                        {selectedCollection.id.slice(0, 8).toUpperCase()}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16, width: '100%' }}>
+                        {[
+                          { label: 'Supply', value: `${selectedCollection.minted_count}/${selectedCollection.max_supply}` },
+                          { label: 'Price', value: `${selectedCollection.price_sol} SOL` },
+                          { label: 'Status', value: selectedCollection.is_active ? 'Active' : 'Inactive' },
+                        ].map((s, i) => (
+                          <div key={i} className="stat-card" style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
+                            <div style={{ fontWeight: 800, fontSize: 12 }}>{s.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        <a href="/marketplace" className="btn" style={{ fontSize: 13, padding: '12px 18px' }}>View Market</a>
+                        <a href="/mint" className="btn secondary" style={{ fontSize: 13, padding: '12px 18px' }}>Mint More</a>
+                      </div>
+                    </>
+                  : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, color: 'var(--muted)' }}>
+                      <div style={{ fontSize: 40, opacity: 0.3 }}>◈</div>
+                      <div style={{ fontSize: 14 }}>Search above to explore</div>
+                    </div>
+            }
           </div>
 
-          {/* Holo card preview */}
+          {/* Holo card preview — decorative, keep as-is */}
           <HoloCard img="/images/card-oshi.webp" />
         </div>
 
@@ -149,19 +247,34 @@ export default function LookupPage() {
         <div className="panel" style={{ padding: 24 }}>
           <h3 style={{ fontSize: 22, margin: '0 0 18px', fontWeight: 800 }}>Trending Lookups</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }} className="four-col-grid">
-            {TRENDING.map((item, i) => (
-              <div
-                key={i}
-                className="stat-card"
-                style={{ cursor: 'pointer', transition: 'all .16s ease' }}
-                onClick={() => setSelectedCard(item)}
-              >
-                <img src={item.img} alt="" style={{ width: 60, display: 'block', margin: '0 auto 10px', borderRadius: 10 }} />
-                <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 2, textAlign: 'center' }}>{item.name}</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#c084fc', textAlign: 'center', marginBottom: 4 }}>{item.serial}</div>
-                <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center' }}>{item.price}</div>
-              </div>
-            ))}
+            {trendingLoading
+              ? Array(4).fill(null).map((_, i) => (
+                  <div key={i} className="stat-card" style={{ padding: 12 }}>
+                    <div style={{ width: 60, height: 80, borderRadius: 10, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', margin: '0 auto 10px' }} />
+                    <div style={{ height: 14, width: '60%', borderRadius: 6, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', margin: '0 auto 6px' }} />
+                    <div style={{ height: 10, width: '40%', borderRadius: 6, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite', margin: '0 auto' }} />
+                  </div>
+                ))
+              : (trendingCollections ?? []).length === 0
+                ? <div style={{ gridColumn: '1/-1', color: 'var(--muted)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No collections available</div>
+                : trendingCollections!.map((c) => (
+                    <div
+                      key={c.id}
+                      className="stat-card"
+                      style={{ cursor: 'pointer', transition: 'all .16s ease' }}
+                      onClick={() => { setSelectedCollection(c); setSelectedAgent(null) }}
+                    >
+                      <div style={{ width: 60, height: 80, borderRadius: 10, background: 'linear-gradient(135deg, rgba(139,92,246,.28), rgba(96,165,250,.14))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 900, color: 'rgba(255,255,255,.4)', margin: '0 auto 10px' }}>
+                        {c.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 2, textAlign: 'center' }}>{c.name}</div>
+                      <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#c084fc', textAlign: 'center', marginBottom: 4 }}>
+                        {c.id.slice(0, 8).toUpperCase()}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center' }}>{c.price_sol} SOL</div>
+                    </div>
+                  ))
+            }
           </div>
         </div>
       </div>

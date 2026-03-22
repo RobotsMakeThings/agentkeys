@@ -1,15 +1,31 @@
-export default function HomePreviewSections() {
-  const stats = [
-    { label: 'Floor', value: '1.82 SOL', delta: '+12.4%', up: true },
-    { label: '24h Volume', value: '42.8 SOL', delta: '+8.7%', up: true },
-    { label: 'Cards', value: '8,200', delta: '+142', up: true },
-    { label: 'Holders', value: '2,847', delta: '+38', up: true },
-  ]
+'use client'
+import { useState, useEffect } from 'react'
+import { api } from '../../lib/api'
+import type { Collection } from '../../types/agentkeys'
 
-  const features = [
-    { img: '/images/card-oshi.webp', name: 'Oshi', sub: 'Legendary · Oracle of Signal', price: '1.82 SOL' },
-    { img: '/images/card-sora.webp', name: 'Sora', sub: 'Epic · Signal Weaver', price: '0.94 SOL' },
-    { img: '/images/card-nova.webp', name: 'Nova', sub: 'Rare · Data Architect', price: '0.48 SOL' },
+export default function HomePreviewSections() {
+  const [topCollections, setTopCollections] = useState<Collection[] | null>(null)
+  const [loadingCollections, setLoadingCollections] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<Collection[]>('/api/collections?sort=popular&limit=3')
+      .then(data => { if (!cancelled) setTopCollections(data) })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingCollections(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  const floor = topCollections?.length
+    ? Math.min(...topCollections.map(c => c.price_sol))
+    : null
+  const totalMinted = topCollections?.reduce((sum, c) => sum + c.minted_count, 0) ?? null
+
+  const stats = [
+    { label: 'Floor', value: floor != null ? `${floor} SOL` : '1.82 SOL', delta: '', up: true },
+    { label: '24h Volume', value: '42.8 SOL', delta: '', up: true }, // no route available
+    { label: 'Cards', value: totalMinted != null ? totalMinted.toLocaleString() : '8,200', delta: '', up: true },
+    { label: 'Holders', value: '2,847', delta: '', up: true }, // no route available
   ]
 
   return (
@@ -31,25 +47,35 @@ export default function HomePreviewSections() {
               <div key={i} className="stat-card">
                 <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
                 <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-.02em' }}>{s.value}</div>
-                <div style={{ fontSize: 11, color: s.up ? '#34d399' : '#f87171', fontWeight: 700, marginTop: 2 }}>{s.delta}</div>
               </div>
             ))}
           </div>
 
           {/* Feature cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-            {features.map((card, i) => (
-              <a key={i} href="/marketplace" style={{ textDecoration: 'none' }}>
-                <div className="listing-card panel" style={{ padding: 12, cursor: 'pointer' }}>
-                  <div style={{ borderRadius: 14, overflow: 'hidden', marginBottom: 10 }}>
-                    <img src={card.img} alt={card.name} style={{ width: '100%', display: 'block', transition: 'transform .22s ease' }} />
+            {loadingCollections
+              ? Array(3).fill(null).map((_, i) => (
+                  <div key={i} className="listing-card panel" style={{ padding: 12 }}>
+                    <div style={{ aspectRatio: '3/4', borderRadius: 14, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', marginBottom: 10 }} />
+                    <div style={{ height: 14, borderRadius: 6, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', marginBottom: 6 }} />
+                    <div style={{ height: 10, width: '60%', borderRadius: 6, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
                   </div>
-                  <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 2 }}>{card.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>{card.sub}</div>
-                  <div style={{ fontWeight: 900, fontSize: 15, color: '#c084fc' }}>{card.price}</div>
-                </div>
-              </a>
-            ))}
+                ))
+              : (topCollections ?? []).map((c) => (
+                  <a key={c.id} href="/marketplace" style={{ textDecoration: 'none' }}>
+                    <div className="listing-card panel" style={{ padding: 12, cursor: 'pointer' }}>
+                      <div style={{ aspectRatio: '3/4', borderRadius: 14, overflow: 'hidden', marginBottom: 10, background: 'linear-gradient(135deg, rgba(139,92,246,.28), rgba(96,165,250,.14))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, fontWeight: 900, color: 'rgba(255,255,255,.4)' }}>
+                        {c.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 2 }}>{c.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>
+                        {c.skill?.name ?? 'Unknown Skill'} · {c.minted_count}/{c.max_supply} minted
+                      </div>
+                      <div style={{ fontWeight: 900, fontSize: 15, color: '#c084fc' }}>{c.price_sol} SOL</div>
+                    </div>
+                  </a>
+                ))
+            }
           </div>
         </div>
 
@@ -87,7 +113,7 @@ export default function HomePreviewSections() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12 }}>
             {[
               { label: 'Packs Left', value: '2,847' },
-              { label: 'Floor', value: '1.82 SOL' },
+              { label: 'Floor', value: floor != null ? `${floor} SOL` : '1.82 SOL' },
               { label: 'Genesis %', value: '4.2%' },
             ].map((s, i) => (
               <div key={i} className="stat-card" style={{ textAlign: 'center', padding: '10px 8px' }}>

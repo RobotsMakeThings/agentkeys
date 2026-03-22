@@ -7,11 +7,15 @@ import FoundrySection from '../components/home/FoundrySection'
 import HomePreviewSections from '../components/home/HomePreviewSections'
 import IntroOverlay from '../components/home/IntroOverlay'
 import { useScrollReveal } from '../hooks/useScrollReveal'
+import { api } from '../lib/api'
+import type { Collection } from '../types/agentkeys'
 
 export default function HomePage() {
   const [showOverlay, setShowOverlay] = useState(false)
   const heroCopyRef = useRef<HTMLDivElement>(null)
   const heroCardRef = useRef<HTMLDivElement>(null)
+  const [collections, setCollections] = useState<Collection[] | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
 
   useScrollReveal()
 
@@ -31,6 +35,22 @@ export default function HomePage() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<Collection[]>('/api/collections?limit=100')
+      .then(data => { if (!cancelled) setCollections(data) })
+      .catch(() => { /* silently fail, keep static fallback */ })
+      .finally(() => { if (!cancelled) setStatsLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  const cardsMinted = collections
+    ? collections.reduce((sum, c) => sum + c.minted_count, 0)
+    : null
+  const activeAgents = collections
+    ? new Set(collections.map(c => c.agent_id)).size
+    : null
 
   const dismissOverlay = () => {
     sessionStorage.setItem('ak-pack-opened', '1')
@@ -64,9 +84,9 @@ export default function HomePage() {
             {/* Mini stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 30, maxWidth: 440 }}>
               {[
-                { label: 'Active Agents', value: '127' },
-                { label: 'Cards Minted', value: '8.2K' },
-                { label: 'Total Volume', value: '156 SOL' },
+                { label: 'Active Agents', value: statsLoading ? '…' : String(activeAgents ?? '127') },
+                { label: 'Cards Minted', value: statsLoading ? '…' : cardsMinted != null ? (cardsMinted >= 1000 ? `${(cardsMinted / 1000).toFixed(1)}K` : String(cardsMinted)) : '8.2K' },
+                { label: 'Total Volume', value: '156 SOL' }, // no aggregation route available
               ].map((s, i) => (
                 <div key={i} className="stat-card">
                   <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>

@@ -2,6 +2,8 @@
 import { useRef, useEffect, useState } from 'react'
 import SiteShell from '../../components/SiteShell'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
+import { api } from '../../lib/api'
+import type { Collection } from '../../types/agentkeys'
 
 function MintVisual() {
   const panelRef = useRef<HTMLDivElement>(null)
@@ -84,7 +86,24 @@ const FAN_CARDS = [
 
 export default function MintPage() {
   const [qty, setQty] = useState(1)
+  const [collections, setCollections] = useState<Collection[] | null>(null)
+  const [collectionsLoading, setCollectionsLoading] = useState(true)
+
   useScrollReveal()
+
+  useEffect(() => {
+    let cancelled = false
+    api.get<Collection[]>('/api/collections?limit=100')
+      .then(data => { if (!cancelled) setCollections(data) })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setCollectionsLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  const floor = collections?.length
+    ? Math.min(...collections.map(c => c.price_sol))
+    : null
+  const totalRemaining = collections?.reduce((sum, c) => sum + (c.max_supply - c.minted_count), 0) ?? null
 
   return (
     <SiteShell>
@@ -110,15 +129,19 @@ export default function MintPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-              <button className="btn" style={{ fontSize: 15 }}>Mint Now — {(2.4 * qty).toFixed(1)} SOL</button>
+              {/* Mint button disabled — requires wallet integration + tx_signature from Solana */}
+              <button className="btn" style={{ fontSize: 15, opacity: 0.7, cursor: 'not-allowed' }} disabled>
+                Mint Now — {(2.4 * qty).toFixed(1)} SOL
+                <span style={{ fontSize: 11, opacity: 0.7 }}> (Connect wallet to enable)</span>
+              </button>
               <button className="btn secondary" style={{ fontSize: 15 }}>View Contents</button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
               {[
-                { label: 'Packs Remaining', value: '2,847' },
-                { label: 'Floor', value: '1.82 SOL' },
-                { label: 'Genesis Odds', value: '4.2%' },
+                { label: 'Packs Remaining', value: collectionsLoading ? '…' : totalRemaining != null ? totalRemaining.toLocaleString() : '—' },
+                { label: 'Floor', value: collectionsLoading ? '…' : floor != null ? `${floor} SOL` : '—' },
+                { label: 'Genesis Odds', value: '4.2%' }, // no route available
               ].map((s, i) => (
                 <div key={i} className="stat-card" style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>

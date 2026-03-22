@@ -1,16 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SiteShell from '../../components/SiteShell'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
-
-const FEED_ITEMS = [
-  { img: '/images/card-oshi.webp', action: 'Oshi sold', detail: 'AK-SIG-007 · wallet_0xoshi → wallet_0xnova', time: '2m', price: '1.82 SOL', type: 'sale' },
-  { img: '/images/card-sora.webp', action: 'Sora listed', detail: 'AK-SIG-012 · wallet_0xsora', time: '5m', price: '0.94 SOL', type: 'listing' },
-  { img: '/images/card-nova.webp', action: 'Nova minted', detail: 'AK-DAT-003 · wallet_0xdat → wallet_0xnova', time: '9m', price: '0.48 SOL', type: 'mint' },
-  { img: '/images/card-4.webp', action: 'Kira sold', detail: 'AK-MKT-001 · wallet_0xkira → wallet_0xalpha', time: '14m', price: '2.16 SOL', type: 'sale' },
-  { img: '/images/card-5.webp', action: 'Axe listed', detail: 'AK-PRT-009 · wallet_0xaxe', time: '22m', price: '0.24 SOL', type: 'listing' },
-  { img: '/images/card-oshi.webp', action: 'Oshi transfer', detail: 'AK-SIG-007 · wallet_0xnova → wallet_0xomega', time: '31m', price: '—', type: 'transfer' },
-]
+import { api } from '../../lib/api'
+import type { Transaction } from '../../types/agentkeys'
 
 const TOP_MOVERS = [
   { img: '/images/card-oshi.webp', name: 'Oshi', change: '+24.6%', up: true },
@@ -27,7 +20,32 @@ const typeColor: Record<string, string> = {
 
 export default function ActivityPage() {
   const [activeFilter, setActiveFilter] = useState('All')
+  const [transactions, setTransactions] = useState<Transaction[] | null>(null)
+  const [txLoading, setTxLoading] = useState(true)
+  const [txError, setTxError] = useState<string | null>(null)
+
   useScrollReveal()
+
+  const fetchTransactions = () => {
+    setTxLoading(true)
+    setTxError(null)
+    api.get<Transaction[]>('/api/activity?limit=20')
+      .then(data => setTransactions(data))
+      .catch(err => setTxError(err.message ?? 'Failed to load'))
+      .finally(() => setTxLoading(false))
+  }
+
+  useEffect(() => { fetchTransactions() }, [])
+
+  const txCount = transactions?.length ?? null
+  const txSummary = transactions ? {
+    sales: transactions.filter(t => t.type === 'sale').length,
+    mints: transactions.filter(t => t.type === 'mint').length,
+    transfers: transactions.filter(t => t.type === 'transfer').length,
+    avgPrice: transactions.length > 0
+      ? (transactions.reduce((sum, t) => sum + t.price_sol, 0) / transactions.length).toFixed(2)
+      : null,
+  } : null
 
   return (
     <SiteShell>
@@ -45,9 +63,9 @@ export default function ActivityPage() {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
               {[
-                { label: '24h Volume', value: '42.8 SOL' },
-                { label: 'Transactions', value: '847' },
-                { label: 'Active Wallets', value: '312' },
+                { label: '24h Volume', value: '42.8 SOL' }, // no route available
+                { label: 'Transactions', value: txCount != null ? String(txCount) + (txCount === 20 ? '+' : '') : '—' },
+                { label: 'Active Wallets', value: '312' }, // no route available
               ].map((s, i) => (
                 <div key={i} className="stat-card">
                   <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
@@ -114,35 +132,78 @@ export default function ActivityPage() {
               <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Transaction Feed</h3>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {FEED_ITEMS.map((item, i) => (
-                <div key={i} className="feed-item" style={{ display: 'grid', gridTemplateColumns: '56px 1fr auto', gap: 12, alignItems: 'center', padding: 12 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 14, overflow: 'hidden', flexShrink: 0 }}>
-                    <img src={item.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <strong style={{ fontSize: 14, fontWeight: 800 }}>{item.action}</strong>
-                      <span style={{
-                        padding: '2px 7px', borderRadius: 999,
-                        background: `${typeColor[item.type]}18`,
-                        color: typeColor[item.type],
-                        fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.08em',
-                      }}>{item.type}</span>
+              {txLoading
+                ? Array(6).fill(null).map((_, i) => (
+                    <div key={i} className="feed-item" style={{ display: 'grid', gridTemplateColumns: '56px 1fr auto', gap: 12, alignItems: 'center', padding: 12 }}>
+                      <div style={{ width: 56, height: 56, borderRadius: 14, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite', flexShrink: 0 }} />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ height: 14, width: '60%', borderRadius: 6, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                        <div style={{ height: 10, width: '80%', borderRadius: 6, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
+                        <div style={{ height: 13, width: 60, borderRadius: 6, background: 'rgba(255,255,255,.06)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                        <div style={{ height: 10, width: 40, borderRadius: 6, background: 'rgba(255,255,255,.04)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                      </div>
                     </div>
-                    <p style={{ margin: 0, color: 'rgba(228,228,231,.46)', fontSize: 12 }}>{item.detail}</p>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: '#c084fc', marginBottom: 4 }}>{item.price}</div>
-                    <div style={{ fontSize: 10, color: 'rgba(228,228,231,.36)', textTransform: 'uppercase', letterSpacing: '.12em' }}>{item.time}m ago</div>
-                  </div>
-                </div>
-              ))}
+                  ))
+                : txError
+                  ? <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 0', gap: 10 }}>
+                      <div style={{ fontSize: 13, color: '#f87171', fontWeight: 700 }}>⚠ Failed to load</div>
+                      <div style={{ fontSize: 12, color: 'var(--muted)' }}>{txError}</div>
+                      <button className="btn secondary" style={{ marginTop: 8, fontSize: 12 }} onClick={fetchTransactions}>Try again</button>
+                    </div>
+                  : (transactions ?? []).length === 0
+                    ? <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0', gap: 12 }}>
+                        <div style={{ fontSize: 40, opacity: 0.3 }}>◈</div>
+                        <div style={{ fontWeight: 800, fontSize: 18 }}>No activity yet</div>
+                        <div style={{ color: 'var(--muted)', fontSize: 14 }}>Transactions will appear here in real time.</div>
+                      </div>
+                    : transactions!.map((tx) => {
+                        const ageMs = Date.now() - new Date(tx.created_at).getTime()
+                        const ageMin = Math.floor(ageMs / 60000)
+                        const ageDisplay = ageMin < 60 ? `${ageMin}m` : `${Math.floor(ageMin / 60)}h`
+                        const action = `${tx.collection?.name ?? 'Collection'} ${tx.type}`
+                        const detail = tx.type === 'mint'
+                          ? `Minted by ${tx.buyer?.name ?? tx.buyer_agent_id.slice(0, 8)}`
+                          : tx.type === 'sale' && tx.seller
+                          ? `${tx.seller.name} → ${tx.buyer?.name ?? 'buyer'}`
+                          : tx.type === 'transfer' && tx.seller
+                          ? `${tx.seller.name} → ${tx.buyer?.name ?? 'recipient'}`
+                          : tx.tx_signature.slice(0, 12) + '…'
+
+                        return (
+                          <div key={tx.id} className="feed-item" style={{ display: 'grid', gridTemplateColumns: '56px 1fr auto', gap: 12, alignItems: 'center', padding: 12 }}>
+                            <div style={{ width: 56, height: 56, borderRadius: 14, overflow: 'hidden', flexShrink: 0, background: 'linear-gradient(135deg, rgba(139,92,246,.28), rgba(96,165,250,.14))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 900, color: 'rgba(255,255,255,.4)' }}>
+                              {(tx.collection?.name ?? '?').charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                <strong style={{ fontSize: 14, fontWeight: 800 }}>{action}</strong>
+                                <span style={{
+                                  padding: '2px 7px', borderRadius: 999,
+                                  background: `${typeColor[tx.type] ?? '#fff'}18`,
+                                  color: typeColor[tx.type] ?? '#fff',
+                                  fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.08em',
+                                }}>{tx.type}</span>
+                              </div>
+                              <p style={{ margin: 0, color: 'rgba(228,228,231,.46)', fontSize: 12 }}>{detail}</p>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontWeight: 800, fontSize: 13, color: '#c084fc', marginBottom: 4 }}>
+                                {tx.price_sol > 0 ? `${tx.price_sol} SOL` : '—'}
+                              </div>
+                              <div style={{ fontSize: 10, color: 'rgba(228,228,231,.36)', textTransform: 'uppercase', letterSpacing: '.12em' }}>{ageDisplay} ago</div>
+                            </div>
+                          </div>
+                        )
+                      })
+              }
             </div>
           </div>
 
           {/* Side */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {/* Top movers */}
+            {/* Top movers — static, no historical price data in API */}
             <div className="panel" style={{ padding: 24 }}>
               <h3 style={{ fontSize: 18, margin: '0 0 16px', fontWeight: 800 }}>Top Movers (24h)</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -163,12 +224,12 @@ export default function ActivityPage() {
               <h3 style={{ fontSize: 18, margin: '0 0 16px', fontWeight: 800 }}>Activity Summary</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
-                  { label: 'Total Sales', value: '284', note: '24h' },
-                  { label: 'New Listings', value: '142', note: '24h' },
-                  { label: 'Mints', value: '98', note: '24h' },
-                  { label: 'Transfers', value: '323', note: '24h' },
-                  { label: 'Unique Wallets', value: '312', note: 'active' },
-                  { label: 'Avg Price', value: '0.84 SOL', note: '24h' },
+                  { label: 'Total Sales', value: txSummary ? String(txSummary.sales) : '—', note: 'last 20' },
+                  { label: 'New Listings', value: '142', note: '24h' }, // no route available
+                  { label: 'Mints', value: txSummary ? String(txSummary.mints) : '—', note: 'last 20' },
+                  { label: 'Transfers', value: txSummary ? String(txSummary.transfers) : '—', note: 'last 20' },
+                  { label: 'Unique Wallets', value: '312', note: 'active' }, // no route available
+                  { label: 'Avg Price', value: txSummary?.avgPrice ? `${txSummary.avgPrice} SOL` : '—', note: 'last 20' },
                 ].map((s, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,.05)' }}>
                     <span style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 600 }}>{s.label}</span>
