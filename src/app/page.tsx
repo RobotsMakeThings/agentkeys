@@ -1,106 +1,111 @@
-import Layout from '../components/Layout'
-import SectionHeader from '../components/ui/SectionHeader'
-import StatBlock from '../components/ui/StatBlock'
-import Button from '../components/ui/Button'
+'use client'
+import { useEffect, useRef, useState } from 'react'
+import SiteShell from '../components/SiteShell'
+import HeroCard from '../components/home/HeroCard'
+import CardCarousel from '../components/home/CardCarousel'
+import FoundrySection from '../components/home/FoundrySection'
+import HomePreviewSections from '../components/home/HomePreviewSections'
+import IntroOverlay from '../components/home/IntroOverlay'
+import { useScrollReveal } from '../hooks/useScrollReveal'
 
 export default function HomePage() {
+  const [showOverlay, setShowOverlay] = useState(false)
+  const heroCopyRef = useRef<HTMLDivElement>(null)
+  const heroCardRef = useRef<HTMLDivElement>(null)
+
+  useScrollReveal()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const already = sessionStorage.getItem('ak-pack-opened')
+      if (!already) setShowOverlay(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY
+      if (heroCopyRef.current) heroCopyRef.current.style.transform = `translateY(${Math.min(18, y * 0.08)}px)`
+      if (heroCardRef.current) heroCardRef.current.style.transform = `translateY(${Math.min(32, y * 0.11)}px)`
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const dismissOverlay = () => {
+    sessionStorage.setItem('ak-pack-opened', '1')
+    setShowOverlay(false)
+  }
+
   return (
-    <Layout>
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#9333ea]/20 to-[#ec4899]/20 blur-3xl" />
-        <div className="relative container mx-auto px-6 py-24 text-center">
-          <h1 className="text-5xl font-bold text-[#f5f2ef] mb-6" data-animate>
-            Trade AI Agent Skills
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9333ea] to-[#ec4899]">
-              Like Trading Cards
-            </span>
-          </h1>
-          <p className="text-xl text-[rgba(245,242,239,.58)] mb-8 max-w-2xl mx-auto" data-animate>
-            Mint, trade, and collect access to powerful AI agent capabilities. 
-            Each skill card grants you exclusive access to specialized agent functions.
-          </p>
-          <div className="flex space-x-4 justify-center">
-            <Button size="lg">
-              Explore Marketplace
-            </Button>
-            <Button variant="secondary" size="lg">
-              Learn More
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8" data-animate>
-          <StatBlock label="Active Agents" value="127" />
-          <StatBlock label="Skills Available" value="340" />
-          <StatBlock label="Cards Minted" value="8.2K" />
-          <StatBlock label="Total Volume" value="156" suffix=" SOL" />
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="container mx-auto px-6 py-16">
-        <SectionHeader 
-          title="How AgentKeys Works"
-          subtitle="Three simple steps to access AI agent capabilities"
-          className="mb-16"
-        />
-        
-        <div className="grid md:grid-cols-3 gap-8" data-animate>
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-[#9333ea] to-[#ec4899] rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-xl">1</span>
-            </div>
-            <h3 className="text-xl font-bold text-[#f5f2ef] mb-3">Discover Skills</h3>
-            <p className="text-[rgba(245,242,239,.58)]">
-              Browse the marketplace to find AI agent skills that match your needs. 
-              Each skill is represented as a tradeable NFT card.
+    <>
+      {showOverlay && <IntroOverlay onDismiss={dismissOverlay} />}
+      <SiteShell>
+        {/* Hero */}
+        <section style={{ display: 'grid', gridTemplateColumns: '.92fr 1.08fr', gap: 44, alignItems: 'center', paddingTop: 26 }} className="hero-grid">
+          {/* Copy */}
+          <div ref={heroCopyRef} style={{ willChange: 'transform' }}>
+            <div className="eyebrow">↑ Live Agent Economy</div>
+            <h1 style={{
+              fontSize: 72, lineHeight: .95, letterSpacing: '-.06em',
+              margin: '18px 0 20px', fontWeight: 900, maxWidth: 620,
+            }}>
+              Trade Skills
+              <span className="grad">Like Cards.</span>
+            </h1>
+            <p style={{ maxWidth: 520, color: 'var(--muted)', fontSize: 17, lineHeight: 1.8, margin: 0 }}>
+              The first marketplace for AI agent skill keycards. Mint, collect, and trade access to the most powerful agent capabilities on Solana.
             </p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-[#9333ea] to-[#ec4899] rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-xl">2</span>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 26 }}>
+              <a href="/marketplace" className="btn">Explore Market</a>
+              <a href="/developers" className="btn secondary">Read Docs</a>
             </div>
-            <h3 className="text-xl font-bold text-[#f5f2ef] mb-3">Mint Access</h3>
-            <p className="text-[rgba(245,242,239,.58)]">
-              Purchase skill cards with SOL to gain exclusive access to agent capabilities. 
-              Limited supply makes each card valuable.
-            </p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-[#9333ea] to-[#ec4899] rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-xl">3</span>
-            </div>
-            <h3 className="text-xl font-bold text-[#f5f2ef] mb-3">Use & Trade</h3>
-            <p className="text-[rgba(245,242,239,.58)]">
-              Access agent skills using your cards, or trade them with other users. 
-              Build your collection of AI capabilities.
-            </p>
-          </div>
-        </div>
-      </div>
 
-      {/* CTA Section */}
-      <div className="bg-[rgba(255,255,255,.035)] border-y border-[rgba(255,255,255,.09)]">
-        <div className="container mx-auto px-6 py-16 text-center">
-          <h2 className="text-3xl font-bold text-[#f5f2ef] mb-4">
-            Ready to Start Trading?
+            {/* Mini stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 30, maxWidth: 440 }}>
+              {[
+                { label: 'Active Agents', value: '127' },
+                { label: 'Cards Minted', value: '8.2K' },
+                { label: 'Total Volume', value: '156 SOL' },
+              ].map((s, i) => (
+                <div key={i} className="stat-card">
+                  <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
+                  <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-.03em' }}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hero Card */}
+          <div ref={heroCardRef} style={{ willChange: 'transform' }}>
+            <HeroCard />
+          </div>
+        </section>
+
+        {/* Carousel Section */}
+        <section style={{ marginTop: 60 }}>
+          <div style={{ textAlign: 'center', marginBottom: 30 }}>
+            <div className="section-label" style={{ marginBottom: 10 }}>Live Market</div>
+            <h2 style={{ fontSize: 52, lineHeight: 1, letterSpacing: '-.05em', margin: '0 0 10px', fontWeight: 900 }}>
+              Featured KeyCards
+            </h2>
+            <p style={{ color: 'var(--muted)', margin: 0, fontSize: 17 }}>The most-traded agent skill cards in circulation.</p>
+          </div>
+          <CardCarousel />
+        </section>
+
+        {/* Foundry Section */}
+        <section style={{ marginTop: 60 }}>
+          <div className="section-label" style={{ marginBottom: 12, textAlign: 'center' }}>Developer SDK</div>
+          <h2 style={{ fontSize: 52, lineHeight: 1, letterSpacing: '-.05em', margin: '0 0 28px', fontWeight: 900, textAlign: 'center' }}>
+            Build with AgentKeys
           </h2>
-          <p className="text-[rgba(245,242,239,.58)] mb-8 max-w-2xl mx-auto">
-            Join the growing community of AI agent skill traders. 
-            Discover new capabilities and build your collection today.
-          </p>
-          <Button size="lg">
-            Get Started Now
-          </Button>
-        </div>
-      </div>
-    </Layout>
+          <FoundrySection />
+        </section>
+
+        {/* Preview sections */}
+        <HomePreviewSections />
+      </SiteShell>
+    </>
   )
 }

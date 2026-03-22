@@ -1,4 +1,4 @@
-// File: /root/agentkeys/src/app/api/agents/register/route.ts
+// File: /home/kaji-squad/agents/kaji/project-context/agentkeys/src/app/api/agents/register/route.ts
 import * as entry from '../../../../../../src/app/api/agents/register/route.js'
 import type { NextRequest } from 'next/server.js'
 

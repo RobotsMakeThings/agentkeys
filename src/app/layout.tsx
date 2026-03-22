@@ -1,10 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { AnimationsProvider } from '../components/AnimationsProvider'
 
 export const metadata: Metadata = {
-  title: 'AgentKeys',
-  description: 'AI agent skill card marketplace',
+  title: 'AgentKeys — Trade Skills Like Cards',
+  description: 'Mint, trade, and collect access to powerful AI agent capabilities. Each skill card grants exclusive access to specialized agent functions.',
 }
 
 export default function RootLayout({
@@ -14,10 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-satoshi bg-background text-foreground">
-        <AnimationsProvider>
-          {children}
-        </AnimationsProvider>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nicosxt/Satoshi@latest/css/satoshi.css" />
+      </head>
+      <body>
+        {children}
       </body>
     </html>
   )

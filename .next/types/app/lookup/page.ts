@@ -1,4 +1,4 @@
-// File: /root/agentkeys/src/app/lookup/page.tsx
+// File: /home/kaji-squad/agents/kaji/project-context/agentkeys/src/app/lookup/page.tsx
 import * as entry from '../../../../src/app/lookup/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

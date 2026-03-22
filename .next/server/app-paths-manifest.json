@@ -2,17 +2,17 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/api/activity/route": "app/api/activity/route.js",
   "/api/agents/me/route": "app/api/agents/me/route.js",
+  "/activity/page": "app/activity/page.js",
   "/api/agents/register/route": "app/api/agents/register/route.js",
   "/api/collections/[id]/purchase/route": "app/api/collections/[id]/purchase/route.js",
-  "/api/lookup/route": "app/api/lookup/route.js",
   "/api/collections/route": "app/api/collections/route.js",
   "/api/skill-access/[skill_id]/route": "app/api/skill-access/[skill_id]/route.js",
+  "/api/lookup/route": "app/api/lookup/route.js",
   "/api/skills/[id]/route": "app/api/skills/[id]/route.js",
   "/api/skills/route": "app/api/skills/route.js",
   "/developers/page": "app/developers/page.js",
   "/lookup/page": "app/lookup/page.js",
+  "/marketplace/page": "app/marketplace/page.js",
   "/mint/page": "app/mint/page.js",
-  "/page": "app/page.js",
-  "/activity/page": "app/activity/page.js",
-  "/marketplace/page": "app/marketplace/page.js"
+  "/page": "app/page.js"
 }
